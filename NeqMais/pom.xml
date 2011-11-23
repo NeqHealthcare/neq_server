@@ -15,6 +15,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+   <!-- Configure repo2.maven.org as a repository. -->
+   <repositories>
+       <repository>
+           <id>repo2_maven_org</id>
+           <url>http://repo2.maven.org/maven2</url>
+       </repository>
+   </repositories>
+
     <dependencies>
         <!-- Jetty -->
         <dependency>
@@ -42,7 +50,7 @@
       		<version>${gsonVersion}</version>
       		<scope>compile</scope>
     	</dependency>
-    
+    	
     </dependencies>
 
     <build>

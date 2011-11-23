@@ -48,7 +48,6 @@ public class PatientServlet {
 		for(Patient patient : patientList){
 		
 			if(patient.getId().equals(id)){
-				Patient requestedPatient = patient;
 				return "<h2> patient information retrieved through a get request</h2>"+"<br />"+ patient.toString();
 			}
 		}

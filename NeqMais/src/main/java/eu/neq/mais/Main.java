@@ -4,7 +4,6 @@ import org.eclipse.jetty.server.Server;
 
 
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletContextHandler.Context;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
@@ -27,6 +26,11 @@ public class Main {
 		
 		server.start(); 
 		server.join();
+		
+		
+		/*tryton remote call - test*/
+		
+		
 
 	}
 }
