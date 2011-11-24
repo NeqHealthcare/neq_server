@@ -20,34 +20,56 @@ public class GNUHealthConnectorImpl implements Connector {
 
 
 	public static void main(String[] args) {
+		
+		// TESTING THIS CRAP
 
 		String username = "admin";
 		String password = "iswi223>>";
 
 		username = "demo_de";
 		password = "demo";
+		
+		GNUHealthConnectorImpl gnuCon = new GNUHealthConnectorImpl();
+		gnuCon.login(username, password);
 
 		// Creating a new session to a JSON-RPC 2.0 web service at a specified URL
 
 		// The JSON-RPC 2.0 server URL
+		
+		
+		
+	
+	}
+
+
+
+	public void logout() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public String login(String username, String password) {
+		
+		
 		URL serverURL = null;
 
 		try {
 			serverURL = new URL("http://" + username + ":" + password + "@demo2.2.tryton.org:8000/demo2.2");
 
 		} catch (MalformedURLException e) {
-		// handle exception...
+			e.printStackTrace();
 		}
 
 		// Create new JSON-RPC 2.0 client session
 		JSONRPC2Session mySession = new JSONRPC2Session(serverURL);
-
-
 		// Once the client session object is created, you can use to send a series
 		// of JSON-RPC 2.0 requests and notifications to it.
 
 		// Sending an example "getServerTime" request:
 
+		
+		
 		// Construct new request
 		String method = "common.db.login";
 		
@@ -57,6 +79,9 @@ public class GNUHealthConnectorImpl implements Connector {
 		
 		JSONRPC2Request request = new JSONRPC2Request(method, params, "0001");
 
+		
+		
+		
 		// Send request
 		JSONRPC2Response response = null;
 
@@ -78,23 +103,12 @@ public class GNUHealthConnectorImpl implements Connector {
 			System.out.println(response.getResult());
 		else
 			System.out.println(response.getError().getMessage());
-	
-	}
-
-
-
-	public void logout() {
-		// TODO Auto-generated method stub
 		
+		return "Change me when done";
 	}
 
-
-	public String login(String username, String password) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void exec(Object o) {
+	public Object exec(Object o) {
+		return o;
 		// TODO Auto-generated method stub
 		
 	}

@@ -1,17 +1,26 @@
 package eu.neq.mais.connector.impl;
 
+import java.util.ArrayList;
+
 import eu.neq.mais.connector.Connector;
 
+/**
+ * Dummy class delivering some test data by simulating a "connection" to a backend.
+ * Only useful for frontend/REST service testing.
+ * @author seba
+ *
+ */
 public class TestDataConnectorImpl implements Connector {
 
 	
 	public TestDataConnectorImpl() {
-		System.out.println("Instantiated");
+		System.out.println("Test Data Connector Instantiated");
 	}
 	
 	public String login(String username, String password) {
-		// TODO Auto-generated method stub
-		return null;
+		double ran = Math.random();
+		System.out.println("Fake Session ID: "+ran);
+		return String.valueOf(ran);
 	}
 
 	public void logout() {
@@ -19,9 +28,11 @@ public class TestDataConnectorImpl implements Connector {
 
 	}
 
-	public void exec(Object o) {
-		// TODO Auto-generated method stub
-
+	public Object exec(Object o) {
+		if (String.class.isInstance(o)) {
+			return null;
+		}
+		return null;
 	}
 
 }
