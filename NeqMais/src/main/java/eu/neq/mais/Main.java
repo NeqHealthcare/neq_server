@@ -8,6 +8,9 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
+import eu.neq.mais.connector.Connector;
+import eu.neq.mais.connector.ConnectorFactory;
+
 
 public class Main {
 
@@ -23,6 +26,12 @@ public class Main {
 		
 		ServletContextHandler context = new ServletContextHandler(server, "/", ServletContextHandler.SESSIONS); 
 		context.addServlet(servletHolder, "/rest/*"); 
+		
+		// INIT THE CONNECTOR
+		
+		Connector backEndConnector = ConnectorFactory.createConnector();
+		
+		
 		
 		server.start(); 
 		server.join();

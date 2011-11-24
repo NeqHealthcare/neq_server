@@ -1,10 +1,12 @@
-package eu.neq.mais.connector;
+package eu.neq.mais.connector.impl;
 
 //The Client sessions package
 import com.thetransactioncompany.jsonrpc2.client.*;
 
 //The Base package for representing JSON-RPC 2.0 messages
 import com.thetransactioncompany.jsonrpc2.*;
+
+import eu.neq.mais.connector.Connector;
 
 
 //For creating URLs
@@ -14,7 +16,7 @@ import java.util.Map;
 
 
 
-public class Connect {
+public class GNUHealthConnectorImpl implements Connector {
 
 
 	public static void main(String[] args) {
@@ -77,5 +79,23 @@ public class Connect {
 		else
 			System.out.println(response.getError().getMessage());
 	
+	}
+
+
+
+	public void logout() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public String login(String username, String password) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void exec(Object o) {
+		// TODO Auto-generated method stub
+		
 	}
 }
