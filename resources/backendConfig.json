@@ -1,20 +1,20 @@
 [
 {
-     "uri": "gnuhealth",
+     "uri": "gnu",
      "sid" : 1,
      "url" : "theilemann.dyndns.org",
      "jsonport" : 8000,
      "xmlport" : 7070,
-     "connector":"eu.neq.mais.domain.gnuhealth.GNUHealthConnectorImpl",
-     "dblist": "devel_01"
+     "connector":"eu.neq.mais.connector.impl.GNUHealthConnectorImpl",
+     "db": "devel_01"
  },
  {
-     "uri": "testdata",
+     "uri": "test",
      "sid" : 1,
      "url" : "theilemann.dyndns.org",
      "jsonport" : 8000,
      "xmlport" : 7070,
-     "connector":"eu.neq.mais.domain.gnuhealth.TestDataConnectorImpl",
-     "dblist": "devel_01"
+     "connector":"eu.neq.mais.connector.impl.TestDataConnectorImpl",
+     "db": "devel_01"
  }
  ]

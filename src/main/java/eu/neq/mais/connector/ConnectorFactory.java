@@ -20,7 +20,8 @@ public abstract class ConnectorFactory {
 		Backend requiredBackend = backendMap.get(backendUri+" "+sid);
 		
 		Connector connector = (Connector) (Connector.class.getClassLoader().loadClass(requiredBackend.getConnector())).newInstance();
-		connector.setConfigurationData(requiredBackend);
+		connector.setBackend(requiredBackend);
+
 		return connector;
 	}
 

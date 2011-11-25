@@ -1,12 +1,15 @@
 package eu.neq.mais.connector.impl;
 
 //The Client sessions package
+import com.google.gson.Gson;
+import com.googlecode.jj1.ServiceProxy;
 import com.thetransactioncompany.jsonrpc2.client.*;
 
 //The Base package for representing JSON-RPC 2.0 messages
 import com.thetransactioncompany.jsonrpc2.*;
 
 import eu.neq.mais.connector.Connector;
+import eu.neq.mais.domain.gnuhealth.GnuMethods;
 import eu.neq.mais.technicalservice.Backend;
 
 
@@ -21,9 +24,6 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	private static Connector instance = null;
 
-	private GNUHealthConnectorImpl(){
-		
-	}
 	
 	public static Connector getInstance(){
 		
@@ -42,71 +42,28 @@ public class GNUHealthConnectorImpl extends Connector {
 
 
 	public String login(String username, String password) {
-		
-		
-		URL serverURL = null;
 
-		try {
-			serverURL = new URL("http://" + username + ":" + password +"@" + this.getBackend().getUrl()+":"+this.getBackend().getJsonport()+"/"+this.getBackend().getDb());
-
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-
-		// Create new JSON-RPC 2.0 client session
-		JSONRPC2Session mySession = new JSONRPC2Session(serverURL);
-		// Once the client session object is created, you can use to send a series
-		// of JSON-RPC 2.0 requests and notifications to it.
-
-		// Sending an example "getServerTime" request:
-
+		String serverURL = "http://"+this.getBackend().getUrl()+":"+
+				this.getBackend().getJsonport()+"/"+this.getBackend().getDb();
 		
+		System.out.println("connect to: "+serverURL);
 		
-		// Construct new request
-		String method = "common.db.login";
+		String[] params =  new String[]{username,password};
 		
-		Map params = new HashMap();
-		params.put("user", "demo_de");
-		params.put("pw", "demo");
+		ServiceProxy proxy = new ServiceProxy(serverURL.toString());
+		System.out.println("send login request");
+		String result = new Gson().toJson(proxy.call(GnuMethods.LOGIN_METHOD, params));
+		System.out.println("result: "+result);
 		
-		JSONRPC2Request request = new JSONRPC2Request(method, params, "0001");
-
-		
-		
-		
-		// Send request
-		JSONRPC2Response response = null;
-
-		try {
-			response = mySession.send(request);
-
-		} catch (JSONRPC2SessionException e) {
-
-		e.printStackTrace();
-	
-		}
-		if(response == null){
-			System.out.println("fuck you");
-		}
-		System.out.println("balökj: "+response.toJSON().toJSONString());
-
-		// Print response result / error
-		if (response.indicatesSuccess())
-			System.out.println(response.getResult());
-		else
-			System.out.println(response.getError().getMessage());
-		
-		return "Change me when done";
+		return result;		
 	}
+	
+	
+	
 
 	public String exec(String method, String[] params, String id) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	public void setConfigurationData(Backend backend) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

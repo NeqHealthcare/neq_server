@@ -32,12 +32,12 @@ public abstract class Connector {
 	public abstract String exec(String method, String[] params, String id);
 	
 	
-	public void setConfigurationData(Backend backend){
+	public void setBackend(Backend backend){
 		this.backend = backend;
 	}
 	
 	public Backend getBackend(){
-		return backend;
+		return this.backend;
 	}
 	
 }

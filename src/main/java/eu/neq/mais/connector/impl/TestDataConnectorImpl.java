@@ -15,9 +15,6 @@ public class TestDataConnectorImpl extends Connector {
 
 	private static Connector instance = null;
 	
-	private TestDataConnectorImpl(){
-		
-	}
 	
 	public static Connector getInstance(){
 		
@@ -42,11 +39,5 @@ public class TestDataConnectorImpl extends Connector {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	public void setConfigurationData(Backend backend) {
-		// TODO Auto-generated method stub
-		
-	}
-
 
 }
