@@ -16,9 +16,18 @@ import java.util.Map;
 
 
 
-public class GNUHealthConnectorImpl implements Connector {
+public class GNUHealthConnectorImpl extends Connector {
 
+	private static Connector instance = null;
 
+	public static Connector getInstance(){
+		
+		if(instance == null){
+			instance = new GNUHealthConnectorImpl();
+		}
+		return instance;
+	}
+	
 	public static void main(String[] args) {
 		
 		// TESTING THIS CRAP

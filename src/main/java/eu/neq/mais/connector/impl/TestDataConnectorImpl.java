@@ -10,11 +10,16 @@ import eu.neq.mais.connector.Connector;
  * @author seba
  *
  */
-public class TestDataConnectorImpl implements Connector {
+public class TestDataConnectorImpl extends Connector {
 
+	private static Connector instance = null;
 	
-	public TestDataConnectorImpl() {
-		System.out.println("Test Data Connector Instantiated");
+	public static Connector getInstance(){
+		
+		if(instance == null){
+			instance = new TestDataConnectorImpl();
+		}
+		return instance;
 	}
 	
 	public String login(String username, String password) {

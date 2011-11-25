@@ -6,7 +6,15 @@ package eu.neq.mais.connector;
  * @author seba
  *
  */
-public interface Connector {
+public abstract class Connector {
+	
+	/**
+	 * return single instance from the class
+	 * @return Connector instance
+	 */
+	public static Connector getInstance(){
+		return null;
+	}
 	
 	/**
 	 * Loging into the Backend
@@ -14,17 +22,17 @@ public interface Connector {
 	 * @param password
 	 * @return Session ID
 	 */
-	public String login(String username, String password);
+	public abstract String login(String username, String password);
 	
 	/**
 	 * Logout
 	 */
-	public void logout();
+	public abstract void logout();
 	
 	/**
 	 * Dummy method...
 	 * @param o
 	 */
-	public Object exec(Object o);
+	public abstract Object exec(Object o);
 	
 }

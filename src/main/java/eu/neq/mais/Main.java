@@ -22,24 +22,14 @@ public class Main {
 		
 		servletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", 
 		        "com.sun.jersey.api.core.PackagesResourceConfig"); 
-		servletHolder.setInitParameter("com.sun.jersey.config.property.packages", "eu.neq.mais");
+		servletHolder.setInitParameter("com.sun.jersey.config.property.packages", "eu.neq.mais.request");
 		
 		ServletContextHandler context = new ServletContextHandler(server, "/", ServletContextHandler.SESSIONS); 
-		context.addServlet(servletHolder, "/rest/*"); 
-		
-		// INIT THE CONNECTOR
-		
-		Connector backEndConnector = ConnectorFactory.createConnector();
-		
+		context.addServlet(servletHolder, "/*"); 
 		
 		
 		server.start(); 
 		server.join();
-		
-		
-		/*tryton remote call - test*/
-		
-		
 
 	}
 }
