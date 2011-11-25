@@ -33,7 +33,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		// TESTING THIS CRAP
 
 		String username = "admin";
-		String password = "iswi223>>";
+		String password = "iswi223<<";
 
 		username = "demo_de";
 		password = "demo";
