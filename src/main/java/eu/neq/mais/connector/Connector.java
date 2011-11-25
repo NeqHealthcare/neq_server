@@ -26,6 +26,6 @@ public interface Connector {
 	 * Dummy method...
 	 * @param o
 	 */
-	public abstract Object exec(Object o);
+	public abstract String exec(String method, String[] params, String id);
 	
 }

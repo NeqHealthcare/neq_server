@@ -26,7 +26,7 @@ public class PatientServlet {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public String returnPatient(@PathParam("backendUri") String backendUri,@PathParam("backendSid") String backendSid,@PathParam("id") Integer id){
+	public String login(@PathParam("backendUri") String backendUri,@PathParam("backendSid") String backendSid){
 		
 		try {
 			connector = ConnectorFactory.getConnector(backendUri, backendSid);
@@ -40,12 +40,23 @@ public class PatientServlet {
 		return session;
 	}
 	
-	// This method is called if HTML is request
+	
 	@GET
-	@Produces(MediaType.TEXT_HTML)
-	public String returnUserAsHTML(@PathParam("id") Integer id) {
+	@Produces(MediaType.APPLICATION_JSON)
+	public String returnPatient(@PathParam("backendUri") String backendUri,@PathParam("backendSid") String backendSid,@PathParam("id") Integer id){
 		
-		return "<h2> patient doesn't exist</h2>";
+		try {
+			connector = ConnectorFactory.getConnector(backendUri, backendSid);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String[] params = new String[id];
+
+		String patient = connector.exec("common.login.bla",params,"100");
+		
+		return patient;
 	}
 
 }

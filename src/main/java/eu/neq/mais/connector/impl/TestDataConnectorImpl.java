@@ -37,11 +37,10 @@ public class TestDataConnectorImpl implements Connector {
 
 	}
 
-	public Object exec(Object o) {
-		if (String.class.isInstance(o)) {
-			return null;
-		}
+	public String exec(String method, String[] params, String id) {
+		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 }

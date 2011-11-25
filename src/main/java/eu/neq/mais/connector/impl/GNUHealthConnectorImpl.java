@@ -118,9 +118,9 @@ public class GNUHealthConnectorImpl implements Connector {
 		return "Change me when done";
 	}
 
-	public Object exec(Object o) {
-		return o;
+	public String exec(String method, String[] params, String id) {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
+
 }
