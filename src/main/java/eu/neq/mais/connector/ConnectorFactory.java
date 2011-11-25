@@ -15,7 +15,6 @@ public abstract class ConnectorFactory {
 
 	public static Connector getConnector(BackendType type) {
 		
-		BackendType tt = BackendType.gnuhealth;
 		
 		switch(type){
 			case gnuhealth: return GNUHealthConnectorImpl.getInstance();
