@@ -16,7 +16,7 @@ import java.util.Map;
 
 
 
-public class GNUHealthConnectorImpl extends Connector {
+public class GNUHealthConnectorImpl implements Connector {
 
 	private static Connector instance = null;
 

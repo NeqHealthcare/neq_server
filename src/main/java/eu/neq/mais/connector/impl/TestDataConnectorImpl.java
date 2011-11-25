@@ -10,7 +10,7 @@ import eu.neq.mais.connector.Connector;
  * @author seba
  *
  */
-public class TestDataConnectorImpl extends Connector {
+public class TestDataConnectorImpl implements Connector {
 
 	private static Connector instance = null;
 	

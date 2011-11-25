@@ -6,15 +6,8 @@ package eu.neq.mais.connector;
  * @author seba
  *
  */
-public abstract class Connector {
+public interface Connector {
 	
-	/**
-	 * return single instance from the class
-	 * @return Connector instance
-	 */
-	public static Connector getInstance(){
-		return null;
-	}
 	
 	/**
 	 * Loging into the Backend
