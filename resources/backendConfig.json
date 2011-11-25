@@ -1,0 +1,15 @@
+{
+     "name": "Gnu Health",
+     "id" : 1,
+     "url" : "demo2.2.tryton.org",
+     "jsonport" : 8000,
+     "dblist":
+     [
+         {
+           "dbname"  : "demo2.2",
+         },
+         {
+           "dbname"  : "demo2.1",
+         }
+     ]
+ }
