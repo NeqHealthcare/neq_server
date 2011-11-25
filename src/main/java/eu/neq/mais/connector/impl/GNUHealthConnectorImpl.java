@@ -20,6 +20,10 @@ public class GNUHealthConnectorImpl implements Connector {
 
 	private static Connector instance = null;
 
+	private GNUHealthConnectorImpl(){
+		
+	}
+	
 	public static Connector getInstance(){
 		
 		if(instance == null){
@@ -27,6 +31,8 @@ public class GNUHealthConnectorImpl implements Connector {
 		}
 		return instance;
 	}
+	
+	
 	
 	public static void main(String[] args) {
 		

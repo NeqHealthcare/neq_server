@@ -1,9 +1,9 @@
 package eu.neq.mais.connector;
 
-import eu.neq.mais.Main;
-import eu.neq.mais.connector.impl.GNUHealthConnectorImpl;
-import eu.neq.mais.connector.impl.TestDataConnectorImpl;
-import eu.neq.mais.domain.gnuhealth.PatientGnu;
+import java.util.Map;
+
+import eu.neq.mais.technicalservice.Backend;
+import eu.neq.mais.technicalservice.FileHandler;
 
 /**
  * Loads a back-end connector based no the configuration of the mais.
@@ -13,14 +13,14 @@ import eu.neq.mais.domain.gnuhealth.PatientGnu;
 public abstract class ConnectorFactory {
 	
 
-	public static Connector getConnector(BackendType type) {
+	public static Connector getConnector(String backendUri, String sid) throws Exception {
 		
+		Map<String,Backend> backendMap = FileHandler.getBackendMap();
 		
-		switch(type){
-			case gnuhealth: return GNUHealthConnectorImpl.getInstance();
-			case testdata: return TestDataConnectorImpl.getInstance();
-		default: return TestDataConnectorImpl.getInstance();
-		}
+		Backend requiredBackend = backendMap.get(backendUri+" "+sid);
+		
+		return (Connector) (Connector.class.getClassLoader().loadClass(requiredBackend.getConnector())).newInstance();
+
 	}
 
 

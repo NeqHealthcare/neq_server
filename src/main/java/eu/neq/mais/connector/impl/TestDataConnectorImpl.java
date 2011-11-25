@@ -14,6 +14,10 @@ public class TestDataConnectorImpl implements Connector {
 
 	private static Connector instance = null;
 	
+	private TestDataConnectorImpl(){
+		
+	}
+	
 	public static Connector getInstance(){
 		
 		if(instance == null){
