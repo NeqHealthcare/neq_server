@@ -10,16 +10,11 @@ public class Backend {
 	private int jsonport;
 	private int xmlport;
 	private String connector;
-	
-	
-	private List<String> dblist;
+	private String db;
 	
 	
 	public String toString(){
-		String backendString =  "sid: "+sid+" ; uri: "+uri+" ; url: "+url+" ; jsonport: "+jsonport+" ; xmlport: "+xmlport;
-		for(String db : dblist){
-			backendString+=" ; dbname: "+db;
-		}
+		String backendString =  "sid: "+sid+" ; uri: "+uri+" ; url: "+url+" ; jsonport: "+jsonport+" ; xmlport: "+xmlport+" ; dbname: "+db;
 		return backendString;
 	}
 
@@ -74,13 +69,13 @@ public class Backend {
 	}
 
 
-	public List<String> getDblist() {
-		return dblist;
+	public String getDb() {
+		return db;
 	}
 
 
-	public void setDblist(List<String> dblist) {
-		this.dblist = dblist;
+	public void setDb(String db) {
+		this.db = db;
 	}
 
 

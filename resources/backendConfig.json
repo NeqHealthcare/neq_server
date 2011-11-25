@@ -6,10 +6,7 @@
      "jsonport" : 8000,
      "xmlport" : 7070,
      "connector":"eu.neq.mais.domain.gnuhealth.GNUHealthConnectorImpl",
-     "dblist":
-     [
-     	"devel_01","demo2.1"
-     ]
+     "dblist": "devel_01"
  },
  {
      "uri": "testdata",
@@ -18,9 +15,6 @@
      "jsonport" : 8000,
      "xmlport" : 7070,
      "connector":"eu.neq.mais.domain.gnuhealth.TestDataConnectorImpl",
-     "dblist":
-     [
-     	"devel_01", "demo2.2"
-     ]
+     "dblist": "devel_01"
  }
  ]

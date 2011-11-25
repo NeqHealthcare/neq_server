@@ -1,13 +1,16 @@
 package eu.neq.mais.connector;
 
+import eu.neq.mais.technicalservice.Backend;
+
 /**
  * Connector interface to standardize the connector implemetations.
  * One connector builds one connection to one back-end HIS, like GNU Health or SAP Healthcare.
  * @author seba
  *
  */
-public interface Connector {
+public abstract class Connector {
 	
+	private Backend backend;
 	
 	/**
 	 * Loging into the Backend
@@ -27,5 +30,14 @@ public interface Connector {
 	 * @param o
 	 */
 	public abstract String exec(String method, String[] params, String id);
+	
+	
+	public void setConfigurationData(Backend backend){
+		this.backend = backend;
+	}
+	
+	public Backend getBackend(){
+		return backend;
+	}
 	
 }

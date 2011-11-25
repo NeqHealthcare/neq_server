@@ -3,6 +3,7 @@ package eu.neq.mais.connector.impl;
 import java.util.ArrayList;
 
 import eu.neq.mais.connector.Connector;
+import eu.neq.mais.technicalservice.Backend;
 
 /**
  * Dummy class delivering some test data by simulating a "connection" to a backend.
@@ -10,7 +11,7 @@ import eu.neq.mais.connector.Connector;
  * @author seba
  *
  */
-public class TestDataConnectorImpl implements Connector {
+public class TestDataConnectorImpl extends Connector {
 
 	private static Connector instance = null;
 	
@@ -40,6 +41,11 @@ public class TestDataConnectorImpl implements Connector {
 	public String exec(String method, String[] params, String id) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void setConfigurationData(Backend backend) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

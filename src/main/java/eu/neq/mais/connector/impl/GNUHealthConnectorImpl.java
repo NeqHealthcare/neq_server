@@ -7,6 +7,7 @@ import com.thetransactioncompany.jsonrpc2.client.*;
 import com.thetransactioncompany.jsonrpc2.*;
 
 import eu.neq.mais.connector.Connector;
+import eu.neq.mais.technicalservice.Backend;
 
 
 //For creating URLs
@@ -16,7 +17,7 @@ import java.util.Map;
 
 
 
-public class GNUHealthConnectorImpl implements Connector {
+public class GNUHealthConnectorImpl extends Connector {
 
 	private static Connector instance = null;
 
@@ -30,26 +31,6 @@ public class GNUHealthConnectorImpl implements Connector {
 			instance = new GNUHealthConnectorImpl();
 		}
 		return instance;
-	}
-	
-	
-	
-	public static void main(String[] args) {
-		
-		// TESTING
-		String username = "admin";
-		String password = "iswi223<<";
-
-		username = "demo_de";
-		password = "demo";
-		
-		GNUHealthConnectorImpl.getInstance().login(username, password);
-
-		// Creating a new session to a JSON-RPC 2.0 web service at a specified URL
-
-		// The JSON-RPC 2.0 server URL
-		
-	
 	}
 
 
@@ -66,7 +47,7 @@ public class GNUHealthConnectorImpl implements Connector {
 		URL serverURL = null;
 
 		try {
-			serverURL = new URL("http://" + username + ":" + password + "@demo2.2.tryton.org:8000/demo2.2");
+			serverURL = new URL("http://" + username + ":" + password +"@" + this.getBackend().getUrl()+":"+this.getBackend().getJsonport()+"/"+this.getBackend().getDb());
 
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -121,6 +102,11 @@ public class GNUHealthConnectorImpl implements Connector {
 	public String exec(String method, String[] params, String id) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void setConfigurationData(Backend backend) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
