@@ -1,20 +1,22 @@
-{
-     "name": "Gnu Health",
-     "id" : 1,
-     "url" : "demo2.2.tryton.org",
-     "jsonport" : 8000,
-     "dblist":
-     [
-     	"demo2.2","demo2.1"
-     ]
- }
- {
-     "name": "Gnu Health",
-     "id" : 1,
-     "url" : "demo2.2.tryton.org",
-     "jsonport" : 8000,
-     "dblist":
-     [
-     	"demo2.2","demo2.1"
-     ]
- }
+[
+	"gnuhealth": {
+	     "name": "Gnu Health",
+	     "id" : 1,
+	     "url" : "demo2.2.tryton.org",
+	     "jsonport" : 8000,
+	     "dblist":
+	     [
+	     	"demo2.2","demo2.1"
+	     ]
+ 	},
+ 	"sap": {
+	     "name": "SAP",
+	     "id" : 1,
+	     "url" : "demo2.2.tryton.org",
+	     "jsonport" : 8000,
+	     "dblist":
+	     [
+	     	"demo2.2","demo2.1"
+	     ]
+ 	}
+]

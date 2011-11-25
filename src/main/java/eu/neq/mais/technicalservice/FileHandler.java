@@ -7,16 +7,27 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 public abstract class FileHandler {
 
 	
-	public static BufferedReader returnBrforFile(String filePath) throws FileNotFoundException{
+	private static BufferedReader returnBrforFile(String filePath) throws FileNotFoundException{
 		BufferedReader br = new BufferedReader(new FileReader(filePath));	
 		return br;
+	}
+	
+	public Map<String,Backend> getBackendList () throws JsonIOException, JsonSyntaxException, FileNotFoundException{
+		
+		Type listType = new TypeToken<Map<String,Backend>>(){}.getType();
+		Map<String,Backend> backendList = new Gson().fromJson(returnBrforFile(Settings.BACKEND_CONFIG_FILE), listType);
+	
+		return backendList;
 	}
 	
 	
@@ -27,10 +38,10 @@ public abstract class FileHandler {
 			new FileReader(Settings.BACKEND_CONFIG_FILE));
  
 	Type listType = new TypeToken<List<Backend>>(){}.getType();
-	List<Backend> backendList = new Gson().fromJson(FileHandler.returnBrforFile(Settings.BACKEND_CONFIG_FILE), listType);
+	Map<String,Backend> backendList = new Gson().fromJson(FileHandler.returnBrforFile(Settings.BACKEND_CONFIG_FILE), listType);
 	
-	for(Backend b : backendList){
-		System.out.println(b.toString());
+	for(Map.Entry<String,Backend> b : backendList.entrySet()){
+		System.out.println(b.getKey()+" "+b.getValue());
 	}
 	
 	}
