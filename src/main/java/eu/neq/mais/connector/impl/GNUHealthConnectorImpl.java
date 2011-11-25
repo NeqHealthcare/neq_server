@@ -30,22 +30,18 @@ public class GNUHealthConnectorImpl extends Connector {
 	
 	public static void main(String[] args) {
 		
-		// TESTING THIS CRAP
-
+		// TESTING
 		String username = "admin";
 		String password = "iswi223<<";
 
 		username = "demo_de";
 		password = "demo";
 		
-		GNUHealthConnectorImpl gnuCon = new GNUHealthConnectorImpl();
-		gnuCon.login(username, password);
+		GNUHealthConnectorImpl.getInstance().login(username, password);
 
 		// Creating a new session to a JSON-RPC 2.0 web service at a specified URL
 
 		// The JSON-RPC 2.0 server URL
-		
-		
 		
 	
 	}
