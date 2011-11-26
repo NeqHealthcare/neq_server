@@ -39,18 +39,26 @@ public class GNUHealthConnectorImpl extends Connector {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	
+	private URL getBackEndUrl() {
+		try {
+			return new URL("http://"+this.getBackend().getUrl()+":"+this.getBackend().getJsonport()+"/"+this.getBackend().getDb());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} 
+			return null;
+		
+	}
 
 
 	public String login(String username, String password) {
-
-		String serverURL = "http://"+this.getBackend().getUrl()+":"+
-				this.getBackend().getJsonport()+"/"+this.getBackend().getDb();
 		
-		System.out.println("connect to: "+serverURL);
+		System.out.println("connect to: "+getBackEndUrl().toString());
 		
 		String[] params =  new String[]{username,password};
 		
-		ServiceProxy proxy = new ServiceProxy(serverURL.toString());
+		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
 		System.out.println("send login request");
 		String result = new Gson().toJson(proxy.call(GnuMethods.LOGIN_METHOD, params));
 		System.out.println("result: "+result);
