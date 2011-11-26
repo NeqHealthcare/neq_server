@@ -1,6 +1,7 @@
 package eu.neq.mais.request;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -30,6 +31,28 @@ public class ConnectionHandler {
 		
 		return session;
 
+	}
+	
+	/**
+	 * Still problems with the SESSION String (contains lots of /// :()
+	 * @param backendUri
+	 * @param backendSid
+	 * @param username
+	 * @param session
+	 */
+	@PUT
+	@Path("logout/{username}/{session}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public void logout(@PathParam("backendUri") String backendUri,@PathParam("backendSid") String backendSid
+			,@PathParam("username") String username,@PathParam("session") String session){
+		
+		try {
+			connector = ConnectorFactory.getConnector(backendUri, backendSid);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		connector.logout(username, session);
 	}
 
 }

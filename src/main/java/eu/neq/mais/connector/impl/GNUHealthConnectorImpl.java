@@ -9,6 +9,7 @@ import com.thetransactioncompany.jsonrpc2.client.*;
 import com.thetransactioncompany.jsonrpc2.*;
 
 import eu.neq.mais.connector.Connector;
+import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.domain.gnuhealth.GnuMethods;
 import eu.neq.mais.technicalservice.Backend;
 
@@ -24,6 +25,16 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	private static Connector instance = null;
 
+	public static void main(String[] args) {
+		
+		try {
+			ConnectorFactory.getConnector("gnu", "1").logout("","");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	
 	public static Connector getInstance(){
 		
@@ -38,7 +49,8 @@ public class GNUHealthConnectorImpl extends Connector {
 	public void logout(String username, String session) {
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
 		String[] params =  new String[]{username,session};
-		proxy.call(GnuMethods.LOGOUT_METHOD, params);		
+		String result = new Gson().toJson(proxy.call(GnuMethods.LOGOUT_METHOD, params));
+		System.out.println("Logout: "+result);
 	}
 	
 	
