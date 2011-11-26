@@ -35,9 +35,10 @@ public class GNUHealthConnectorImpl extends Connector {
 
 
 
-	public void logout() {
-		// TODO Auto-generated method stub
-		
+	public void logout(String username, String session) {
+		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
+		String[] params =  new String[]{username,session};
+		proxy.call(GnuMethods.LOGOUT_METHOD, params);		
 	}
 	
 	
@@ -69,7 +70,7 @@ public class GNUHealthConnectorImpl extends Connector {
 	
 	
 
-	public String exec(String method, String[] params, String id) {
+	public String db_exec(String method, String[] params, String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -23,13 +23,13 @@ public abstract class Connector {
 	/**
 	 * Logout
 	 */
-	public abstract void logout();
+	public abstract void logout(String username, String Session);
 	
 	/**
 	 * Dummy method...
 	 * @param o
 	 */
-	public abstract String exec(String method, String[] params, String id);
+	public abstract String db_exec(String method, String[] params, String id);
 	
 	
 	public void setBackend(Backend backend){

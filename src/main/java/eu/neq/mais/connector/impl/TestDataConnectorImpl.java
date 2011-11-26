@@ -30,12 +30,12 @@ public class TestDataConnectorImpl extends Connector {
 		return String.valueOf(ran);
 	}
 
-	public void logout() {
+	public void logout(String username, String session) {
 		// TODO Auto-generated method stub
 
 	}
 
-	public String exec(String method, String[] params, String id) {
+	public String db_exec(String method, String[] params, String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
