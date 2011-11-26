@@ -47,6 +47,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
 
 	public void logout(String username, String session) {
+		System.out.println("send logout request");
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
 		String[] params =  new String[]{username,session};
 		String result = new Gson().toJson(proxy.call(GnuMethods.LOGOUT_METHOD, params));
@@ -83,7 +84,12 @@ public class GNUHealthConnectorImpl extends Connector {
 	
 
 	public String db_exec(String method, String[] params, String id) {
-		// TODO Auto-generated method stub
+	/*	System.out.println("send db_exec request");
+		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
+		String result = new Gson().toJson(proxy.call(GnuMethods.LOGOUT_METHOD, params));
+		System.out.println("exec: "+result);
+		return result; */
+		
 		return null;
 	}
 
