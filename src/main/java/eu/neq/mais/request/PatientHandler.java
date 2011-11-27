@@ -28,7 +28,7 @@ public class PatientHandler {
 		
 		String[] params = new String[id];
 
-		String patient = connector.db_exec("common.login.bla",params,"100");
+		String patient = connector.exec("common.login.bla",params,"100");
 		
 		return patient;
 	}

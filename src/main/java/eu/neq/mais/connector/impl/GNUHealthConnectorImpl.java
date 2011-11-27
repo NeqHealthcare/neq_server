@@ -17,6 +17,7 @@ import eu.neq.mais.technicalservice.Backend;
 
 //For creating URLs
 import java.net.*;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -30,6 +31,57 @@ public class GNUHealthConnectorImpl extends Connector {
 	private static Connector instance = null;
 		
 	
+	public static void main(String[] args) {
+		try {
+			Connector con = ConnectorFactory.getConnector("gnu", "1");
+			
+			// LOGIN
+			String session = con.login("admin", "iswi223<<");
+			
+			
+			// PREPARE SESSION PARAM
+			char s = '"';
+			String session_split[] = session.split(String.valueOf(s));
+			session = s+session_split[1]+s;
+			
+			logger.info("prepared session param: "+session);
+			
+			
+			// GET PREFERENCES
+			// *NEED PREFERENCES TO FULLFIL PARAMETERS*
+			String preferences = con.getPreferences(session);
+			
+		
+			// PREPARE PARAMS
+			// ModelStorage.search(cursor, user, domain[, offset[, limit[, order[, context[, count]]]]])
+//		    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, False, };
+			
+			
+//			String res = con.exec(GnuMethods.PATIENT_SEARCH_METHOD, params, null);
+//			logger.info("res: "+res);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+	
+	}
+	
+	public String getPreferences(String session) {
+		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
+		
+		Object[] params = new Object[]{1, session, true, new String[]{}};
+		
+		String x = "{\"params\": [1, "+session+", [], 0, 1000, null, {\"groups\": [1, 3, 4, 2], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}], \"id\": 52, \"method\": \"model.gnuhealth.patient.search\"}";
+		String result = new Gson().toJson(proxy.execute(x));
+		
+		//String result = new Gson().toJson(proxy.call(GnuMethods.GET_PREFERENCES_METHOD, params));
+		logger.info("PREFERENCES: "+result);
+		return result;
+	}
+	
+	
 	public static Connector getInstance(){
 		
 		if(instance == null){
@@ -40,9 +92,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
 
 
-	public String logout(String username, String session) {
-		System.out.println("alala: "+logger.getHandlers().toString());
-		
+	public String logout(String username, String session) {		
 		logger.info("Recieved logout request from: "+username+" (Session: "+session+")");
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
 		String[] params =  new String[]{username,session};
@@ -64,15 +114,12 @@ public class GNUHealthConnectorImpl extends Connector {
 
 
 	public String login(String username, String password) {
+		logger.info("login - connect to: "+getBackEndUrl().toString() + "with: "+username+":"+password);
 
-		logger.info("login - connect to: "+getBackEndUrl().toString());
-
-		
 		String[] params =  new String[]{username,password};
-		
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
-		logger.info("login - send login request");
 		String result = new Gson().toJson(proxy.call(GnuMethods.LOGIN_METHOD, params));
+		
 		logger.info("result: "+result);
 		
 		return result;		
@@ -81,14 +128,16 @@ public class GNUHealthConnectorImpl extends Connector {
 	
 	
 
-	public String db_exec(String method, String[] params, String id) {
-	/*	System.out.println("send db_exec request");
-		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
-		String result = new Gson().toJson(proxy.call(GnuMethods.LOGOUT_METHOD, params));
-		System.out.println("exec: "+result);
-		return result; */
+	public String exec(String method, Object[] params, String id) {
+					
+		logger.info("EXECUTE REQUEST: "+method);
 		
-		return null;
+		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
+		
+		String result = new Gson().toJson(proxy.call(GnuMethods.PATIENT_SEARCH_METHOD, params));
+		
+		logger.info("EXECUTE RESULT: "+result);
+		return result; 
 	}
 
 }

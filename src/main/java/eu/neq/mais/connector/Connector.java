@@ -40,7 +40,9 @@ public abstract class Connector {
 	 * Dummy method...
 	 * @param o
 	 */
-	public abstract String db_exec(String method, String[] params, String id);
+	public abstract String exec(String method, Object[] params, String id);
+	
+	public abstract String getPreferences(String session);
 	
 	
 	public void setBackend(Backend backend){
