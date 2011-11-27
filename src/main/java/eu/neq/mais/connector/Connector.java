@@ -1,6 +1,11 @@
 package eu.neq.mais.connector;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import eu.neq.mais.technicalservice.Backend;
+import eu.neq.mais.technicalservice.FileHandler;
+import eu.neq.mais.technicalservice.Settings;
 
 /**
  * Connector interface to standardize the connector implemetations.
@@ -11,6 +16,12 @@ import eu.neq.mais.technicalservice.Backend;
 public abstract class Connector {
 	
 	private Backend backend;
+	protected static Logger logger = Logger.getLogger("eu.neq.mais.connector");
+	
+	public Connector() {
+		logger.setLevel(Level.ALL); // DEBUG PURPOSES
+		logger.addHandler(FileHandler.getLogFileHandler(Settings.LOG_FILE_CONNECTORS));
+	}
 	
 	/**
 	 * Loging into the Backend
@@ -23,7 +34,7 @@ public abstract class Connector {
 	/**
 	 * Logout
 	 */
-	public abstract void logout(String username, String Session);
+	public abstract String logout(String username, String Session);
 	
 	/**
 	 * Dummy method...
@@ -38,6 +49,14 @@ public abstract class Connector {
 	
 	public Backend getBackend(){
 		return this.backend;
+	}
+
+	public static Logger getLogger() {
+		return logger;
+	}
+
+	public static void setLogger(Logger logger) {
+		Connector.logger = logger;
 	}
 	
 }

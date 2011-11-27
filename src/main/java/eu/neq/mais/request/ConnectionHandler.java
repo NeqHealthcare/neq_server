@@ -16,7 +16,7 @@ public class ConnectionHandler {
 	private Connector connector;
 	
 	@GET
-	@Path("{username}/{password}")
+	@Path("login/{username}/{password}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String login(@PathParam("backendUri") String backendUri,@PathParam("backendSid") String backendSid
 			,@PathParam("username") String username,@PathParam("password") String password){
@@ -40,10 +40,10 @@ public class ConnectionHandler {
 	 * @param username
 	 * @param session
 	 */
-	@PUT
+	@GET
 	@Path("logout/{username}/{session}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public void logout(@PathParam("backendUri") String backendUri,@PathParam("backendSid") String backendSid
+	public String logout(@PathParam("backendUri") String backendUri,@PathParam("backendSid") String backendSid
 			,@PathParam("username") String username,@PathParam("session") String session){
 		
 		try {
@@ -51,8 +51,8 @@ public class ConnectionHandler {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		connector.logout(username, session);
+		}		
+		return connector.logout(username, session);
 	}
 
 }
