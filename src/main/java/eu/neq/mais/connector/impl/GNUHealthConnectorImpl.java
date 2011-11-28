@@ -134,7 +134,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			connection.setDoInput(true);
 			connection.setDoOutput(true);
 
-			String jsonfile = "{\"params\": [1, \""+session+"\", [], 0, 1000, null, {\"groups\": [1, 3, 4, 2], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}], \"id\": 52, \"method\": \"model.gnuhealth.patient.search\"}";
+			String jsonfile = "{\"params\": [1, \""+session+"\", [], 0, 1000, null, {\"groups\": [1, 3, 4, 2], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}], \"id\": 52, \"method\": \"model.gnuhealth.patient.search_read\"}";
 //			String jsonfile = "{\"params\": [1, \""+session+"\", [], 0, 1000, {\"groups\": [1, 3, 4, 2]], \"id\": 52, \"method\": \"model.gnuhealth.patient.search\"}";
 			logger.info("JSON SEARCH REQUEST: "+jsonfile);
 			OutputStream out = connection.getOutputStream();
