@@ -12,6 +12,7 @@ import com.thetransactioncompany.jsonrpc2.*;
 import eu.neq.mais.Main;
 import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
+import eu.neq.mais.domain.gnuhealth.GnuHealthJsonObject;
 import eu.neq.mais.domain.gnuhealth.GnuMethods;
 import eu.neq.mais.technicalservice.Backend;
 
@@ -158,9 +159,13 @@ public class GNUHealthConnectorImpl extends Connector {
 		logger.info("CALL EXECUTE: "+method+", PARAMS: "+paramsString);
 		
 		/**
-		 * Send a JSON FILE
+		 * Get GnuHealthCompatible Json Request file
 		 */
+		GnuHealthJsonObject dom = new GnuHealthJsonObject(session, GnuMethods.PATIENT_SEARCH_METHOD, 55);
 		
+		/**
+		 * Send json file to GNUHealth and recieve response
+		 */
 		URLConnection connection;
 		String result = null;
 		
@@ -171,8 +176,10 @@ public class GNUHealthConnectorImpl extends Connector {
 			connection.setDoInput(true);
 			connection.setDoOutput(true);
 
-			String jsonfile = "{\"params\": [1, \""+session+"\", [], 0, 1000, null, {\"groups\": [1, 3, 4, 2], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}], \"id\": 52, \"method\": \""+method+"\"}";
-//			String jsonfile = "{\"params\": [1, \""+session+"\", [], 0, 1000, {\"groups\": [1, 3, 4, 2]], \"id\": 52, \"method\": \"model.gnuhealth.patient.search\"}";
+			
+			
+			String jsonfile = dom.getJson();
+			System.out.println(jsonfile);
 			OutputStream out = connection.getOutputStream();
 			out.write(jsonfile.getBytes());
 			out.close();
