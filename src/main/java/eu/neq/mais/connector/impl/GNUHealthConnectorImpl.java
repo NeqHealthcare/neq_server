@@ -177,12 +177,11 @@ public class GNUHealthConnectorImpl extends Connector {
 			connection.setDoOutput(true);
 
 			
-			String jsonfile = "{\"params\": [1, \""+session+"\", [], 0, 1000, null, {\"groups\": [1, 3, 4, 2], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}], \"id\": 52, \"method\": \"model.gnuhealth.patient.search\"}";
-			String jsonfile2 = dom.getJson();
-			System.out.println(jsonfile);
-			System.out.println(jsonfile2);
+//			String jsonfile = "{\"params\": [1, \""+session+"\", [], 0, 1000, null, {\"groups\": [1, 3, 4, 2], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}], \"id\": 52, \"method\": \"model.gnuhealth.patient.search\"}";
+			
+			String jsonfile = dom.getJson();
 			OutputStream out = connection.getOutputStream();
-			out.write(jsonfile2.getBytes());
+			out.write(jsonfile.getBytes());
 			out.close();
 
 			connection.connect();

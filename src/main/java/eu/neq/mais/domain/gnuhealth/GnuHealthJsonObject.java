@@ -22,19 +22,17 @@ public class GnuHealthJsonObject {
 		HashMap<String, Object> hm = new HashMap<String, Object>();
 		
 		
-		hm.put("timezone", "replaceme");
+		hm.put("timezone", null); // doesnt convert properly into a JSON object *oh noes*
+		
 		hm.put("company", 1);
 		hm.put("language_direction", "ltr");
-		
-
 		
 		HashMap<String, Object> locale = new HashMap<String, Object>();
 		locale.put("date", "%m/%d/%y");
 		locale.put("thousands_sep", ",");
 		locale.put("grouping", new String[]{});
 		locale.put("decimal_point", ".");
-		
-		
+
 		hm.put("locale", locale);
 		
 		hm.put("language", "en_US");
