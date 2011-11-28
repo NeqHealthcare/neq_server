@@ -161,7 +161,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		/**
 		 * Get GnuHealthCompatible Json Request file
 		 */
-		GnuHealthJsonObject dom = new GnuHealthJsonObject(session, GnuMethods.PATIENT_SEARCH_METHOD, 55);
+		GnuHealthJsonObject dom = new GnuHealthJsonObject(session, GnuMethods.PATIENT_SEARCH_METHOD, 52);
 		
 		/**
 		 * Send json file to GNUHealth and recieve response
@@ -177,11 +177,12 @@ public class GNUHealthConnectorImpl extends Connector {
 			connection.setDoOutput(true);
 
 			
-			
-			String jsonfile = dom.getJson();
+			String jsonfile = "{\"params\": [1, \""+session+"\", [], 0, 1000, null, {\"groups\": [1, 3, 4, 2], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}], \"id\": 52, \"method\": \"model.gnuhealth.patient.search\"}";
+			String jsonfile2 = dom.getJson();
 			System.out.println(jsonfile);
+			System.out.println(jsonfile2);
 			OutputStream out = connection.getOutputStream();
-			out.write(jsonfile.getBytes());
+			out.write(jsonfile2.getBytes());
 			out.close();
 
 			connection.connect();
