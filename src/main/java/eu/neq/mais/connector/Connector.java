@@ -40,11 +40,8 @@ public abstract class Connector {
 	 * Dummy method...
 	 * @param o
 	 */
-	public abstract String exec(String method, Object[] params, String id);
-	
-	public abstract String getPreferences(String session);
-	
-	
+	public abstract String execute(String session, String method, Object[] params);
+		
 	public void setBackend(Backend backend){
 		this.backend = backend;
 	}

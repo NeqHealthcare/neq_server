@@ -59,40 +59,13 @@ public class GNUHealthConnectorImpl extends Connector {
 			
 			logger.info("prepared session param: "+session);
 			
-			
-			// GET PREFERENCES (DOMAIN)
-			// *NEED PREFERENCES TO FULLFIL PARAMETERS*
-			 String pref = con.getPreferences(session);
-		
-			
-			 
-			 
-			 // PREPARE PARAMS
+
+			// PREPARE PARAMS
 			// ModelStorage.search(cursor, user, domain[, offset[, limit[, order[, context[, count]]]]])
 		    Object[] params = new Object[]{1, session, new String[]{}};
 		    
-		  
-		    // VALIDATING
-//		    String content = null;
-//			int gid = 1;
-//			Map<String, Object> values = new HashMap<String, Object>();
-//			values.put("method", GnuMethods.GET_PREFERENCES_METHOD);
-//			values.put("params", params);
-//			values.put("id", "" + gid++);
-//			
-//			try {
-//				JSONWriter writer = new JSONValidatingWriter(new ExceptionErrorListener());
-//				content = writer.write(values);
-//			} catch (NullPointerException e) {
-//				logger.warning("FAIL");
-//				throw new JsonRpcException("cannot encode object to json", e);
-//			}
-//			
-//			System.out.print("search json:"+content.toString());
-			
-			
-//			String res = con.exec(GnuMethods.PATIENT_SEARCH_METHOD, params, null);
-//			logger.info("res: "+res);
+		    String res = con.execute(session, GnuMethods.PATIENT_SEARCH_METHOD, params);
+			logger.info("res: "+res);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -126,47 +99,7 @@ public class GNUHealthConnectorImpl extends Connector {
 //		
 //		System.out.print(content.toString());
 		
-		URLConnection connection;
-		try {
-			connection = new URL(getBackEndUrl().toString()).openConnection();
-			connection.setRequestProperty("method", "POST");
-			connection.setUseCaches(false);
-			connection.setDoInput(true);
-			connection.setDoOutput(true);
-
-			String jsonfile = "{\"params\": [1, \""+session+"\", [], 0, 1000, null, {\"groups\": [1, 3, 4, 2], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}], \"id\": 52, \"method\": \"model.gnuhealth.patient.search_read\"}";
-//			String jsonfile = "{\"params\": [1, \""+session+"\", [], 0, 1000, {\"groups\": [1, 3, 4, 2]], \"id\": 52, \"method\": \"model.gnuhealth.patient.search\"}";
-			logger.info("JSON SEARCH REQUEST: "+jsonfile);
-			OutputStream out = connection.getOutputStream();
-			out.write(jsonfile.getBytes());
-			out.close();
-
-			connection.connect();
-
-			InputStream in = connection.getInputStream();
-			BufferedReader i = new BufferedReader(new InputStreamReader(in, "utf-8"));
-			StringBuilder sb = new StringBuilder();
-			String line;
-			while ((line = i.readLine()) != null) {
-				sb.append(line);
-				sb.append("\n");
-			}
-
-			in.close();
-			
-			System.out.print("RESULT: "+sb);
-			Map<String, Object> result = null;
-			JSONReader reader = new JSONValidatingReader(new ExceptionErrorListener());
-			result = (Map<String, Object>) reader.read(sb.toString());
-			
-			
-			
-			
-		} catch (MalformedURLException e2) {
-			e2.printStackTrace();
-		} catch (IOException e2) {
-			e2.printStackTrace();
-		}
+		
 
 		return null;
 	}
@@ -208,22 +141,6 @@ public class GNUHealthConnectorImpl extends Connector {
 
 		String[] params =  new String[]{username,password};
 		
-		
-		String content = null;
-		int gid = 1;
-		Map<String, Object> values = new HashMap<String, Object>();
-		values.put("method", GnuMethods.LOGIN_METHOD);
-		values.put("params", params);
-		values.put("id", "" + gid++);		
-		try {
-			JSONWriter writer = new JSONValidatingWriter(new ExceptionErrorListener());
-			content = writer.write(values);
-		} catch (NullPointerException e) {
-			throw new JsonRpcException("cannot encode object to json", e);
-		}
-		
-		System.out.println("json: "+content.toString());
-		
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
 		String result = new Gson().toJson(proxy.call(GnuMethods.LOGIN_METHOD, params));
 		
@@ -235,15 +152,55 @@ public class GNUHealthConnectorImpl extends Connector {
 	
 	
 
-	public String exec(String method, Object[] params, String id) {
-					
-		logger.info("EXECUTE REQUEST: "+method);
+	public String execute(String session, String method, Object[] params) {
+		String paramsString = "";
+		for (Object o : params) paramsString += o.toString()+", ";
+		logger.info("CALL EXECUTE: "+method+", PARAMS: "+paramsString);
 		
-		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
+		/**
+		 * Send a JSON FILE
+		 */
 		
-		String result = new Gson().toJson(proxy.call(GnuMethods.PATIENT_SEARCH_METHOD, params));
+		URLConnection connection;
+		String result = null;
 		
-		logger.info("EXECUTE RESULT: "+result);
+		try {
+			connection = new URL(getBackEndUrl().toString()).openConnection();
+			connection.setRequestProperty("method", "POST");
+			connection.setUseCaches(false);
+			connection.setDoInput(true);
+			connection.setDoOutput(true);
+
+			String jsonfile = "{\"params\": [1, \""+session+"\", [], 0, 1000, null, {\"groups\": [1, 3, 4, 2], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}], \"id\": 52, \"method\": \""+method+"\"}";
+//			String jsonfile = "{\"params\": [1, \""+session+"\", [], 0, 1000, {\"groups\": [1, 3, 4, 2]], \"id\": 52, \"method\": \"model.gnuhealth.patient.search\"}";
+			OutputStream out = connection.getOutputStream();
+			out.write(jsonfile.getBytes());
+			out.close();
+
+			connection.connect();
+
+			InputStream in = connection.getInputStream();
+			BufferedReader i = new BufferedReader(new InputStreamReader(in, "utf-8"));
+			StringBuilder sb = new StringBuilder();
+			String line;
+			while ((line = i.readLine()) != null) {
+				sb.append(line);
+				sb.append("\n");
+			}
+
+			in.close();
+			
+			result = sb.toString();
+			//JSONReader reader = new JSONValidatingReader(new ExceptionErrorListener());
+			//result = (Map<String, Object>) reader.read(sb.toString());		
+		} catch (MalformedURLException e2) {
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		}
+		
+		
+		
 		return result; 
 	}
 
