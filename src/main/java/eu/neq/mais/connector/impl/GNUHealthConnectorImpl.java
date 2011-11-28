@@ -43,6 +43,7 @@ import org.stringtree.json.JSONWriter;
 public class GNUHealthConnectorImpl extends Connector {
 
 	private static Connector instance = null;
+	private static int gnid = 55;
 		
 	
 	public static void main(String[] args) {
@@ -63,10 +64,16 @@ public class GNUHealthConnectorImpl extends Connector {
 
 			// PREPARE PARAMS
 			// ModelStorage.search(cursor, user, domain[, offset[, limit[, order[, context[, count]]]]])
-		    Object[] params = new Object[]{1, session, new String[]{}};
+		    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"};
 		    
 		    String res = con.execute(session, GnuMethods.PATIENT_SEARCH_METHOD, params);
 			logger.info("res: "+res);
+			
+			
+			Object[] params2 = new Object[]{1, session, new int[]{1,2,3}, new String[]{"lastname"}, "REPLACE_CONTEXT"};
+			    
+			String res2 = con.execute(session, GnuMethods.PATIENT_READ_METHOD, params2);
+			logger.info("res2: "+res2);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -154,14 +161,13 @@ public class GNUHealthConnectorImpl extends Connector {
 	
 
 	public String execute(String session, String method, Object[] params) {
-		String paramsString = "";
-		for (Object o : params) paramsString += o.toString()+", ";
-		logger.info("CALL EXECUTE: "+method+", PARAMS: "+paramsString);
+
+		logger.info("CALL EXECUTE: "+method);
 		
 		/**
 		 * Get GnuHealthCompatible Json Request file
 		 */
-		GnuHealthJsonObject dom = new GnuHealthJsonObject(session, GnuMethods.PATIENT_SEARCH_METHOD, 52);
+		GnuHealthJsonObject dom = new GnuHealthJsonObject(session, method, params, gnid++);
 		
 		/**
 		 * Send json file to GNUHealth and recieve response

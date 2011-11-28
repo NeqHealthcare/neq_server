@@ -10,10 +10,8 @@ public class GnuHealthJsonObject {
 	int id;
 	String method;
 	
-	public GnuHealthJsonObject(String session, String method, int id) {
-		this.params = new Object[]{
-				1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"
-				};
+	public GnuHealthJsonObject(String session, String method, Object[] params, int id) {
+		this.params = params;
 		this.id = id;
 		this.method = method;
 	}
@@ -55,7 +53,7 @@ public class GnuHealthJsonObject {
 		almost = almost.replace("\"REPLACE_CONTEXT\"", context);
 		almost = almost.replace("//", "/");
 		almost = almost.replace("\\\\", "\\");
-
+		System.out.println(almost);
 		return almost;
 	}
 
