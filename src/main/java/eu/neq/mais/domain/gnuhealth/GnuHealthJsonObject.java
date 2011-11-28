@@ -53,7 +53,7 @@ public class GnuHealthJsonObject {
 		almost = almost.replace("\"REPLACE_CONTEXT\"", context);
 		almost = almost.replace("//", "/");
 		almost = almost.replace("\\\\", "\\");
-		System.out.println(almost);
+//		System.out.println(almost);
 		return almost;
 	}
 

@@ -62,19 +62,21 @@ public class GNUHealthConnectorImpl extends Connector {
 			logger.info("prepared session param: "+session);
 			
 
-			// PREPARE PARAMS
-			// ModelStorage.search(cursor, user, domain[, offset[, limit[, order[, context[, count]]]]])
+			// Search Patients
 		    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"};
 		    
 		    String res = con.execute(session, GnuMethods.PATIENT_SEARCH_METHOD, params);
 			logger.info("res: "+res);
 			
-			
+			// Read Patients 1,2 and 3.
 			Object[] params2 = new Object[]{1, session, new int[]{1,2,3}, new String[]{"lastname"}, "REPLACE_CONTEXT"};
 			    
 			String res2 = con.execute(session, GnuMethods.PATIENT_READ_METHOD, params2);
 			logger.info("res2: "+res2);
 			
+			// Logout
+			String res3 = con.logout("admin", session);
+						
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -184,8 +186,8 @@ public class GNUHealthConnectorImpl extends Connector {
 
 			
 //			String jsonfile = "{\"params\": [1, \""+session+"\", [], 0, 1000, null, {\"groups\": [1, 3, 4, 2], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}], \"id\": 52, \"method\": \"model.gnuhealth.patient.search\"}";
-			
 			String jsonfile = dom.getJson();
+			
 			OutputStream out = connection.getOutputStream();
 			out.write(jsonfile.getBytes());
 			out.close();
