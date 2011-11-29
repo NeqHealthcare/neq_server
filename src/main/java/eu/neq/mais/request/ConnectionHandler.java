@@ -42,18 +42,19 @@ public class ConnectionHandler {
 			,@QueryParam("username") String username,
 			@QueryParam("password") String password){
 		
+		String session = "false";
+		
 		try {
 			connector = ConnectorFactory.getConnector(backendSid);
+			session = connector.login(username, password);
+			if(session.length()>5){
+				SessionStore.put(session, backendSid);
+			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String session = connector.login(username, password);
-		//works only as long as nobody changes the connector.login method :)
-		if(session.length()>5){
-			SessionStore.put(session, backendSid);
-		}
-		logger.info("login method: returned json object: "+new Gson().toJson(session));
+		
+		logger.info("login method returned json object: "+new Gson().toJson(session));
 		return new Gson().toJson(session);
 	}
 	
@@ -71,17 +72,17 @@ public class ConnectionHandler {
 	@Path("logout")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String logout(@QueryParam("username") String username,@QueryParam("session") String session){
-		System.out.println("session: "+session);
+
+		String result = "false";
+		
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore.getBackendSid(session));
-			String result = connector.logout(username, session);
-			logger.info("logout successful: returned json object: "+new Gson().toJson(result));
-			return new Gson().toJson(result);
+			result = connector.logout(username, session);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		
-		logger.info("logout unsuccessful: returned json object: "+new Gson().toJson("false"));
-		return new Gson().toJson("false");
+		logger.info("logout method returned json object: "+new Gson().toJson("false"));
+		return new Gson().toJson(result);
 	}
 
 }
