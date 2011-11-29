@@ -1,7 +1,6 @@
 [
 {
-     "uri": "gnu",
-     "sid" : 1,
+     "sid" : "gnuhealth1",
      "url" : "theilemann.dyndns.org",
      "jsonport" : 8000,
      "xmlport" : 7070,
@@ -9,8 +8,7 @@
      "db": "devel_01"
  },
  {
-     "uri": "test",
-     "sid" : 1,
+     "sid" : gnuhealth2,
      "url" : "theilemann.dyndns.org",
      "jsonport" : 8000,
      "xmlport" : 7070,

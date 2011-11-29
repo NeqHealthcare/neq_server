@@ -1,12 +1,9 @@
 package eu.neq.mais.technicalservice;
 
-import java.util.List;
-
 public class Backend {
 	
-	private String uri;
-	private long sid;
 	private String url;
+	private String sid;
 	private int jsonport;
 	private int xmlport;
 	private String connector;
@@ -14,28 +11,8 @@ public class Backend {
 	
 	
 	public String toString(){
-		String backendString =  "sid: "+sid+" ; uri: "+uri+" ; url: "+url+" ; jsonport: "+jsonport+" ; xmlport: "+xmlport+" ; dbname: "+db;
+		String backendString =  "sid: "+sid+" ; url: "+url+" ; jsonport: "+jsonport+" ; xmlport: "+xmlport+" ; dbname: "+db;
 		return backendString;
-	}
-
-
-	public String getUri() {
-		return uri;
-	}
-
-
-	public void setUri(String uri) {
-		this.uri = uri;
-	}
-
-
-	public long getSid() {
-		return sid;
-	}
-
-
-	public void setSid(long sid) {
-		this.sid = sid;
 	}
 
 
@@ -48,6 +25,15 @@ public class Backend {
 		this.url = url;
 	}
 
+
+	public String getSid() {
+		return sid;
+	}
+
+
+	public void setSid(String sid) {
+		this.sid = sid;
+	}
 
 	public int getJsonport() {
 		return jsonport;

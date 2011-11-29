@@ -8,20 +8,21 @@ import javax.ws.rs.core.MediaType;
 
 import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
+import eu.neq.mais.technicalservice.SessionStore;
 
 
-@Path("/{backendUri}/{backendSid}/patient/")
+@Path("/patient/")
 public class PatientHandler {
 	
 	private Connector connector;
 
 	@GET
-	@Path("/{id: [0-9]*}")
+	@Path("/{id: [0-9]*}/{session}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String returnPatient(@PathParam("backendUri") String backendUri,@PathParam("backendSid") String backendSid,@PathParam("id") Integer id){
+	public String returnPatient(@PathParam("session") String session,@PathParam("id") Integer id){
 		
 		try {
-			connector = ConnectorFactory.getConnector(backendUri, backendSid);
+			connector = ConnectorFactory.getConnector(SessionStore.getBackendSid(session));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -31,15 +32,7 @@ public class PatientHandler {
 		String patient = connector.execute("lala", "common.login.bla",params);
 		
 		return patient;
-	}
-	
-	@GET
-	@Path("/muh")
-	@Produces(MediaType.APPLICATION_JSON)
-	public String muh(){
-		return "muh";
-	}
-	
+	}	
 
 }
 			

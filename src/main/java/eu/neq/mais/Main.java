@@ -1,20 +1,13 @@
 package eu.neq.mais;
 
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.eclipse.jetty.server.Server;
-
-
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
-import eu.neq.mais.connector.Connector;
-import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.FileHandler;
 import eu.neq.mais.technicalservice.Settings;
 

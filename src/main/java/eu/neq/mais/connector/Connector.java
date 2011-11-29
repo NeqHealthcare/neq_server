@@ -25,20 +25,31 @@ public abstract class Connector {
 	
 	/**
 	 * Loging into the Backend
+	 * 
+	 *
 	 * @param username
 	 * @param password
-	 * @return Session ID
+	 * @return Session ID:
+	 * Login successful: session
+	 * Login unsuccessful: empty string
 	 */
 	public abstract String login(String username, String password);
 	
 	/**
-	 * Logout
+	 * 
+	 * @param username
+	 * @param Session
+	 * @return
 	 */
 	public abstract String logout(String username, String Session);
 	
+
 	/**
-	 * Dummy method...
-	 * @param o
+	 * 
+	 * @param session
+	 * @param method
+	 * @param params
+	 * @return
 	 */
 	public abstract String execute(String session, String method, Object[] params);
 		

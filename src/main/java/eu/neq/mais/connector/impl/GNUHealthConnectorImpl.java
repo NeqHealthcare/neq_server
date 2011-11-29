@@ -1,42 +1,22 @@
 package eu.neq.mais.connector.impl;
 
-//The Client sessions package
-import com.google.gson.Gson;
-import com.googlecode.jj1.JsonRpcException;
-import com.googlecode.jj1.ServiceProxy;
-import com.thetransactioncompany.jsonrpc2.client.*;
-
-//The Base package for representing JSON-RPC 2.0 messages
-import com.thetransactioncompany.jsonrpc2.*;
-
-import eu.neq.mais.Main;
-import eu.neq.mais.connector.Connector;
-import eu.neq.mais.connector.ConnectorFactory;
-import eu.neq.mais.domain.gnuhealth.GnuHealthJsonObject;
-import eu.neq.mais.domain.gnuhealth.GnuMethods;
-import eu.neq.mais.technicalservice.Backend;
-
-
-//For creating URLs
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.*;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 
-import org.stringtree.json.ExceptionErrorListener;
-import org.stringtree.json.JSONReader;
-import org.stringtree.json.JSONValidatingReader;
-import org.stringtree.json.JSONValidatingWriter;
-import org.stringtree.json.JSONWriter;
+import com.google.gson.Gson;
+import com.googlecode.jj1.ServiceProxy;
+
+import eu.neq.mais.connector.Connector;
+import eu.neq.mais.connector.ConnectorFactory;
+import eu.neq.mais.domain.gnuhealth.GnuHealthJsonObject;
+import eu.neq.mais.domain.gnuhealth.GnuMethods;
+import eu.neq.mais.technicalservice.SessionStore;
 
 
 
@@ -48,20 +28,11 @@ public class GNUHealthConnectorImpl extends Connector {
 	
 	public static void main(String[] args) {
 		try {
-			Connector con = ConnectorFactory.getConnector("gnu", "1");
+			Connector con = ConnectorFactory.getConnector("gnuhealth1");
 			
 			// LOGIN
-			String session = con.login("admin", "iswi223<<");
+			String session = con.login("admin", "iswi223<<");	
 			
-			
-			// PREPARE SESSION PARAM
-			char s = '"';
-			String session_split[] = session.split(String.valueOf(s));
-			session = session_split[1];
-			
-			logger.info("prepared session param: "+session);
-			
-
 			// Search Patients
 		    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"};
 		    
@@ -146,6 +117,10 @@ public class GNUHealthConnectorImpl extends Connector {
 	}
 
 
+	/**
+	 *Login successful: session
+	 * Login unsuccessful: empty string
+	 */
 	public String login(String username, String password) {
 		logger.info("login - connect to: "+getBackEndUrl().toString() + "with: "+username+":"+password);
 
@@ -154,8 +129,17 @@ public class GNUHealthConnectorImpl extends Connector {
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
 		String result = new Gson().toJson(proxy.call(GnuMethods.LOGIN_METHOD, params));
 		
-		logger.info("result: "+result);
+		logger.info("result: "+result);	
 		
+		//checks if login was successfull
+		if((result.length()>5)){
+			char s = '"';
+			String session_split[] = result.split(String.valueOf(s));
+			result = session_split[1];
+		}else{
+			result = "";
+		}
+		logger.info("retrieved session: "+result);	
 		return result;		
 	}
 	

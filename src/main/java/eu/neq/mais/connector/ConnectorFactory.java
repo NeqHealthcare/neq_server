@@ -12,18 +12,22 @@ import eu.neq.mais.technicalservice.FileHandler;
  */
 public abstract class ConnectorFactory {
 	
+	private static Map<String,Backend> backendMap = null;
 
-	public static Connector getConnector(String backendUri, String sid) throws Exception {
+	public static Connector getConnector(String backendSid) throws Exception {
 		
-		Map<String,Backend> backendMap = FileHandler.getBackendMap();
+		if(backendMap == null){
+			backendMap = FileHandler.getBackendMap();
+		}
 		
-		Backend requiredBackend = backendMap.get(backendUri+" "+sid);
+		Backend requiredBackend = backendMap.get(backendSid);
 		
 		Connector connector = (Connector) (Connector.class.getClassLoader().loadClass(requiredBackend.getConnector())).newInstance();
 		connector.setBackend(requiredBackend);
 
 		return connector;
 	}
+	
 
 
 }
