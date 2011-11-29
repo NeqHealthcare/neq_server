@@ -1,9 +1,12 @@
 package eu.neq.mais.request;
 
+import java.util.logging.Logger;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import com.google.gson.Gson;
@@ -15,13 +18,16 @@ import eu.neq.mais.technicalservice.SessionStore;
 @Path("/connection/")
 public class ConnectionHandler {
 	
-	private Connector connector;
+	protected static Logger logger = Logger.getLogger("eu.neq.mais.request");
 	
-	/**
+	private Connector connector;
+
+	 /**
+	 * Example url: http://localhost:8080/connection/login?username=admin&password=iswi223<<&backendSid=gnuhealth1
 	 *
 	 * A json object is returned:
 	 * Login successful: session
-	 * Login unsuccessful: empty string
+	 * Login unsuccessful: false as string
 	 * 
 	 * @param backendSid
 	 * @param username
@@ -29,10 +35,12 @@ public class ConnectionHandler {
 	 * @return
 	 */
 	@GET
-	@Path("login/{username}/{password}/{backendSid}")
+	@Path("login")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String login(@PathParam("backendSid") String backendSid
-			,@PathParam("username") String username,@PathParam("password") String password){
+	public String login(
+			@QueryParam("backendSid") String backendSid
+			,@QueryParam("username") String username,
+			@QueryParam("password") String password){
 		
 		try {
 			connector = ConnectorFactory.getConnector(backendSid);
@@ -42,32 +50,36 @@ public class ConnectionHandler {
 		}
 		String session = connector.login(username, password);
 		//works only as long as nobody changes the connector.login method :)
-		if(session.length()>0){
+		if(session.length()>5){
 			SessionStore.put(session, backendSid);
 		}
-	
+		logger.info("login method: returned json object: "+new Gson().toJson(session));
 		return new Gson().toJson(session);
 	}
 	
 	/**
-	 * Still problems with the SESSION String (contains lots of /// :()
+	 * Example url: http://localhost:8080/connection/logout?username=admin&session=SESSION_VARIABLE
+	 * 
 	 * @param backendUri
 	 * @param backendSid
 	 * @param username
 	 * @param session
 	 */
 	@GET
-	@Path("logout/{username}/{session}")
+	@Path("logout")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String logout(@PathParam("username") String username,@PathParam("session") String session){
-		
+	public String logout(@QueryParam("username") String username,@QueryParam("session") String session){
+		System.out.println("session: "+session);
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore.getBackendSid(session));
+			String result = connector.logout(username, session);
+			logger.info("logout successful: returned json object: "+new Gson().toJson(result));
+			return new Gson().toJson(result);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
-		return new Gson().toJson(connector.logout(username, session));
+		logger.info("logout unsuccessful: returned json object: "+new Gson().toJson("false"));
+		return new Gson().toJson("false");
 	}
 
 }

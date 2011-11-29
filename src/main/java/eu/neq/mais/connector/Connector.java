@@ -31,7 +31,7 @@ public abstract class Connector {
 	 * @param password
 	 * @return Session ID:
 	 * Login successful: session
-	 * Login unsuccessful: empty string
+	 * Login unsuccessful: false as string
 	 */
 	public abstract String login(String username, String password);
 	

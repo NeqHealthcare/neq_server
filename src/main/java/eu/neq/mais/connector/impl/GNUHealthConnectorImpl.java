@@ -119,7 +119,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	/**
 	 *Login successful: session
-	 * Login unsuccessful: empty string
+	 * Login unsuccessful: false as string
 	 */
 	public String login(String username, String password) {
 		logger.info("login - connect to: "+getBackEndUrl().toString() + "with: "+username+":"+password);
@@ -137,7 +137,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			String session_split[] = result.split(String.valueOf(s));
 			result = session_split[1];
 		}else{
-			result = "";
+			result = "false";
 		}
 		logger.info("retrieved session: "+result);	
 		return result;		
