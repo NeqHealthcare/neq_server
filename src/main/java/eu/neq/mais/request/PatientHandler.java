@@ -31,12 +31,36 @@ public class PatientHandler {
 		
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore.getBackendSid(session));
-//			patient = connector.execute(session, method, params);
+			patient = connector.execute(session, connector.getPatientSearchMethod(), connector.getPatientSearchParams(id));
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
+			patient = "false";
 		}		
-		logger.info("logout method returned json object: "+new Gson().toJson("false"));
+		logger.info("logout method returned json object: "+new Gson().toJson(patient));
 		return new Gson().toJson(patient);
+
+	}	
+	
+	@GET
+	@Path("/all/{session}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String returnAllPatient(@PathParam("session")String session){
+		
+		String patientList = "false";
+		
+		try {
+			connector = ConnectorFactory.getConnector(SessionStore.getBackendSid(session));
+			patientList = connector.execute(session, connector.getPatientSearchMethod(), connector.getPatientSearchParams());
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			patientList = "false";
+		}		
+		logger.info("logout method returned json object: "+new Gson().toJson(patientList));
+		return new Gson().toJson(patientList);
 
 	}	
 

@@ -49,6 +49,7 @@ public class ConnectionHandler {
 			session = connector.login(username, password);
 			if(session.length()>5){
 				SessionStore.put(session, backendSid);
+				session = "false";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -80,8 +81,9 @@ public class ConnectionHandler {
 			result = connector.logout(username, session);
 		} catch (Exception e) {
 			e.printStackTrace();
+			result = "false";
 		}		
-		logger.info("logout method returned json object: "+new Gson().toJson("false"));
+		logger.info("logout method returned json object: "+new Gson().toJson(result));
 		return new Gson().toJson(result);
 	}
 

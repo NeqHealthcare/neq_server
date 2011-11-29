@@ -34,13 +34,13 @@ public class GNUHealthConnectorImpl extends Connector {
 			// Search Patients
 		    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"};
 		    
-		    String res = con.execute(session, GnuMethods.PATIENT_SEARCH_METHOD, params);
+		    String res = con.execute(session, GNUHealthConnectorImpl.getPatientSearchMethod(), params);
 			logger.info("res: "+res);
 			
 			// Read Patients 1,2 and 3.
-			Object[] params2 = new Object[]{1, session, new int[]{1,2,3}, new String[]{"lastname"}, "REPLACE_CONTEXT"};
+			Object[] params2 = new Object[]{1, session, new int[]{1,2,3}, new String[]{"lastname",}, "REPLACE_CONTEXT"};
 			    
-			String res2 = con.execute(session, GnuMethods.PATIENT_READ_METHOD, params2);
+			String res2 = con.execute(session, GNUHealthConnectorImpl.getPatientReadMethod(), params2);
 			logger.info("res2: "+res2);
 			
 			// Logout
@@ -98,7 +98,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		logger.info("Recieved logout request from: "+username+" (Session: "+session+")");
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
 		String[] params =  new String[]{username,session};
-		String result = new Gson().toJson(proxy.call(GnuMethods.LOGOUT_METHOD, params));
+		String result = new Gson().toJson(proxy.call(GNUHealthConnectorImpl.getLogoutMethod(), params));
 		logger.info("Logout result: "+result);
 		return result;
 	}
@@ -125,7 +125,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		String[] params =  new String[]{username,password};
 		
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
-		String result = new Gson().toJson(proxy.call(GnuMethods.LOGIN_METHOD, params));
+		String result = new Gson().toJson(proxy.call(GNUHealthConnectorImpl.getLoginMethod(), params));
 		
 		logger.info("result: "+result);	
 		
@@ -201,4 +201,37 @@ public class GNUHealthConnectorImpl extends Connector {
 		return result; 
 	}
 
+	
+	
+	
+	
+	
+	/*-----  BACKEND METHODS  ----*/
+	
+	public static String getLoginMethod(){
+		return "common.db.login";
+	}
+	public static String getLogoutMethod(){
+		return "common.db.logout";
+	}
+	public static String getPatientSearchMethod(){
+		return "model.gnuhealth.patient.search";
+	}
+	public static String getPatientReadMethod(){
+		return "model.gnuhealth.patient.read";
+	}
+	public static  String getReferencesMethod(){
+		return "model.res.user.get_preferences";
+	}
+	
+	
+	/*-----  BACKEND METHOD PARAMS  ----*/
+	
+	public static Object[] getPatientSearchParams(){
+		return null;
+	}
+	
+	public static Object[] getPatientSearchParams(String id){
+		return null;
+	}
 }

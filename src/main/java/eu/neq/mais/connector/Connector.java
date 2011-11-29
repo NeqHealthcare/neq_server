@@ -69,4 +69,34 @@ public abstract class Connector {
 		Connector.logger = logger;
 	}
 	
+	
+	
+	/*-----  BACKEND METHODS  ----*/
+	
+	public static String getLoginMethod(){
+		return null;
+	}
+	public static String getLogoutMethod(){
+		return null;
+	}
+	public static String getPatientSearchMethod(){
+		return null;
+	}
+	public static String getPatientReadMethod(){
+		return null;
+	}
+	public static String getReferencesMethod(){
+		return null;
+	}
+	
+	
+	/*-----  BACKEND METHOD PARAMS  ----*/
+	
+	public static Object[] getPatientSearchParams(){
+		return null;
+	}
+	
+	public static Object[] getPatientSearchParams(String id){
+		return null;
+	}
 }
