@@ -60,10 +60,12 @@ public class ConnectionHandler {
 	/**
 	 * Example url: http://localhost:8080/connection/logout?username=admin&session=SESSION_VARIABLE
 	 * 
-	 * @param backendUri
 	 * @param backendSid
 	 * @param username
 	 * @param session
+	 * 
+	 * Login successful: true as string
+	 * Login unsuccessful: false as string
 	 */
 	@GET
 	@Path("logout")
