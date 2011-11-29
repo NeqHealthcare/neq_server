@@ -4,7 +4,7 @@
      "url" : "theilemann.dyndns.org",
      "jsonport" : 8000,
      "xmlport" : 7070,
-     "connector":"eu.neq.mais.connector.impl.GNUHealthConnectorImpl",
+     "connector":"eu.neq.mais.connector.gnuhealth.GNUHealthConnectorImpl",
      "db": "devel_01"
  },
  {
@@ -12,7 +12,7 @@
      "url" : "theilemann.dyndns.org",
      "jsonport" : 8000,
      "xmlport" : 7070,
-     "connector":"eu.neq.mais.connector.impl.TestDataConnectorImpl",
+     "connector":"eu.neq.mais.connector.gnuhealth.TestDataConnectorImpl",
      "db": "devel_01"
  }
  ]

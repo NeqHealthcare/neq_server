@@ -1,4 +1,4 @@
-package eu.neq.mais.connector.impl;
+package eu.neq.mais.connector.gnuhealth;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,8 +14,6 @@ import com.googlecode.jj1.ServiceProxy;
 
 import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
-import eu.neq.mais.domain.gnuhealth.GnuHealthJsonObject;
-import eu.neq.mais.domain.gnuhealth.GnuMethods;
 import eu.neq.mais.technicalservice.SessionStore;
 
 

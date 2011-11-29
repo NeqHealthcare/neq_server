@@ -1,4 +1,4 @@
-package eu.neq.mais.domain.gnuhealth;
+package eu.neq.mais.connector.gnuhealth;
 
 import java.util.HashMap;
 
