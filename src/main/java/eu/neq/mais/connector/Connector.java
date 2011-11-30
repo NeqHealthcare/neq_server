@@ -73,30 +73,16 @@ public abstract class Connector {
 	
 	/*-----  BACKEND METHODS  ----*/
 	
-	public static String getLoginMethod(){
-		return null;
-	}
-	public static String getLogoutMethod(){
-		return null;
-	}
-	public static String getPatientSearchMethod(){
-		return null;
-	}
-	public static String getPatientReadMethod(){
-		return null;
-	}
-	public static String getReferencesMethod(){
-		return null;
-	}
+	public abstract String getLoginMethod();
+	public abstract String getLogoutMethod();
+	public abstract String getPatientSearchMethod();
+	public abstract String getPatientReadMethod();
+	public abstract String getReferencesMethod();
 	
 	
 	/*-----  BACKEND METHOD PARAMS  ----*/
 	
-	public static Object[] getPatientSearchParams(){
-		return null;
-	}
+	public abstract Object[] getReturnAllPatientsParams(String session);
 	
-	public static Object[] getPatientSearchParams(String id){
-		return null;
-	}
+	public abstract Object[] getReturnPatientParams(String session, String id);
 }

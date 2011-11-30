@@ -12,6 +12,7 @@ public abstract class Patient {
 	private String forename;
 	private Date birthday;
 	private Gender gender;
+	private String[] diseases;
 	
 	public String toString(){
 		return "id: "+id+" ; name: "+forename+" "+surname+" ; gender: "+getGender()+" ; birthday: "+birthday;
@@ -50,6 +51,14 @@ public abstract class Patient {
 	}
 	public void setGender(Gender gender) {
 		this.gender = gender;
+	}
+
+	public String[] getDiseases() {
+		return diseases;
+	}
+
+	public void setDiseases(String[] diseases) {
+		this.diseases = diseases;
 	}
 	
 }

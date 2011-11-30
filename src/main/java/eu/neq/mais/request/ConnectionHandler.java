@@ -49,6 +49,7 @@ public class ConnectionHandler {
 			session = connector.login(username, password);
 			if(session.length()>5){
 				SessionStore.put(session, backendSid);
+			}else{
 				session = "false";
 			}
 		} catch (Exception e) {

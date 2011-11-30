@@ -34,17 +34,23 @@ public class GNUHealthConnectorImpl extends Connector {
 			// Search Patients
 		    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"};
 		    
-		    String res = con.execute(session, GNUHealthConnectorImpl.getPatientSearchMethod(), params);
+		    String res = con.execute(session, con.getPatientSearchMethod(), params);
 			logger.info("res: "+res);
 			
-			// Read Patients 1,2 and 3.
-			Object[] params2 = new Object[]{1, session, new int[]{1,2,3}, new String[]{"lastname",}, "REPLACE_CONTEXT"};
+			// Read Patients
+			Object[] params2 = con.getReturnAllPatientsParams(session);
 			    
-			String res2 = con.execute(session, GNUHealthConnectorImpl.getPatientReadMethod(), params2);
+			String res2 = con.execute(session, con.getPatientReadMethod(), params2);
 			logger.info("res2: "+res2);
+
 			
+			// Read Patients
+			Object[] params3 = con.getReturnPatientParams(session,"1");
+			    
+			String res3 = con.execute(session, con.getPatientReadMethod(), params3);
+			logger.info("res3: "+res3);
 			// Logout
-			String res3 = con.logout("admin", session);
+			String res4 = con.logout("admin", session);
 						
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -98,7 +104,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		logger.info("Recieved logout request from: "+username+" (Session: "+session+")");
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
 		String[] params =  new String[]{username,session};
-		String result = new Gson().toJson(proxy.call(GNUHealthConnectorImpl.getLogoutMethod(), params));
+		String result = new Gson().toJson(proxy.call(this.getLogoutMethod(), params));
 		logger.info("Logout result: "+result);
 		return result;
 	}
@@ -125,7 +131,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		String[] params =  new String[]{username,password};
 		
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
-		String result = new Gson().toJson(proxy.call(GNUHealthConnectorImpl.getLoginMethod(), params));
+		String result = new Gson().toJson(proxy.call(this.getLoginMethod(), params));
 		
 		logger.info("result: "+result);	
 		
@@ -207,31 +213,64 @@ public class GNUHealthConnectorImpl extends Connector {
 	
 	
 	/*-----  BACKEND METHODS  ----*/
-	
-	public static String getLoginMethod(){
+	@Override
+	public String getLoginMethod(){
 		return "common.db.login";
 	}
-	public static String getLogoutMethod(){
+	@Override
+	public String getLogoutMethod(){
 		return "common.db.logout";
 	}
-	public static String getPatientSearchMethod(){
+	@Override
+	public String getPatientSearchMethod(){
 		return "model.gnuhealth.patient.search";
 	}
-	public static String getPatientReadMethod(){
+	@Override
+	public String getPatientReadMethod(){
 		return "model.gnuhealth.patient.read";
 	}
-	public static  String getReferencesMethod(){
+	@Override
+	public  String getReferencesMethod(){
 		return "model.res.user.get_preferences";
 	}
 	
 	
 	/*-----  BACKEND METHOD PARAMS  ----*/
 	
-	public static Object[] getPatientSearchParams(){
-		return null;
+	@Override
+	public  Object[] getReturnAllPatientsParams(String session){
+		
+		return new Object[]{1, session, getAllPatientIds(), 
+				new String[]{"rec_name","age","diseases","sex","primary_care_doctor"}, 
+				"REPLACE_CONTEXT"};
+	}
+	@Override
+	public Object[] getReturnPatientParams(String session,String id){
+		return new Object[]{1, session, new int[]{Integer.parseInt(id)}, 
+				new String[]{"rec_name","age","diseases","sex","primary_care_doctor"}, 
+				"REPLACE_CONTEXT"};
 	}
 	
-	public static Object[] getPatientSearchParams(String id){
-		return null;
+	private int[] getAllPatientIds(){
+		
+		int[] idList;
+		
+		// LOGIN
+		String session = login("admin", "iswi223<<");	
+		
+		// Search Patients
+	    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"};
+	    
+	    String result = execute(session, getPatientSearchMethod(), params);
+	    //{"id": 55, "result": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]}
+	    result  = result.substring(result.indexOf("[")+1,result.lastIndexOf("]"));
+	    
+	    String[] idListString = result.split(", ");
+	    idList = new int[idListString.length];
+	    
+	    for(int i = 0 ; i<idListString.length; i++){
+	    	idList[i] = Integer.parseInt(idListString[i]);
+	    }
+	    return idList;
 	}
 }
