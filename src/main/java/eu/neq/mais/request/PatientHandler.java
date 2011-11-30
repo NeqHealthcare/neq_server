@@ -45,8 +45,8 @@ public class PatientHandler {
 			e.printStackTrace();
 			patient = "false";
 		}		
-		logger.info("logout method returned json object: "+new Gson().toJson(patient));
-		return new Gson().toJson(patient);
+		logger.info("return patient method returned json object: "+patient);
+		return patient;
 
 	}	
 	
@@ -75,8 +75,8 @@ public class PatientHandler {
 			e.printStackTrace();
 			patientList = "false";
 		}		
-		logger.info("logout method returned json object: "+new Gson().toJson(patientList));
-		return new Gson().toJson(patientList);
+		logger.info("logout method returned json object: "+patientList);
+		return patientList;
 
 	}	
 

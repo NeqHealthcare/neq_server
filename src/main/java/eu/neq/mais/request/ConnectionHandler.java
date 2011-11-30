@@ -56,8 +56,8 @@ public class ConnectionHandler {
 			e.printStackTrace();
 		}
 		
-		logger.info("login method returned json object: "+new Gson().toJson(session));
-		return new Gson().toJson(session);
+		logger.info("login method returned json object: "+session);
+		return session;
 	}
 	
 	/**
@@ -84,8 +84,8 @@ public class ConnectionHandler {
 			e.printStackTrace();
 			result = "false";
 		}		
-		logger.info("logout method returned json object: "+new Gson().toJson(result));
-		return new Gson().toJson(result);
+		logger.info("logout method returned json object: "+result);
+		return result;
 	}
 
 }
