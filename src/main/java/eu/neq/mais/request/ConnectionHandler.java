@@ -85,6 +85,9 @@ public class ConnectionHandler {
 			e.printStackTrace();
 			result = "false";
 		}
+		if(result.equals("true")){
+			SessionStore.removeKeyValuePair(session);
+		}
 		logger.info("logout method returned json object: " + result);
 		return result;
 	}

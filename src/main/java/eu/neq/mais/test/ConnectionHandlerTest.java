@@ -6,7 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import eu.neq.mais.Main;
+import eu.neq.mais.NeqServer;
 
 public class ConnectionHandlerTest {
 
@@ -15,15 +15,17 @@ public class ConnectionHandlerTest {
 	private String fakeLoginRequestParameters ="username=admn&password=iswi3<<&backendSid=gnuhealth1";
 	private String logoutURL ="http://localhost:8080/connection/logout";
 	private String logoutRequestParameters = "username=admin&session=";
-	private Main neqServer;
-
+	private NeqServer server;
+	
 	@Before
 	public void setUp() throws Exception {
-		neqServer = new Main();
+		server = NeqServer.getInstance();
+		new Thread(server). start ();
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		server.stop();
 	}
 
 	@Test

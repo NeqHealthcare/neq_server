@@ -37,6 +37,14 @@ public abstract class SessionStore {
 	}
 	
 	/**
+	 * remove a key/value pair from the session store
+	 * 
+	 * @param session - session that should be removed
+	 */
+	public static void removeKeyValuePair(String session){
+		getInstance().remove(session);
+	}
+	/**
 	 * returns the backendSid that fits the session
 	 */
 	public static String getBackendSid(String session){

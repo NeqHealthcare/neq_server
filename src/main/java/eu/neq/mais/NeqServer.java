@@ -12,15 +12,31 @@ import eu.neq.mais.technicalservice.FileHandler;
 import eu.neq.mais.technicalservice.Settings;
 
 
-public class Main {
+public class NeqServer implements Runnable {
 	
-	public static void main(String[] args) throws Exception {
+	private static NeqServer instance = null;
+	
+	private Server server = null;
+	
+	public static NeqServer getInstance(){
+		if(instance == null){
+			instance = new NeqServer();
+		}
+		return instance;
+	}
+	
+	public NeqServer(){
+		
+	}
+	
+	public void run() {
+		this.stop();
 		
 		Logger logger = Logger.getLogger("eu.neq.mais.Main");
 		logger.addHandler(FileHandler.getLogFileHandler(Settings.LOG_FILE_MAIN));
 		
 		logger.info("Setting up Server - Port 8080");
-		Server server = new Server(8080); 
+		server = new Server(8080); 
 		
 		ServletHolder servletHolder = new ServletHolder(ServletContainer.class); 
 		
@@ -33,10 +49,33 @@ public class Main {
 		context.addServlet(servletHolder, "/*"); 
 		
 		logger.info("starting server");
-		server.start(); 
+		try {
+			server.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
 		
 		logger.info("joining server");
-		server.join();
+		try {
+			server.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
+	}
+	
+	public void stop(){
+		if(server != null){
+			try {
+				server.stop();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static void main(String[]  args){
+		NeqServer server = NeqServer.getInstance();
+		server.run();
 	}
 }
