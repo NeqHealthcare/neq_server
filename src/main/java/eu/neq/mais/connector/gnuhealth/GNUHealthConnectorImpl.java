@@ -60,36 +60,6 @@ public class GNUHealthConnectorImpl extends Connector {
 	
 	}
 	
-	/**
-	 * Die Methode nutzt nun nen TCP-Dump json string um search infos zurückzubekommen.
-	 * Ich bin mir noch nicht sicher, welche rolle der domain (context) spielt.
-	 */
-	public String getPreferences(String session) {
-//		Object[] params = new Object[]{1, session, 0, 1000};
-//		
-//		String content = null;
-//		int gid = 100;
-//		Map<String, Object> values = new HashMap<String, Object>();
-//		values.put("method", "s.system.listMethods");
-//		values.put("params", params);
-//		values.put("id", "" + gid++);
-//		
-//		try {
-//			JSONWriter writer = new JSONValidatingWriter(new ExceptionErrorListener());
-//			content = writer.write(values);
-//		} catch (NullPointerException e) {
-//			logger.warning("FAIL");
-//			throw new JsonRpcException("cannot encode object to json", e);
-//		}
-//		
-//		System.out.print(content.toString());
-		
-		
-
-		return null;
-	}
-	
-	
 	public static Connector getInstance(){
 		
 		if(instance == null){

@@ -50,7 +50,15 @@
       		<version>${gsonVersion}</version>
       		<scope>compile</scope>
     	</dependency>
-    	
+    	<!-- J-Unit-->
+    	<dependency>
+      		<groupId>junit</groupId>
+      		<artifactId>junit</artifactId>
+      		<version>4.1</version>
+      		<type>jar</type>
+      		<scope>test</scope>
+      		<optional>true</optional>
+    	</dependency>
     </dependencies>
 
     <build>

@@ -9,10 +9,10 @@
  },
  {
      "sid" : gnuhealth2,
-     "url" : "theilemann.dyndns.org",
+     "url" : "ec2-176-34-200-228.eu-west-1.compute.amazonaws.com",
      "jsonport" : 8000,
      "xmlport" : 7070,
-     "connector":"eu.neq.mais.connector.gnuhealth.TestDataConnectorImpl",
-     "db": "devel_01"
+     "connector":"eu.neq.mais.connector.gnuhealth.GNUHealthConnectorImpl",
+     "db": "db_03"
  }
  ]
