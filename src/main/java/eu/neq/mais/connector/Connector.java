@@ -78,6 +78,8 @@ public abstract class Connector {
 	public abstract String getPatientSearchMethod();
 	public abstract String getPatientReadMethod();
 	public abstract String getReferencesMethod();
+	public abstract String getDiagnoseReadMethod();
+	
 	
 	
 	/*-----  BACKEND METHOD PARAMS  ----*/
@@ -85,4 +87,5 @@ public abstract class Connector {
 	public abstract Object[] getReturnAllPatientsParams(String session);
 	
 	public abstract Object[] getReturnPatientParams(String session, String id);
+	public abstract Object[] getReturnDiagnoseParams(String session, String id);
 }

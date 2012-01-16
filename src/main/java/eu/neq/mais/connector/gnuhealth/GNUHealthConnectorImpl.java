@@ -153,7 +153,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			connection.connect();
 
 			InputStream in = connection.getInputStream();
-			BufferedReader i = new BufferedReader(new InputStreamReader(in, "utf-8"));
+			BufferedReader i = new BufferedReader(new InputStreamReader(in, "ascii")); //ascii seems to be the correct encoding
 			StringBuilder sb = new StringBuilder();
 			String line;
 			while ((line = i.readLine()) != null) {
@@ -178,7 +178,7 @@ public class GNUHealthConnectorImpl extends Connector {
 	}
 
 	
-	
+	//Sollen wir das hier nicht auch in ein configfile übertragen um dann die einzelnen funktionen universell benennen zu können?
 	
 	
 	
@@ -203,6 +203,11 @@ public class GNUHealthConnectorImpl extends Connector {
 	public  String getReferencesMethod(){
 		return "model.res.user.get_preferences";
 	}
+	@Override
+	public String getDiagnoseReadMethod() {
+		return "model.gnuhealth.patient.disease.read";
+	}
+
 	
 	
 	/*-----  BACKEND METHOD PARAMS  ----*/
@@ -210,7 +215,7 @@ public class GNUHealthConnectorImpl extends Connector {
 	@Override
 	public  Object[] getReturnAllPatientsParams(String session){
 		
-		return new Object[]{1, session, getAllPatientIds(), 
+		return new Object[]{1, session, getAllPatientIds(session), 
 				new String[]{"rec_name","age","diseases","sex","primary_care_doctor"}, 
 				"REPLACE_CONTEXT"};
 	}
@@ -221,12 +226,30 @@ public class GNUHealthConnectorImpl extends Connector {
 				"REPLACE_CONTEXT"};
 	}
 	
-	private int[] getAllPatientIds(){
+	@Override
+	public Object[] getReturnDiagnoseParams(String session,String id){
+		return new Object[]{1, session, new int[]{Integer.parseInt(id)}, 
+				new String[]{"status",
+		        "pregnancy_warning",
+		        "is_active",
+		        "short_comment",
+		        "diagnosed_date",
+		        "healed_date",
+		        "pathology",
+		        "disease_severity",
+		        "is_infectious",
+		        "is_allergy",
+		        "pathology.rec_name",}, 
+				"REPLACE_CONTEXT"};
+	}
+	
+	
+	private int[] getAllPatientIds(String session){
 		
 		int[] idList;
 		
 		// LOGIN
-		String session = login("admin", "iswi223<<");	
+		//String session = login("admin", "iswi223<<");	
 		
 		// Search Patients
 	    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"};
@@ -243,4 +266,6 @@ public class GNUHealthConnectorImpl extends Connector {
 	    }
 	    return idList;
 	}
+
+
 }

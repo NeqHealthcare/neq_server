@@ -12,12 +12,24 @@ import java.util.List;
  */
 public abstract class Diagnose {
 	
-	private Date diagnoseDate;
+	private Date diagnoseDate, healed_date;
 	private Doctor doctor;
 	private List<Disease> disease;
 	
+
+	/**
+	 * @return the healed_date
+	 */
+	public Date getHealed_date() {
+		return healed_date;
+	}
+	/**
+	 * @param healed_date the healed_date to set
+	 */
 	
-	
+	public void setHealed_date(Date healed_date) {
+		this.healed_date = healed_date;
+	}
 	public Date getDiagnoseDate() {
 		return diagnoseDate;
 	}
