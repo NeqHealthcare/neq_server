@@ -267,6 +267,7 @@ public class GNUHealthConnectorImpl extends Connector {
 				new String[]{"rec_name","age","diseases","sex","primary_care_doctor"}, 
 				"REPLACE_CONTEXT"};
 	}
+	
 	@Override
 	public Object[] getReturnPatientParams(String session,String id){
 		return new Object[]{1, session, new int[]{Integer.parseInt(id)}, 
@@ -291,7 +292,6 @@ public class GNUHealthConnectorImpl extends Connector {
 				"REPLACE_CONTEXT"};
 	}
 	
-	
 	private int[] getAllPatientIds(String session){
 		
 		int[] idList;
@@ -314,7 +314,6 @@ public class GNUHealthConnectorImpl extends Connector {
 	    }
 	    return idList;
 	}
-	
 	
 	public int[] getAllUserIds(String session) {
 		int[] idList;
