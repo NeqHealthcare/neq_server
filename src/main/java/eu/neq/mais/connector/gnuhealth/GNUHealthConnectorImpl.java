@@ -145,7 +145,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			
 //			String jsonfile = "{\"params\": [1, \""+session+"\", [], 0, 1000, null, {\"groups\": [1, 3, 4, 2], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}], \"id\": 52, \"method\": \"model.gnuhealth.patient.search\"}";
 			String jsonfile = dom.getJson();
-			
+			System.out.println(jsonfile); // HERE HERE HERE
 			OutputStream out = connection.getOutputStream();
 			out.write(jsonfile.getBytes());
 			out.close();
@@ -265,6 +265,45 @@ public class GNUHealthConnectorImpl extends Connector {
 	    	idList[i] = Integer.parseInt(idListString[i]);
 	    }
 	    return idList;
+	}
+	
+	
+	
+	
+	public String getUserSearchMethod() {
+		return "model.res.user.search";
+	}
+	
+	public int[] getAllUserIds(String session) {
+		int[] idList;
+		
+		// Search Patients
+	    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"};
+	    
+	    String result = execute(session, getUserSearchMethod(), params);
+	    result  = result.substring(result.indexOf("[")+1,result.lastIndexOf("]"));
+	    
+	    String[] idListString = result.split(", ");
+	    idList = new int[idListString.length];
+	    
+	    for(int i = 0 ; i<idListString.length; i++){
+	    	idList[i] = Integer.parseInt(idListString[i]);
+	    }
+	    return idList;
+	}
+	
+	public int getUserID(String username, String session) {
+		
+		int[] ids = getAllUserIds(session);
+		
+		Object[] params = new Object[]{7, session, ids, new String[]{"name", "login", "signature"}, "REPLACE_CONTEXT"};		    
+		String res = execute(session, "model.res.user.read", params);
+		
+		
+		System.out.println(">> "+res);
+		
+		return 0;
+		
 	}
 
 

@@ -48,7 +48,7 @@ public class GnuHealthJsonObject {
 		Gson gson = new Gson();
 		String almost = gson.toJson(this);
 		
-		String context = "{\"groups\": [1, 3, 4, 2], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}";
+		String context = "{\"groups\": [], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}";
 
 		almost = almost.replace("\"REPLACE_CONTEXT\"", context);
 		almost = almost.replace("//", "/");
