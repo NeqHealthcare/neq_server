@@ -44,14 +44,14 @@ public class PatientHandler {
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore
 					.getBackendSid(session));
-			patient = connector.execute(session,
-					connector.getPatientReadMethod(),
+			patient = connector.execute(connector.getPatientReadMethod(),
 					connector.getReturnPatientParams(session, id));
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			patient = "false";
 		}
+		patient = patient.substring(patient.indexOf("["), patient.lastIndexOf("]")+1);
 		logger.info("return patient method returned json object: " + patient);
 		return patient;
 
@@ -82,9 +82,7 @@ public class PatientHandler {
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore
 					.getBackendSid(session));
-			patientList = connector.execute(session,
-					connector.getPatientReadMethod(),
-					connector.getReturnAllPatientsParams(session));
+			patientList = connector.returnAllPatientsForUIList(session);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -112,7 +110,7 @@ public class PatientHandler {
 	 *         Request failed: false
 	 */
 	@GET
-	@Path("/all")
+	@Path("/all_for_user")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String returnAllPatients(@QueryParam("session") String session,@QueryParam("primary_care_doctor") String primaryCareDoctor) {
 
@@ -121,14 +119,14 @@ public class PatientHandler {
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore
 					.getBackendSid(session));
-			patientList = connector.execute(session,
-					connector.getPatientReadMethod(),
+			patientList = connector.execute(connector.getPatientReadMethod(),
 					connector.getReturnAllPatientsParams(session));
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			patientList = "false";
 		}
+		patientList = patientList.substring(patientList.indexOf("["), patientList.lastIndexOf("]")+1);
 		logger.info("return patients method returned json object filled with all patients for a specific primary care doctor: " + patientList);
 		return patientList;
 

@@ -15,11 +15,9 @@ import eu.neq.mais.domain.Doctor;
  *
  */
 public class DiagnoseGnu extends Diagnose{
-	
-
 
 	private boolean status, pregnancy_warning, is_active, is_infectious, is_allergy;
-    private String short_comment, disease_severity;
+    private String short_comment, disease_severity, rec_name, id, diagnosed_date, pathology;
 	
 	public DiagnoseGnu(Date diagnoseDate, Date healed_date, Doctor doctor,
 			List<Disease> disease, boolean status, boolean pregnancy_warning,
@@ -137,6 +135,38 @@ public class DiagnoseGnu extends Diagnose{
 	 */
 	public void setDisease_severity(String disease_severity) {
 		this.disease_severity = disease_severity;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getRec_name() {
+		return rec_name;
+	}
+
+	public void setRec_name(String rec_name) {
+		this.rec_name = rec_name;
+	}
+
+	public String getDiagnosed_date() {
+		return diagnosed_date;
+	}
+
+	public void setDiagnosed_date(String diagnosed_date) {
+		this.diagnosed_date = diagnosed_date;
+	}
+
+	public String getPathology() {
+		return pathology;
+	}
+
+	public void setPathology(String pathology) {
+		this.pathology = pathology;
 	}
 
 	

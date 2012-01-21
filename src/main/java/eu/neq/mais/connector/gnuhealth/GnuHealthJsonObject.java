@@ -16,7 +16,7 @@ public class GnuHealthJsonObject {
 	int id;
 	String method;
 	
-	public GnuHealthJsonObject(String session, String method, Object[] params, int id) {
+	public GnuHealthJsonObject(String method, Object[] params, int id) {
 		this.params = params;
 		this.id = id;
 		this.method = method;
