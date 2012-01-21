@@ -319,7 +319,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		// Search Patients
 	    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"};
 	    
-	    String result = execute(session, getUserSearchMethod(), params);
+	    String result = execute(getUserSearchMethod(), params);
 	    result  = result.substring(result.indexOf("[")+1,result.lastIndexOf("]"));
 	    
 	    String[] idListString = result.split(", ");
@@ -336,7 +336,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		int[] ids = getAllUserIds(session);
 		
 		Object[] params = new Object[]{7, session, ids, new String[]{"name", "login", "signature"}, "REPLACE_CONTEXT"};		    
-		String res = execute(session, "model.res.user.read", params);
+		String res = execute("model.res.user.read", params);
 		
 		
 		System.out.println(">> "+res);

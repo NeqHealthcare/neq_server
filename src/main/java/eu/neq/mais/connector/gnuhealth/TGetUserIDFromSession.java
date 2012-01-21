@@ -24,7 +24,7 @@ public class TGetUserIDFromSession {
 			// FIND ALL USERS
 			Object[] params = new Object[] { 7, session, new String[] {}, 0,
 					1000, null, "REPLACE_CONTEXT" };
-			String res = con.execute(session, "model.res.user.search", params);
+			String res = con.execute("model.res.user.search", params);
 			System.out.println(">> " + res);
 
 			// FIND id FOR SESSION USER
@@ -34,7 +34,7 @@ public class TGetUserIDFromSession {
 			params = new Object[] { 7, session, id,
 					new String[] { "name", "login", "signature" },
 					"REPLACE_CONTEXT" };
-			res = con.execute(session, "model.res.user.read", params);
+			res = con.execute("model.res.user.read", params);
 			System.out.println(res);
 			
 		
