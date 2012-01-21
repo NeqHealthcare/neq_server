@@ -13,6 +13,14 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
 
+/**
+ * Could not identify the author of this class, but it can be found here: 
+ * http://code.google.com/p/gendi/source/browse/trunk/gendircp/src/noveiras/HTTPRequestPoster.java?r=94
+ * 
+ * 
+ * @author Unkown
+ *
+ */
 public class HTTPRequestPoster {
 	/**
 	 * Sends an HTTP GET request to a url

@@ -17,7 +17,12 @@ import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.SessionStore;
 
 
-
+/**
+ * 
+ * 
+ * @author Jan Gansen, Sebastian Schütz, Denny Stohr
+ *
+ */
 public class GNUHealthConnectorImpl extends Connector {
 
 	private static Connector instance = null;

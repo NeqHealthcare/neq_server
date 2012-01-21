@@ -4,6 +4,11 @@ import java.util.Date;
 
 import com.google.gson.Gson;
 
+/**
+ * 
+ * @author Jan Gansen
+ *
+ */
 public abstract class Patient {
 
 	private String id;

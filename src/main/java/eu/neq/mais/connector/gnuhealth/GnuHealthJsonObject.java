@@ -4,6 +4,12 @@ import java.util.HashMap;
 
 import com.google.gson.Gson;
 
+/**
+ * 
+ * 
+ * @author Sebastian Schütz
+ *
+ */
 public class GnuHealthJsonObject {
 	
 	Object[] params;

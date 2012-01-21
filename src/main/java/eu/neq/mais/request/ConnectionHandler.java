@@ -12,6 +12,11 @@ import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.SessionStore;
 
+/**
+ * 
+ * @author Jan Gansen
+ *
+ */
 @Path("/connection/")
 public class ConnectionHandler {
 

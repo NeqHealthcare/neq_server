@@ -7,7 +7,7 @@ import eu.neq.mais.technicalservice.FileHandler;
 
 /**
  * Loads a back-end connector based no the configuration of the mais.
- * @author seba
+ * @author Sebastian Schütz, Jan Gansen
  *
  */
 public abstract class ConnectorFactory {

@@ -8,6 +8,12 @@ import org.junit.Test;
 
 import eu.neq.mais.NeqServer;
 
+
+/**
+ * 
+ * @author Jan Gansen
+ *
+ */
 public class ConnectionHandlerTest {
 
 	private String URL = "http://localhost:8080/connection/login";

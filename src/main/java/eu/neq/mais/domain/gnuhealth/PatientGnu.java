@@ -4,6 +4,11 @@ import java.util.Date;
 import eu.neq.mais.domain.Gender;
 import eu.neq.mais.domain.Patient;
 
+/**
+ * 
+ * @author Jan Gansen
+ *
+ */
 public class PatientGnu extends Patient {
 	
 	

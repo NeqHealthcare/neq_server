@@ -10,7 +10,7 @@ import eu.neq.mais.technicalservice.Settings;
 /**
  * Connector interface to standardize the connector implemetations.
  * One connector builds one connection to one back-end HIS, like GNU Health or SAP Healthcare.
- * @author seba
+ * @author Sebastian Schütz, Jan Gansen
  *
  */
 public abstract class Connector {
