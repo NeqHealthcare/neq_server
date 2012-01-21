@@ -43,14 +43,14 @@ public class DiagnoseHandler {
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore
 					.getBackendSid(session));
-			diagnose = connector.execute(session,
-					connector.getDiagnoseReadMethod(),
+			diagnose = connector.execute(connector.getDiagnoseReadMethod(),
 					connector.getReturnDiagnoseParams(session, id));
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			diagnose = "false";
 		}
+		diagnose = diagnose.substring(diagnose.indexOf("["), diagnose.lastIndexOf("]")+1);
 		logger.info("return diagnose method returned json object: " + diagnose);
 		return diagnose;
 		

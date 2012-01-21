@@ -5,19 +5,34 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.googlecode.jj1.ServiceProxy;
 
 import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
+import eu.neq.mais.domain.Patient;
+import eu.neq.mais.domain.gnuhealth.DiagnoseGnu;
+import eu.neq.mais.domain.gnuhealth.PatientGnu;
+import eu.neq.mais.technicalservice.Backend;
+import eu.neq.mais.technicalservice.FileHandler;
 import eu.neq.mais.technicalservice.SessionStore;
+import eu.neq.mais.technicalservice.Settings;
 
 
-
+/**
+ * 
+ * 
+ * @author Jan Gansen, Sebastian Schütz, Denny Stohr
+ *
+ */
 public class GNUHealthConnectorImpl extends Connector {
 
 	private static Connector instance = null;
@@ -31,24 +46,26 @@ public class GNUHealthConnectorImpl extends Connector {
 			// LOGIN
 			String session = con.login("admin", "iswi223<<");	
 			
-			// Search Patients
-		    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"};
-		    
-		    String res = con.execute(session, con.getPatientSearchMethod(), params);
-			logger.info("res: "+res);
+//			// Search Patients
+//		    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"}; 
+//		    String res = con.execute(session, con.getPatientSearchMethod(), params);
+//			logger.info("res: "+res);
+//			
+//			// Read Patients
+//			Object[] params2 = con.getReturnAllPatientsParams(session);	    
+//			String res2 = con.execute(session, con.getPatientReadMethod(), params2);
+//			logger.info("res2: "+res2);
+//
+//			
+//			// Read Patients
+//			Object[] params3 = con.getReturnPatientParams(session,"1");			    
+//			String res3 = con.execute(session, con.getPatientReadMethod(), params3);
+//			logger.info("res3: "+res3);
 			
-			// Read Patients
-			Object[] params2 = con.getReturnAllPatientsParams(session);
-			    
-			String res2 = con.execute(session, con.getPatientReadMethod(), params2);
-			logger.info("res2: "+res2);
-
+			// returnAllPatientsForUIList
+			String patientListForUI = con.returnAllPatientsForUIList(session);
+			System.out.println(patientListForUI.toString());
 			
-			// Read Patients
-			Object[] params3 = con.getReturnPatientParams(session,"1");
-			    
-			String res3 = con.execute(session, con.getPatientReadMethod(), params3);
-			logger.info("res3: "+res3);
 			// Logout
 			String res4 = con.logout("admin", session);
 						
@@ -120,14 +137,14 @@ public class GNUHealthConnectorImpl extends Connector {
 	
 	
 
-	public String execute(String session, String method, Object[] params) {
+	public String execute(String method, Object[] params) {
 
 		logger.info("CALL EXECUTE: "+method);
 		
 		/**
 		 * Get GnuHealthCompatible Json Request file
 		 */
-		GnuHealthJsonObject dom = new GnuHealthJsonObject(session, method, params, gnid++);
+		GnuHealthJsonObject dom = new GnuHealthJsonObject(method, params, gnid++);
 		
 		/**
 		 * Send json file to GNUHealth and recieve response
@@ -177,9 +194,31 @@ public class GNUHealthConnectorImpl extends Connector {
 		return result; 
 	}
 
-	
-	//Sollen wir das hier nicht auch in ein configfile übertragen um dann die einzelnen funktionen universell benennen zu können?
-	
+
+	@Override
+	public String returnAllPatientsForUIList(String session) {
+		String patientListString = "false";
+		patientListString = execute(getPatientReadMethod(), getReturnAllPatientsParams(session));
+		List<PatientGnu> patientList = new ArrayList<PatientGnu>();
+		
+		Type listType = new TypeToken<List<PatientGnu>>(){}.getType();
+		patientListString = patientListString.substring(patientListString.indexOf("["), patientListString.lastIndexOf("]")+1);
+		patientList = new Gson().fromJson(patientListString, listType);
+		
+//		Type type = new TypeToken<DiagnoseGnu>(){}.getType();
+		for(PatientGnu patient : patientList){
+			List<DiagnoseGnu> diagnoseList = new ArrayList<DiagnoseGnu>();
+			for(String diseaseID : patient.getDiseases()){
+				String diseaseString = execute(getDiagnoseReadMethod(),getReturnDiagnoseParams(session, diseaseID));
+				diseaseString = diseaseString.substring(diseaseString.indexOf("[")+1, diseaseString.lastIndexOf("]"));
+				diagnoseList.add((DiagnoseGnu) new Gson().fromJson(diseaseString,DiagnoseGnu.class));
+			}
+			patient.setDiagnoseList(diagnoseList);
+		}
+		
+//		diagnoseList.add(execute(session,getDiagnoseReadMethod(),getReturnDiagnoseParams(session, id));
+		return new Gson().toJson(patientList);
+	}
 	
 	
 	/*-----  BACKEND METHODS  ----*/
@@ -200,7 +239,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		return "model.gnuhealth.patient.read";
 	}
 	@Override
-	public  String getReferencesMethod(){
+	public  String getPreferencesMethod(){
 		return "model.res.user.get_preferences";
 	}
 	@Override
@@ -254,7 +293,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		// Search Patients
 	    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"};
 	    
-	    String result = execute(session, getPatientSearchMethod(), params);
+	    String result = execute(getPatientSearchMethod(), params);
 	    //{"id": 55, "result": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]}
 	    result  = result.substring(result.indexOf("[")+1,result.lastIndexOf("]"));
 	    

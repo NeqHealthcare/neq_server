@@ -12,6 +12,12 @@ import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.SessionStore;
 
+
+/**
+ * 
+ * @author Jan Gansen
+ *
+ */
 @Path("/patients/")
 public class PatientHandler {
 
@@ -38,14 +44,14 @@ public class PatientHandler {
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore
 					.getBackendSid(session));
-			patient = connector.execute(session,
-					connector.getPatientReadMethod(),
+			patient = connector.execute(connector.getPatientReadMethod(),
 					connector.getReturnPatientParams(session, id));
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			patient = "false";
 		}
+		patient = patient.substring(patient.indexOf("["), patient.lastIndexOf("]")+1);
 		logger.info("return patient method returned json object: " + patient);
 		return patient;
 
@@ -76,15 +82,52 @@ public class PatientHandler {
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore
 					.getBackendSid(session));
-			patientList = connector.execute(session,
-					connector.getPatientReadMethod(),
+			patientList = connector.returnAllPatientsForUIList(session);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			patientList = "false";
+		}
+		logger.info("return patients method returned json object filled with al patients: " + patientList);
+		return patientList;
+
+	}
+	
+	
+	/**
+	 * Example url: http://localhost:8080/patients/all?session=SESSION_VARIABLE&primary_care_doctor=PRIMARY_CARE_DOCTOR_ID
+	 * 
+	 * @param session
+	 * @return json object
+	 * 
+	 *         Successfull: {"id": 56, "result": [{"rec_name": "Miller, Frank",
+	 *         "diseases": [], "age": "38y 1m 17d", "sex": "m", "id": 1,
+	 *         "primary_care_doctor": 1}, {"rec_name": "Lasson, Sophie",
+	 *         "diseases": [6], "age": "20y 1m 30d", "sex": "f", "id": 2,
+	 *         "primary_care_doctor": 1}, {"rec_name": "Schweizer, Jochen",
+	 *         "diseases": [3], "age": "44y 10m 12d", "sex": "m", "id": 11,
+	 *         "primary_care_doctor": 1}]} ; 
+	 *         Request failed: false
+	 */
+	@GET
+	@Path("/all_for_user")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String returnAllPatients(@QueryParam("session") String session,@QueryParam("primary_care_doctor") String primaryCareDoctor) {
+
+		String patientList = "false";
+
+		try {
+			connector = ConnectorFactory.getConnector(SessionStore
+					.getBackendSid(session));
+			patientList = connector.execute(connector.getPatientReadMethod(),
 					connector.getReturnAllPatientsParams(session));
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			patientList = "false";
 		}
-		logger.info("logout method returned json object: " + patientList);
+		patientList = patientList.substring(patientList.indexOf("["), patientList.lastIndexOf("]")+1);
+		logger.info("return patients method returned json object filled with all patients for a specific primary care doctor: " + patientList);
 		return patientList;
 
 	}

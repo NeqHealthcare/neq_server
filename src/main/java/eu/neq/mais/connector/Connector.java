@@ -10,7 +10,7 @@ import eu.neq.mais.technicalservice.Settings;
 /**
  * Connector interface to standardize the connector implemetations.
  * One connector builds one connection to one back-end HIS, like GNU Health or SAP Healthcare.
- * @author seba
+ * @author Sebastian Schütz, Jan Gansen
  *
  */
 public abstract class Connector {
@@ -51,7 +51,15 @@ public abstract class Connector {
 	 * @param params
 	 * @return
 	 */
-	public abstract String execute(String session, String method, Object[] params);
+	public abstract String execute(String method, Object[] params);
+	
+	
+	/**
+	 * 
+	 * @param session current session
+	 * @return special patient list that can be used in the ui patient list view
+	 */
+	public abstract String returnAllPatientsForUIList(String session);
 		
 	public void setBackend(Backend backend){
 		this.backend = backend;
@@ -77,7 +85,7 @@ public abstract class Connector {
 	public abstract String getLogoutMethod();
 	public abstract String getPatientSearchMethod();
 	public abstract String getPatientReadMethod();
-	public abstract String getReferencesMethod();
+	public abstract String getPreferencesMethod();
 	public abstract String getDiagnoseReadMethod();
 	
 	

@@ -11,7 +11,11 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 import eu.neq.mais.technicalservice.FileHandler;
 import eu.neq.mais.technicalservice.Settings;
 
-
+/**
+ * 
+ * @author Jan Gansen
+ *
+ */
 public class NeqServer implements Runnable {
 	
 	private static NeqServer instance = null;

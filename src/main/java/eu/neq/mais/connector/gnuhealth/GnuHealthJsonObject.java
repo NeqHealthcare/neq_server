@@ -4,13 +4,19 @@ import java.util.HashMap;
 
 import com.google.gson.Gson;
 
+/**
+ * 
+ * 
+ * @author Sebastian Schütz
+ *
+ */
 public class GnuHealthJsonObject {
 	
 	Object[] params;
 	int id;
 	String method;
 	
-	public GnuHealthJsonObject(String session, String method, Object[] params, int id) {
+	public GnuHealthJsonObject(String method, Object[] params, int id) {
 		this.params = params;
 		this.id = id;
 		this.method = method;
