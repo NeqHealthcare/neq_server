@@ -21,6 +21,7 @@ import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.domain.Patient;
 import eu.neq.mais.domain.gnuhealth.DiagnoseGnu;
 import eu.neq.mais.domain.gnuhealth.PatientGnu;
+import eu.neq.mais.domain.gnuhealth.UserGnu;
 import eu.neq.mais.technicalservice.Backend;
 import eu.neq.mais.technicalservice.FileHandler;
 import eu.neq.mais.technicalservice.SessionStore;
@@ -44,7 +45,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			Connector con = ConnectorFactory.getConnector("gnuhealth1");
 			
 			// LOGIN
-			String session = con.login("admin", "iswi223<<");	
+			String session = con.login("admin", "iswi223<<");
 			
 //			// Search Patients
 //		    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"}; 
@@ -63,8 +64,12 @@ public class GNUHealthConnectorImpl extends Connector {
 //			logger.info("res3: "+res3);
 			
 			// returnAllPatientsForUIList
-			String patientListForUI = con.returnAllPatientsForUIList(session);
-			System.out.println(patientListForUI.toString());
+//			String patientListForUI = con.returnAllPatientsForUIList(session);
+//			System.out.println(patientListForUI.toString());
+			
+		   // return all ids
+			int[] re = con.getAllUserIds(session);
+			System.out.println("ID FOUND: "+con.getUserId("jgansen", session));
 			
 			// Logout
 			String res4 = con.logout("admin", session);
@@ -159,10 +164,9 @@ public class GNUHealthConnectorImpl extends Connector {
 			connection.setDoInput(true);
 			connection.setDoOutput(true);
 
+			String jsonfile = dom.getJson();			
+//			System.out.println("json req: "+jsonfile); // DEBUG LINE
 			
-//			String jsonfile = "{\"params\": [1, \""+session+"\", [], 0, 1000, null, {\"groups\": [1, 3, 4, 2], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}], \"id\": 52, \"method\": \"model.gnuhealth.patient.search\"}";
-			String jsonfile = dom.getJson();
-			System.out.println(jsonfile); // HERE HERE HERE
 			OutputStream out = connection.getOutputStream();
 			out.write(jsonfile.getBytes());
 			out.close();
@@ -180,9 +184,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
 			in.close();
 			
-			result = sb.toString();
-			//JSONReader reader = new JSONValidatingReader(new ExceptionErrorListener());
-			//result = (Map<String, Object>) reader.read(sb.toString());		
+			result = sb.toString();	
 		} catch (MalformedURLException e2) {
 			e2.printStackTrace();
 		} catch (IOException e2) {
@@ -246,7 +248,14 @@ public class GNUHealthConnectorImpl extends Connector {
 	public String getDiagnoseReadMethod() {
 		return "model.gnuhealth.patient.disease.read";
 	}
-
+	@Override
+	public String getUserSearchMethod() {
+		return "model.res.user.search";
+	}
+	@Override
+	public String getUserReadMethod() {
+		return "model.res.user.read";
+	}
 	
 	
 	/*-----  BACKEND METHOD PARAMS  ----*/
@@ -307,12 +316,6 @@ public class GNUHealthConnectorImpl extends Connector {
 	}
 	
 	
-	
-	
-	public String getUserSearchMethod() {
-		return "model.res.user.search";
-	}
-	
 	public int[] getAllUserIds(String session) {
 		int[] idList;
 		
@@ -331,17 +334,35 @@ public class GNUHealthConnectorImpl extends Connector {
 	    return idList;
 	}
 	
-	public int getUserID(String username, String session) {
+	public int getUserId(String username, String session) {
+		System.out.println("session: "+session +", username: "+username);
 		
+		// Getting all User Ids
 		int[] ids = getAllUserIds(session);
+		for (int i : ids) System.out.println(i);
 		
-		Object[] params = new Object[]{7, session, ids, new String[]{"name", "login", "signature"}, "REPLACE_CONTEXT"};		    
+		// Searching for all Ids and fields: name, login
+		Object[] params = new Object[] {1, session, ids,
+				new String[] { "name", "login" },
+				"REPLACE_CONTEXT" };
+		
+		// Execute search
 		String res = execute("model.res.user.read", params);
+		System.out.println("res: "+res);
 		
+		// cleanse json transmission overhead (transaction id, etc..)
+		String cleansed = res.substring(res.indexOf("["),res.indexOf("]")+1);
 		
-		System.out.println(">> "+res);
+		// convert to list
+		Type listType = new TypeToken<List<UserGnu>>(){}.getType();
+		List<UserGnu> userList = new Gson().fromJson(cleansed, listType);
 		
-		return 0;
+		// SEARCH FOR ID
+		for (UserGnu u : userList) {
+			if(u.getLogin().equals(username)) return Integer.valueOf(u.getId());
+		}
+		
+		return -1;
 		
 	}
 

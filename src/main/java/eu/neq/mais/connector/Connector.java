@@ -60,6 +60,8 @@ public abstract class Connector {
 	 * @return special patient list that can be used in the ui patient list view
 	 */
 	public abstract String returnAllPatientsForUIList(String session);
+	public abstract int[] getAllUserIds(String session);
+	public abstract int getUserId(String session, String username);
 		
 	public void setBackend(Backend backend){
 		this.backend = backend;
@@ -87,6 +89,8 @@ public abstract class Connector {
 	public abstract String getPatientReadMethod();
 	public abstract String getPreferencesMethod();
 	public abstract String getDiagnoseReadMethod();
+	public abstract String getUserSearchMethod();
+	public abstract String getUserReadMethod();
 	
 	
 	
@@ -96,4 +100,8 @@ public abstract class Connector {
 	
 	public abstract Object[] getReturnPatientParams(String session, String id);
 	public abstract Object[] getReturnDiagnoseParams(String session, String id);
+	
+
+
+
 }
