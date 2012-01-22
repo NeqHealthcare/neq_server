@@ -72,12 +72,12 @@ public class GNUHealthConnectorImpl extends Connector {
 			// System.out.println(patientListForUI.toString());
 
 			// return all ids
-			String login_name = "jolee"; // <<-- search string
-			int idfound = con.getUserId(login_name, session);
-			int pid = con.getPhysicianId(session, idfound);
-			System.out.println("[" + login_name +"] User.id:" + idfound + ", Parties.id: "
-					+ pid + " (system intern record id = equal to physician id)");
-			System.out.println(con.returnPersonalPatientsForUIList(session, idfound));
+//			String login_name = "jolee"; // <<-- search string
+//			int idfound = con.getUserId(login_name, session);
+//			int pid = con.getPhysicianId(session, idfound);
+//			System.out.println("[" + login_name +"] User.id:" + idfound + ", Parties.id: "
+//					+ pid + " (system intern record id = equal to physician id)");
+			System.out.println(con.returnPersonalPatientsForUIList(session));
 
 			// Logout
 			String res4 = con.logout("admin", session);
@@ -240,7 +240,7 @@ public class GNUHealthConnectorImpl extends Connector {
 	}
 	
 	@Override
-	public String returnPersonalPatientsForUIList(String session, int user_id) {
+	public String returnPersonalPatientsForUIList(String session) {
 		String patientListString = "false";
 		
 		Object[] params = new Object[] {1,session,getAllPatientIds(session),new String[] { "rec_name", "age", "diseases","sex","primary_care_doctor.name","primary_care_doctor.rec_name" }, "REPLACE_CONTEXT" };
@@ -278,19 +278,13 @@ public class GNUHealthConnectorImpl extends Connector {
 			}
 			patient.setDiagnoseList(diagnoseList);
 		}
-		
-		int party_id = getPhysicianId(session, user_id);
+		//CHANGE - REAL USER ID NEEDED
+		int party_id = getPhysicianId(session, 1);
 		ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();
 		for (PatientGnu p : patientList) {
 			if (Integer.valueOf(p.getPrimary_care_doctor_id()) == party_id) relevantList.add(p);
 		}
 		return new Gson().toJson(relevantList);
-	}
-
-	@Override
-	public String returnAUsersPatientsForUIList(String session) {
-		// not yet implemented!
-		return returnAllPatientsForUIList(session);
 	}
 
 	@Override

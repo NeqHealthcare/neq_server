@@ -97,7 +97,7 @@ public class PatientHandler {
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore
 					.getBackendSid(session));
-			patientList = connector.returnAUsersPatientsForUIList(session);
+			patientList = connector.returnPersonalPatientsForUIList(session);
 		} catch (Exception e) {
 			e.printStackTrace();
 			patientList = "false";

@@ -64,8 +64,7 @@ public abstract class Connector {
 	public abstract int getPhysicianId(String session, int user_id);
 	public abstract String getUserRecName(String username, String session);
 	public abstract String returnAllPatientsForUIList(String session);
-	public abstract String returnAUsersPatientsForUIList(String session);
-	public abstract String returnPersonalPatientsForUIList(String session, int user_id);
+	public abstract String returnPersonalPatientsForUIList(String session);
 	
 	/**
 	 * 
