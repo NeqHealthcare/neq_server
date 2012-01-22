@@ -77,7 +77,12 @@ public class GNUHealthConnectorImpl extends Connector {
 //			int pid = con.getPhysicianId(session, idfound);
 //			System.out.println("[" + login_name +"] User.id:" + idfound + ", Parties.id: "
 //					+ pid + " (system intern record id = equal to physician id)");
-			System.out.println(con.returnPersonalPatientsForUIList(session));
+//			System.out.println(con.returnPersonalPatientsForUIList(session));
+			
+			// searching for a patient
+			String param = "sop";
+			System.out.println(con.searchForAPatient(session, param));
+			
 
 			// Logout
 			String res4 = con.logout("admin", session);
@@ -338,7 +343,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			// -> a search looking for a name has been executed
 			
 			for (PatientGnu p : patientList) {
-				if (p.getRec_name().contains(param)) relevantList.add(p);
+				if (p.getRec_name().toLowerCase().contains(param.toLowerCase())) relevantList.add(p);
 			}
 			
 		}
