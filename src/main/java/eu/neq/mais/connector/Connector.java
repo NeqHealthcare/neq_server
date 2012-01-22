@@ -61,10 +61,11 @@ public abstract class Connector {
 	 */
 	public abstract int[] getAllUserIds(String session);
 	public abstract int getUserId(String session, String username);
-	public abstract int getPhysicianId(String session, String rec_name);
+	public abstract int getPhysicianId(String session, int user_id);
 	public abstract String getUserRecName(String username, String session);
 	public abstract String returnAllPatientsForUIList(String session);
 	public abstract String returnAUsersPatientsForUIList(String session);
+	public abstract String returnPersonalPatientsForUIList(String session, int user_id);
 	
 	/**
 	 * 

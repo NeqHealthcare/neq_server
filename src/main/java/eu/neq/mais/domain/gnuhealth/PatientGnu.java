@@ -18,6 +18,7 @@ public class PatientGnu extends Patient {
 	private String sex;
 	private String id;
 	private String primary_care_doctor_rec_name;
+	private String primary_care_doctor_name;
 	
 	public String getRec_name() {
 		return rec_name;
@@ -78,5 +79,13 @@ public class PatientGnu extends Patient {
 	public void setPrimary_care_doctor_rec_name(
 			String primary_care_doctor_rec_name) {
 		this.primary_care_doctor_rec_name = primary_care_doctor_rec_name;
+	}
+
+	public String getPrimary_care_doctor_id() {
+		return primary_care_doctor_name;
+	}
+
+	public void setPrimary_care_doctor_id(String primary_care_doctor_id) {
+		this.primary_care_doctor_name = primary_care_doctor_id;
 	};
 }

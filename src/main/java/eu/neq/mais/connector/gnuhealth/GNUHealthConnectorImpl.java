@@ -21,148 +21,147 @@ import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.domain.Patient;
 import eu.neq.mais.domain.gnuhealth.DiagnoseGnu;
 import eu.neq.mais.domain.gnuhealth.PatientGnu;
+import eu.neq.mais.domain.gnuhealth.PhysicianGnu;
 import eu.neq.mais.domain.gnuhealth.UserGnu;
 import eu.neq.mais.technicalservice.Backend;
 import eu.neq.mais.technicalservice.FileHandler;
 import eu.neq.mais.technicalservice.SessionStore;
 import eu.neq.mais.technicalservice.Settings;
 
-
 /**
  * 
  * 
  * @author Jan Gansen, Sebastian Schütz, Denny Stohr
- *
+ * 
  */
 public class GNUHealthConnectorImpl extends Connector {
 
 	private static Connector instance = null;
 	private static int gnid = 55;
-		
-	
+
 	public static void main(String[] args) {
 		try {
 			Connector con = ConnectorFactory.getConnector("gnuhealth1");
-			
+
 			// LOGIN
 			String session = con.login("admin", "iswi223<<");
-			
-//			// Search Patients
-//		    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"}; 
-//		    String res = con.execute(session, con.getPatientSearchMethod(), params);
-//			logger.info("res: "+res);
-//			
-//			// Read Patients
-//			Object[] params2 = con.getReturnAllPatientsParams(session);	    
-//			String res2 = con.execute(session, con.getPatientReadMethod(), params2);
-//			logger.info("res2: "+res2);
-//
-//			
-//			// Read Patients
-//			Object[] params3 = con.getReturnPatientParams(session,"1");			    
-//			String res3 = con.execute(session, con.getPatientReadMethod(), params3);
-//			logger.info("res3: "+res3);
-			
+
+			// // Search Patients
+			// Object[] params = new Object[]{1, session, new String[]{}, 0,
+			// 1000, null, "REPLACE_CONTEXT"};
+			// String res = con.execute(session, con.getPatientSearchMethod(),
+			// params);
+			// logger.info("res: "+res);
+			//
+			// // Read Patients
+			// Object[] params2 = con.getReturnAllPatientsParams(session);
+			// String res2 = con.execute(session, con.getPatientReadMethod(),
+			// params2);
+			// logger.info("res2: "+res2);
+			//
+			//
+			// // Read Patients
+			// Object[] params3 = con.getReturnPatientParams(session,"1");
+			// String res3 = con.execute(session, con.getPatientReadMethod(),
+			// params3);
+			// logger.info("res3: "+res3);
+
 			// returnAllPatientsForUIList
-//			String patientListForUI = con.returnAllPatientsForUIList(session);
-//			System.out.println(patientListForUI.toString());
-			
-		   // return all ids
-			int[] re = con.getAllUserIds(session);
-			int idfound = con.getUserId("jgansen", session);
-			System.out.println("ID FOUND: "+idfound);
-			String recname = con.getUserRecName("jgansen", session);
-		
-			System.out.println("recname found: "+recname);
-			
-			System.out.println("Physician ID: "+con.getPhysicianId(session, recname));
-			
+			// String patientListForUI =
+			// con.returnAllPatientsForUIList(session);
+			// System.out.println(patientListForUI.toString());
+
+			// return all ids
+			String login_name = "jolee"; // <<-- search string
+			int idfound = con.getUserId(login_name, session);
+			int pid = con.getPhysicianId(session, idfound);
+			System.out.println("[" + login_name +"] User.id:" + idfound + ", Parties.id: "
+					+ pid + " (system intern record id = equal to physician id)");
+			System.out.println(con.returnPersonalPatientsForUIList(session, idfound));
+
 			// Logout
 			String res4 = con.logout("admin", session);
-						
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
-	
+
 	}
-	
-	public static Connector getInstance(){
-		
-		if(instance == null){
+
+	public static Connector getInstance() {
+
+		if (instance == null) {
 			instance = new GNUHealthConnectorImpl();
 		}
 		return instance;
 	}
 
-
-
-	public String logout(String username, String session) {		
-		logger.info("Recieved logout request from: "+username+" (Session: "+session+")");
+	public String logout(String username, String session) {
+		logger.info("Recieved logout request from: " + username + " (Session: "
+				+ session + ")");
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
-		String[] params =  new String[]{username,session};
-		String result = new Gson().toJson(proxy.call(this.getLogoutMethod(), params));
-		logger.info("Logout result: "+result);
+		String[] params = new String[] { username, session };
+		String result = new Gson().toJson(proxy.call(this.getLogoutMethod(),
+				params));
+		logger.info("Logout result: " + result);
 		return result;
 	}
-	
-	
+
 	private URL getBackEndUrl() {
 		try {
-			return new URL("http://"+this.getBackend().getUrl()+":"+this.getBackend().getJsonport()+"/"+this.getBackend().getDb());
+			return new URL("http://" + this.getBackend().getUrl() + ":"
+					+ this.getBackend().getJsonport() + "/"
+					+ this.getBackend().getDb());
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
-		} 
-			return null;
-		
+		}
+		return null;
+
 	}
 
-
 	/**
-	 *Login successful: session
-	 * Login unsuccessful: false as string
+	 * Login successful: session Login unsuccessful: false as string
 	 */
 	public String login(String username, String password) {
-		logger.info("login - connect to: "+getBackEndUrl().toString() + "with: "+username+":"+password);
+		logger.info("login - connect to: " + getBackEndUrl().toString()
+				+ "with: " + username + ":" + password);
 
-		String[] params =  new String[]{username,password};
-		
+		String[] params = new String[] { username, password };
+
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
-		String result = new Gson().toJson(proxy.call(this.getLoginMethod(), params));
-		
-		logger.info("result: "+result);	
-		
-		//checks if login was successfull
-		if((result.length()>5)){
+		String result = new Gson().toJson(proxy.call(this.getLoginMethod(),
+				params));
+
+		logger.info("result: " + result);
+
+		// checks if login was successfull
+		if ((result.length() > 5)) {
 			char s = '"';
 			String session_split[] = result.split(String.valueOf(s));
 			result = session_split[1];
-		}else{
+		} else {
 			result = "false";
 		}
-		logger.info("retrieved session: "+result);	
-		return result;		
+		logger.info("retrieved session: " + result);
+		return result;
 	}
-	
-	
-	
 
 	public String execute(String method, Object[] params) {
 
-		logger.info("CALL EXECUTE: "+method);
-		
+		logger.info("CALL EXECUTE: " + method);
+
 		/**
 		 * Get GnuHealthCompatible Json Request file
 		 */
-		GnuHealthJsonObject dom = new GnuHealthJsonObject(method, params, gnid++);
-		
+		GnuHealthJsonObject dom = new GnuHealthJsonObject(method, params,
+				gnid++);
+
 		/**
 		 * Send json file to GNUHealth and recieve response
 		 */
 		URLConnection connection;
 		String result = null;
-		
+
 		try {
 			connection = new URL(getBackEndUrl().toString()).openConnection();
 			connection.setRequestProperty("method", "POST");
@@ -170,9 +169,9 @@ public class GNUHealthConnectorImpl extends Connector {
 			connection.setDoInput(true);
 			connection.setDoOutput(true);
 
-			String jsonfile = dom.getJson();			
-//			System.out.println("json req: "+jsonfile); // DEBUG LINE
-			
+			String jsonfile = dom.getJson();
+			// System.out.println("json req: "+jsonfile); // DEBUG LINE
+
 			OutputStream out = connection.getOutputStream();
 			out.write(jsonfile.getBytes());
 			out.close();
@@ -180,7 +179,8 @@ public class GNUHealthConnectorImpl extends Connector {
 			connection.connect();
 
 			InputStream in = connection.getInputStream();
-			BufferedReader i = new BufferedReader(new InputStreamReader(in, "ascii")); //ascii seems to be the correct encoding
+			BufferedReader i = new BufferedReader(new InputStreamReader(in,
+					"ascii")); // ascii seems to be the correct encoding
 			StringBuilder sb = new StringBuilder();
 			String line;
 			while ((line = i.readLine()) != null) {
@@ -189,39 +189,48 @@ public class GNUHealthConnectorImpl extends Connector {
 			}
 
 			in.close();
-			
-			result = sb.toString();	
+
+			result = sb.toString();
 		} catch (MalformedURLException e2) {
 			e2.printStackTrace();
 		} catch (IOException e2) {
 			e2.printStackTrace();
 		}
-		
-		
-		
-		return result; 
-	}
 
+		return result;
+	}
 
 	@Override
 	public String returnAllPatientsForUIList(String session) {
 		String patientListString = "false";
-		patientListString = execute(getPatientReadMethod(), getReturnAllPatientsParams(session));
-		
-		Type listType = new TypeToken<List<PatientGnu>>(){}.getType();
-		patientListString = patientListString.substring(patientListString.indexOf("["), patientListString.lastIndexOf("]")+1);
-		patientListString = patientListString.replaceAll("primary_care_doctor.rec_name", "primary_care_doctor_rec_name");
-		List<PatientGnu> patientList = new Gson().fromJson(patientListString, listType);
+		patientListString = execute(getPatientReadMethod(),
+				getReturnAllPatientsParams(session));
 
-		for(PatientGnu patient : patientList){
+		Type listType = new TypeToken<List<PatientGnu>>() {
+		}.getType();
+		patientListString = patientListString.substring(
+				patientListString.indexOf("["),
+				patientListString.lastIndexOf("]") + 1);
+		patientListString = patientListString.replaceAll(
+				"primary_care_doctor.rec_name", "primary_care_doctor_rec_name");
+		List<PatientGnu> patientList = new Gson().fromJson(patientListString,
+				listType);
+
+		for (PatientGnu patient : patientList) {
 			List<DiagnoseGnu> diagnoseList = new ArrayList<DiagnoseGnu>();
-			if(patient.getDiseases() != null){
-				for(String diseaseID : patient.getDiseases()){
-					String diagnoseString = execute(getDiagnoseReadMethod(),getReturnDiagnoseParams(session, diseaseID));
-					diagnoseString = diagnoseString.substring(diagnoseString.indexOf("[")+1, diagnoseString.lastIndexOf("]"));
-					diagnoseString = diagnoseString.replaceAll("pathology.rec_name", "pathology_rec_name");
-					Type type = new TypeToken<DiagnoseGnu>(){}.getType();
-					diagnoseList.add((DiagnoseGnu) new Gson().fromJson(diagnoseString,type));
+			if (patient.getDiseases() != null) {
+				for (String diseaseID : patient.getDiseases()) {
+					String diagnoseString = execute(getDiagnoseReadMethod(),
+							getReturnDiagnoseParams(session, diseaseID));
+					diagnoseString = diagnoseString.substring(
+							diagnoseString.indexOf("[") + 1,
+							diagnoseString.lastIndexOf("]"));
+					diagnoseString = diagnoseString.replaceAll(
+							"pathology.rec_name", "pathology_rec_name");
+					Type type = new TypeToken<DiagnoseGnu>() {
+					}.getType();
+					diagnoseList.add((DiagnoseGnu) new Gson().fromJson(
+							diagnoseString, type));
 				}
 			}
 			patient.setDiagnoseList(diagnoseList);
@@ -230,6 +239,54 @@ public class GNUHealthConnectorImpl extends Connector {
 		return new Gson().toJson(patientList);
 	}
 	
+	@Override
+	public String returnPersonalPatientsForUIList(String session, int user_id) {
+		String patientListString = "false";
+		
+		Object[] params = new Object[] {1,session,getAllPatientIds(session),new String[] { "rec_name", "age", "diseases","sex","primary_care_doctor.name","primary_care_doctor.rec_name" }, "REPLACE_CONTEXT" };
+		
+		patientListString = execute(getPatientReadMethod(),
+				params);
+
+		
+		Type listType = new TypeToken<List<PatientGnu>>() {
+		}.getType();
+		patientListString = patientListString.substring(
+				patientListString.indexOf("["),
+				patientListString.lastIndexOf("]") + 1);
+		patientListString = patientListString.replaceAll(
+				"primary_care_doctor.name", "primary_care_doctor_name");
+		List<PatientGnu> patientList = new Gson().fromJson(patientListString,
+				listType);
+
+		for (PatientGnu patient : patientList) {
+			List<DiagnoseGnu> diagnoseList = new ArrayList<DiagnoseGnu>();
+			if (patient.getDiseases() != null) {
+				for (String diseaseID : patient.getDiseases()) {
+					String diagnoseString = execute(getDiagnoseReadMethod(),
+							getReturnDiagnoseParams(session, diseaseID));
+					diagnoseString = diagnoseString.substring(
+							diagnoseString.indexOf("[") + 1,
+							diagnoseString.lastIndexOf("]"));
+					diagnoseString = diagnoseString.replaceAll(
+							"pathology.rec_name", "pathology_rec_name");
+					Type type = new TypeToken<DiagnoseGnu>() {
+					}.getType();
+					diagnoseList.add((DiagnoseGnu) new Gson().fromJson(
+							diagnoseString, type));
+				}
+			}
+			patient.setDiagnoseList(diagnoseList);
+		}
+		
+		int party_id = getPhysicianId(session, user_id);
+		ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();
+		for (PatientGnu p : patientList) {
+			if (Integer.valueOf(p.getPrimary_care_doctor_id()) == party_id) relevantList.add(p);
+		}
+		return new Gson().toJson(relevantList);
+	}
+
 	@Override
 	public String returnAUsersPatientsForUIList(String session) {
 		// not yet implemented!
@@ -241,229 +298,243 @@ public class GNUHealthConnectorImpl extends Connector {
 		// not yet implemented!
 		return returnAllPatientsForUIList(session);
 	}
-	
-	
+
 	/*-----  BACKEND METHODS  ----*/
 	@Override
-	public String getLoginMethod(){
+	public String getLoginMethod() {
 		return "common.db.login";
 	}
+
 	@Override
-	public String getLogoutMethod(){
+	public String getLogoutMethod() {
 		return "common.db.logout";
 	}
+
 	@Override
-	public String getPatientSearchMethod(){
+	public String getPatientSearchMethod() {
 		return "model.gnuhealth.patient.search";
 	}
+
 	@Override
-	public String getPatientReadMethod(){
+	public String getPatientReadMethod() {
 		return "model.gnuhealth.patient.read";
 	}
+
 	@Override
-	public  String getPreferencesMethod(){
+	public String getPreferencesMethod() {
 		return "model.res.user.get_preferences";
 	}
+
 	@Override
 	public String getDiagnoseReadMethod() {
 		return "model.gnuhealth.patient.disease.read";
 	}
+
 	@Override
 	public String getUserSearchMethod() {
 		return "model.res.user.search";
 	}
+
 	@Override
 	public String getUserReadMethod() {
 		return "model.res.user.read";
 	}
+
 	@Override
 	public String getPhysicianSearchMethod() {
 		return "model.gnuhealth.physician.search";
 	}
-	
-	
+
 	/*-----  BACKEND METHOD PARAMS  ----*/
-	
+
 	@Override
-	public  Object[] getReturnAllPatientsParams(String session){
-		
-		return new Object[]{1, session, getAllPatientIds(session), 
-				new String[]{"rec_name","age","diseases","sex","primary_care_doctor.rec_name"}, 
-				"REPLACE_CONTEXT"};
+	public Object[] getReturnAllPatientsParams(String session) {
+
+		return new Object[] {
+				1,
+				session,
+				getAllPatientIds(session),
+				new String[] { "rec_name", "age", "diseases", "sex",
+						"primary_care_doctor.rec_name" }, "REPLACE_CONTEXT" };
 	}
-	
+
 	@Override
-	public Object[] getReturnPatientParams(String session,String id){
-		return new Object[]{1, session, new int[]{Integer.parseInt(id)}, 
-				new String[]{"rec_name","age","diseases","sex","primary_care_doctor.rec_name"}, 
-				"REPLACE_CONTEXT"};
+	public Object[] getReturnPatientParams(String session, String id) {
+		return new Object[] {
+				1,
+				session,
+				new int[] { Integer.parseInt(id) },
+				new String[] { "rec_name", "age", "diseases", "sex",
+						"primary_care_doctor.rec_name" }, "REPLACE_CONTEXT" };
 	}
-	
+
 	@Override
-	public Object[] getReturnDiagnoseParams(String session,String id){
-		return new Object[]{1, session, new int[]{Integer.parseInt(id)}, 
-				new String[]{"status",
-		        "pregnancy_warning",
-		        "is_active",
-		        "short_comment",
-		        "diagnosed_date",
-		        "healed_date",
-		        "pathology",
-		        "disease_severity",
-		        "is_infectious",
-		        "is_allergy",
-		        "pathology.rec_name",}, 
-				"REPLACE_CONTEXT"};
+	public Object[] getReturnDiagnoseParams(String session, String id) {
+		return new Object[] {
+				1,
+				session,
+				new int[] { Integer.parseInt(id) },
+				new String[] { "status", "pregnancy_warning", "is_active",
+						"short_comment", "diagnosed_date", "healed_date",
+						"pathology", "disease_severity", "is_infectious",
+						"is_allergy", "pathology.rec_name", },
+				"REPLACE_CONTEXT" };
 	}
-	
-	private int[] getAllPatientIds(String session){
-		
+
+	private int[] getAllPatientIds(String session) {
+
 		int[] idList;
-		
+
 		// LOGIN
-		//String session = login("admin", "iswi223<<");	
-		
+		// String session = login("admin", "iswi223<<");
+
 		// Search Patients
-	    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"};
-	    
-	    String result = execute(getPatientSearchMethod(), params);
-	    //{"id": 55, "result": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]}
-	    result  = result.substring(result.indexOf("[")+1,result.lastIndexOf("]"));
-	    
-	    String[] idListString = result.split(", ");
-	    idList = new int[idListString.length];
-	    
-	    for(int i = 0 ; i<idListString.length; i++){
-	    	idList[i] = Integer.parseInt(idListString[i]);
-	    }
-	    return idList;
+		Object[] params = new Object[] { 1, session, new String[] {}, 0, 1000,
+				null, "REPLACE_CONTEXT" };
+
+		String result = execute(getPatientSearchMethod(), params);
+		// {"id": 55, "result": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]}
+		result = result.substring(result.indexOf("[") + 1,
+				result.lastIndexOf("]"));
+
+		String[] idListString = result.split(", ");
+		idList = new int[idListString.length];
+
+		for (int i = 0; i < idListString.length; i++) {
+			idList[i] = Integer.parseInt(idListString[i]);
+		}
+		return idList;
 	}
-	
+
 	public int[] getAllUserIds(String session) {
 		int[] idList;
-		
+
 		// Search Patients
-	    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"};
-	    
-	    String result = execute(getUserSearchMethod(), params);
-	    result  = result.substring(result.indexOf("[")+1,result.lastIndexOf("]"));
-	    
-	    String[] idListString = result.split(", ");
-	    idList = new int[idListString.length];
-	    
-	    for(int i = 0 ; i<idListString.length; i++){
-	    	idList[i] = Integer.parseInt(idListString[i]);
-	    }
-	    return idList;
+		Object[] params = new Object[] { 1, session, new String[] {}, 0, 1000,
+				null, "REPLACE_CONTEXT" };
+
+		String result = execute(getUserSearchMethod(), params);
+		result = result.substring(result.indexOf("[") + 1,
+				result.lastIndexOf("]"));
+
+		String[] idListString = result.split(", ");
+		idList = new int[idListString.length];
+
+		for (int i = 0; i < idListString.length; i++) {
+			idList[i] = Integer.parseInt(idListString[i]);
+		}
+		return idList;
 	}
-	
+
 	public int getUserId(String username, String session) {
-	
+
 		// Getting all User Ids
 		int[] ids = getAllUserIds(session);
-		for (int i : ids) System.out.println(i);
-		
+
 		// Searching for all Ids and fields: name, login
-		Object[] params = new Object[] {1, session, ids,
-				new String[] { "name", "login" },
-				"REPLACE_CONTEXT" };
-		
+		Object[] params = new Object[] { 1, session, ids,
+				new String[] { "name", "login" }, "REPLACE_CONTEXT" };
+
 		// Execute search
 		String res = execute("model.res.user.read", params);
-		System.out.println("res: "+res);
 		
 		// cleanse json transmission overhead (transaction id, etc..)
-		String cleansed = res.substring(res.indexOf("["),res.indexOf("]")+1);
-		
+		String cleansed = res.substring(res.indexOf("["), res.indexOf("]") + 1);
+
 		// convert to list
-		Type listType = new TypeToken<List<UserGnu>>(){}.getType();
+		Type listType = new TypeToken<List<UserGnu>>() {
+		}.getType();
 		List<UserGnu> userList = new Gson().fromJson(cleansed, listType);
-		
+
 		// SEARCH FOR ID
 		for (UserGnu u : userList) {
-			if(u.getLogin().equals(username)) return Integer.valueOf(u.getId());
+			if (u.getLogin().equals(username))
+				return Integer.valueOf(u.getId());
 		}
-		
+
 		return -1;
-		
+
 	}
-	
+
 	public String getUserRecName(String username, String session) {
 
 		// Getting all User Ids
 		int[] ids = getAllUserIds(session);
-		for (int i : ids) System.out.println(i);
-		
+		for (int i : ids)
+			System.out.println(i);
+
 		// Searching for all Ids and fields: name, login
-		Object[] params = new Object[] {1, session, ids,
-				new String[] { "name", "login", "rec_name" },
-				"REPLACE_CONTEXT" };
-		
+		Object[] params = new Object[] { 1, session, ids,
+				new String[] { "name", "login", "rec_name" }, "REPLACE_CONTEXT" };
+
 		// Execute search
 		String res = execute("model.res.user.read", params);
-		System.out.println("res: "+res);
-		
+
 		// cleanse json transmission overhead (transaction id, etc..)
-		String cleansed = res.substring(res.indexOf("["),res.indexOf("]")+1);
-		
+		String cleansed = res.substring(res.indexOf("["), res.indexOf("]") + 1);
+
 		// convert to list
-		Type listType = new TypeToken<List<UserGnu>>(){}.getType();
+		Type listType = new TypeToken<List<UserGnu>>() {
+		}.getType();
 		List<UserGnu> userList = new Gson().fromJson(cleansed, listType);
-		
+
 		// SEARCH FOR ID
 		for (UserGnu u : userList) {
-			if(u.getLogin().equals(username)) return u.getRec_name();
+			if (u.getLogin().equals(username))
+				return u.getRec_name() + ":" + u.getId();
 		}
-		
+
 		return "no name found";
-		
+
 	}
-	
-	public int[] getAllPhysicianIds(String session) {
+
+	public int[] getAllPartyIds(String session) {
 		int[] idList;
-		
+
 		// Search Patients
-	    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"};
-	    
-	    String result = execute(getPhysicianSearchMethod(), params);
-	    result  = result.substring(result.indexOf("[")+1,result.lastIndexOf("]"));
-	    
-	    String[] idListString = result.split(", ");
-	    idList = new int[idListString.length];
-	    
-	    for(int i = 0 ; i<idListString.length; i++){
-	    	idList[i] = Integer.parseInt(idListString[i]);
-	    }
-	    return idList;
+		Object[] params = new Object[] { 1, session, new String[] {}, 0, 1000,
+				null, "REPLACE_CONTEXT" };
+
+		String result = execute("model.party.party.search", params);
+		result = result.substring(result.indexOf("[") + 1,
+				result.lastIndexOf("]"));
+
+		String[] idListString = result.split(", ");
+		idList = new int[idListString.length];
+
+		for (int i = 0; i < idListString.length; i++) {
+			idList[i] = Integer.parseInt(idListString[i]);
+		}
+		return idList;
 	}
 
 	@Override
-	public int getPhysicianId(String session, String rec_name) {
-		
-		int[] allphys = getAllPhysicianIds(session);
-		
-		
-		Object[] params = new Object[] {1, session, allphys,
-				new String[] { "rec_name"},
-				"REPLACE_CONTEXT" };
-		
+	public int getPhysicianId(String session, int user_id) {
+
+		int[] allphys = getAllPartyIds(session);
+
+		Object[] params = new Object[] { 1, session, allphys,
+				new String[] { "id", "internal_user" }, "REPLACE_CONTEXT" };
+
 		// Execute search
-		String res = execute("model.gnuhealth.physician.read", params);
-		System.out.println(res);
-		
+		String res = execute("model.party.party.read", params);
+
 		// cleanse json transmission overhead (transaction id, etc..)
-		String cleansed = res.substring(res.indexOf("["),res.indexOf("]")+1);
-				
+		String cleansed = res.substring(res.indexOf("["), res.indexOf("]") + 1);
+
 		// convert to list
-		Type listType = new TypeToken<List<UserGnu>>(){}.getType();
-		List<UserGnu> userList = new Gson().fromJson(cleansed, listType);
-		
+		Type listType = new TypeToken<List<PhysicianGnu>>() {
+		}.getType();
+		List<PhysicianGnu> userList = new Gson().fromJson(cleansed, listType);
+
 		// SEARCH FOR ID
-		for (UserGnu u : userList) {
-			if(u.getRec_name().equals(rec_name)) return Integer.valueOf(u.getRec_name());
+		for (PhysicianGnu u : userList) {
+			if (u.getInternal_user() != null) {
+				if (Integer.valueOf(u.getInternal_user()) == user_id)
+					return Integer.valueOf(u.getId());
+			}
 		}
 		return -1;
 	}
-
 
 }
