@@ -62,6 +62,8 @@ public abstract class Connector {
 	public abstract String returnAllPatientsForUIList(String session);
 	public abstract int[] getAllUserIds(String session);
 	public abstract int getUserId(String session, String username);
+	public abstract int getPhysicianId(String session, String rec_name);
+	public abstract String getUserRecName(String username, String session);
 		
 	public void setBackend(Backend backend){
 		this.backend = backend;
@@ -91,7 +93,7 @@ public abstract class Connector {
 	public abstract String getDiagnoseReadMethod();
 	public abstract String getUserSearchMethod();
 	public abstract String getUserReadMethod();
-	
+	public abstract String getPhysicianSearchMethod();
 	
 	
 	/*-----  BACKEND METHOD PARAMS  ----*/
@@ -100,6 +102,7 @@ public abstract class Connector {
 	
 	public abstract Object[] getReturnPatientParams(String session, String id);
 	public abstract Object[] getReturnDiagnoseParams(String session, String id);
+
 	
 
 

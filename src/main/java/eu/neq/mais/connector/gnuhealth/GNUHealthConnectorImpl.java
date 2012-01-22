@@ -69,7 +69,13 @@ public class GNUHealthConnectorImpl extends Connector {
 			
 		   // return all ids
 			int[] re = con.getAllUserIds(session);
-			System.out.println("ID FOUND: "+con.getUserId("jgansen", session));
+			int idfound = con.getUserId("jgansen", session);
+			System.out.println("ID FOUND: "+idfound);
+			String recname = con.getUserRecName("jgansen", session);
+		
+			System.out.println("recname found: "+recname);
+			
+			System.out.println("Physician ID: "+con.getPhysicianId(session, recname));
 			
 			// Logout
 			String res4 = con.logout("admin", session);
@@ -256,6 +262,10 @@ public class GNUHealthConnectorImpl extends Connector {
 	public String getUserReadMethod() {
 		return "model.res.user.read";
 	}
+	@Override
+	public String getPhysicianSearchMethod() {
+		return "model.gnuhealth.physician.search";
+	}
 	
 	
 	/*-----  BACKEND METHOD PARAMS  ----*/
@@ -334,8 +344,7 @@ public class GNUHealthConnectorImpl extends Connector {
 	}
 	
 	public int getUserId(String username, String session) {
-		System.out.println("session: "+session +", username: "+username);
-		
+	
 		// Getting all User Ids
 		int[] ids = getAllUserIds(session);
 		for (int i : ids) System.out.println(i);
@@ -363,6 +372,83 @@ public class GNUHealthConnectorImpl extends Connector {
 		
 		return -1;
 		
+	}
+	
+	public String getUserRecName(String username, String session) {
+
+		// Getting all User Ids
+		int[] ids = getAllUserIds(session);
+		for (int i : ids) System.out.println(i);
+		
+		// Searching for all Ids and fields: name, login
+		Object[] params = new Object[] {1, session, ids,
+				new String[] { "name", "login", "rec_name" },
+				"REPLACE_CONTEXT" };
+		
+		// Execute search
+		String res = execute("model.res.user.read", params);
+		System.out.println("res: "+res);
+		
+		// cleanse json transmission overhead (transaction id, etc..)
+		String cleansed = res.substring(res.indexOf("["),res.indexOf("]")+1);
+		
+		// convert to list
+		Type listType = new TypeToken<List<UserGnu>>(){}.getType();
+		List<UserGnu> userList = new Gson().fromJson(cleansed, listType);
+		
+		// SEARCH FOR ID
+		for (UserGnu u : userList) {
+			if(u.getLogin().equals(username)) return u.getRec_name();
+		}
+		
+		return "no name found";
+		
+	}
+	
+	public int[] getAllPhysicianIds(String session) {
+		int[] idList;
+		
+		// Search Patients
+	    Object[] params = new Object[]{1, session, new String[]{}, 0, 1000, null, "REPLACE_CONTEXT"};
+	    
+	    String result = execute(getPhysicianSearchMethod(), params);
+	    result  = result.substring(result.indexOf("[")+1,result.lastIndexOf("]"));
+	    
+	    String[] idListString = result.split(", ");
+	    idList = new int[idListString.length];
+	    
+	    for(int i = 0 ; i<idListString.length; i++){
+	    	idList[i] = Integer.parseInt(idListString[i]);
+	    }
+	    return idList;
+	}
+
+	@Override
+	public int getPhysicianId(String session, String rec_name) {
+		
+		int[] allphys = getAllPhysicianIds(session);
+		
+		
+		Object[] params = new Object[] {1, session, allphys,
+				new String[] { "rec_name"},
+				"REPLACE_CONTEXT" };
+		
+		// Execute search
+		String res = execute("model.gnuhealth.physician.read", params);
+		System.out.println(res);
+		
+		// cleanse json transmission overhead (transaction id, etc..)
+		String cleansed = res.substring(res.indexOf("["),res.indexOf("]")+1);
+				
+		// convert to list
+		Type listType = new TypeToken<List<UserGnu>>(){}.getType();
+		List<UserGnu> userList = new Gson().fromJson(cleansed, listType);
+		
+		// SEARCH FOR ID
+		for (UserGnu u : userList) {
+			if(u.getRec_name().equals(rec_name)) return Integer.valueOf(u.getRec_name());
+		}
+		return -1;
 	}
 
 
