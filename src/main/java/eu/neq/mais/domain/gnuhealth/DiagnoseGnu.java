@@ -3,7 +3,6 @@
  */
 package eu.neq.mais.domain.gnuhealth;
 
-import java.util.Date;
 import java.util.List;
 
 import eu.neq.mais.domain.Diagnose;
@@ -16,28 +15,69 @@ import eu.neq.mais.domain.Doctor;
  */
 public class DiagnoseGnu extends Diagnose{
 
-	private boolean status, pregnancy_warning, is_active, is_infectious, is_allergy;
-    private String short_comment, disease_severity, rec_name, id, diagnosed_date, pathology;
 	
-	public DiagnoseGnu(Date diagnoseDate, Date healed_date, Doctor doctor,
-			List<Disease> disease, boolean status, boolean pregnancy_warning,
-			boolean is_active, boolean is_infectious, boolean is_allergy,
-			String short_comment, String disease_severity) {
-		
-		this.setDiagnoseDate(diagnoseDate);
-		this.setHealed_date(healed_date);
-		this.setDoctor(doctor);
-		this.setDisease(disease);
-		
-		this.status = status;
-		this.pregnancy_warning = pregnancy_warning;
-		this.is_active = is_active;
-		this.is_infectious = is_infectious;
-		this.is_allergy = is_allergy;
-		this.short_comment = short_comment;
-		this.disease_severity = disease_severity;
-		
+//	private Date diagnoseDate, healed_date;
+	private Doctor doctor;
+	private List<Disease> disease;
+	
+	private boolean status, pregnancy_warning, is_active, is_infectious, is_allergy;
+    private String short_comment, disease_severity, id, pathology,pathology_rec_name;
+    private DateGnu diagnosed_date;
+	
+//	public DiagnoseGnu(Date diagnoseDate, Date healed_date, Doctor doctor,
+//			List<Disease> disease, boolean status, boolean pregnancy_warning,
+//			boolean is_active, boolean is_infectious, boolean is_allergy,
+//			String short_comment, String disease_severity) {
+//		
+//		this.setDiagnoseDate(diagnoseDate);
+//		this.setHealed_date(healed_date);
+//		this.setDoctor(doctor);
+//		this.setDisease(disease);
+//		
+//		this.status = status;
+//		this.pregnancy_warning = pregnancy_warning;
+//		this.is_active = is_active;
+//		this.is_infectious = is_infectious;
+//		this.is_allergy = is_allergy;
+//		this.short_comment = short_comment;
+//		this.disease_severity = disease_severity;
+//		
+//	}
+//	
+
+//	/**
+//	 * @return the healed_date
+//	 */
+//	public Date getHealed_date() {
+//		return healed_date;
+//	}
+//	/**
+//	 * @param healed_date the healed_date to set
+//	 */
+//	
+//	public void setHealed_date(Date healed_date) {
+//		this.healed_date = healed_date;
+//	}
+//	public Date getDiagnoseDate() {
+//		return diagnoseDate;
+//	}
+//	public void setDiagnoseDate(Date diagnoseDate) {
+//		this.diagnoseDate = diagnoseDate;
+//	}
+	
+	public Doctor getDoctor() {
+		return doctor;
 	}
+	public void setDoctor(Doctor doctor) {
+		this.doctor = doctor;
+	}
+	public List<Disease> getDisease() {
+		return disease;
+	}
+	public void setDisease(List<Disease> disease) {
+		this.disease = disease;
+	}
+	
 
 	/**
 	 * @return the status
@@ -108,73 +148,101 @@ public class DiagnoseGnu extends Diagnose{
 	public void setIs_allergy(boolean is_allergy) {
 		this.is_allergy = is_allergy;
 	}
-
-	/**
-	 * @return the short_comment
-	 */
+	public DateGnu getDiagnosed_date() {
+		return diagnosed_date;
+	}
+	public void setDiagnosed_date(DateGnu diagnosed_date) {
+		this.diagnosed_date = diagnosed_date;
+	}
 	public String getShort_comment() {
 		return short_comment;
 	}
-
-	/**
-	 * @param short_comment the short_comment to set
-	 */
 	public void setShort_comment(String short_comment) {
 		this.short_comment = short_comment;
 	}
-
-	/**
-	 * @return the disease_severity
-	 */
-	public String getDisease_severity() {
-		return disease_severity;
-	}
-
-	/**
-	 * @param disease_severity the disease_severity to set
-	 */
-	public void setDisease_severity(String disease_severity) {
-		this.disease_severity = disease_severity;
-	}
-
 	public String getId() {
 		return id;
 	}
-
 	public void setId(String id) {
 		this.id = id;
 	}
-
-	public String getRec_name() {
-		return rec_name;
-	}
-
-	public void setRec_name(String rec_name) {
-		this.rec_name = rec_name;
-	}
-
-	public String getDiagnosed_date() {
-		return diagnosed_date;
-	}
-
-	public void setDiagnosed_date(String diagnosed_date) {
-		this.diagnosed_date = diagnosed_date;
-	}
-
 	public String getPathology() {
 		return pathology;
 	}
-
 	public void setPathology(String pathology) {
 		this.pathology = pathology;
 	}
+	public String getDisease_severity() {
+		return disease_severity;
+	}
+	public void setDisease_severity(String disease_severity) {
+		this.disease_severity = disease_severity;
+	}
+	public String getPathology_rec_name() {
+		return pathology_rec_name;
+	}
+	public void setPathology_rec_name(String pathology_rec_name) {
+		this.pathology_rec_name = pathology_rec_name;
+	}
 
-	
-	
-	
-	
- 
-    
- 
+//	/**
+//	 * @return the short_comment
+//	 */
+//	public String getShort_comment() {
+//		return short_comment;
+//	}
+//
+//	/**
+//	 * @param short_comment the short_comment to set
+//	 */
+//	public void setShort_comment(String short_comment) {
+//		this.short_comment = short_comment;
+//	}
+//
+//	/**
+//	 * @return the disease_severity
+//	 */
+//	public String getDisease_severity() {
+//		return disease_severity;
+//	}
+//
+//	/**
+//	 * @param disease_severity the disease_severity to set
+//	 */
+//	public void setDisease_severity(String disease_severity) {
+//		this.disease_severity = disease_severity;
+//	}
+//
+//	public String getId() {
+//		return id;
+//	}
+//
+//	public void setId(String id) {
+//		this.id = id;
+//	}
+//
+//	public String getRec_name() {
+//		return rec_name;
+//	}
+//
+//	public void setRec_name(String rec_name) {
+//		this.rec_name = rec_name;
+//	}
+//
+//	public String getDiagnosed_date() {
+//		return diagnosed_date;
+//	}
+//
+//	public void setDiagnosed_date(String diagnosed_date) {
+//		this.diagnosed_date = diagnosed_date;
+//	}
+//
+//	public String getPathology() {
+//		return pathology;
+//	}
+//
+//	public void setPathology(String pathology) {
+//		this.pathology = pathology;
+//	}
 
 }

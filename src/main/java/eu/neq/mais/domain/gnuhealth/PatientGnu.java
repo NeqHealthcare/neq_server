@@ -17,6 +17,7 @@ public class PatientGnu extends Patient {
 	private String age;
 	private String sex;
 	private String id;
+	private String primary_care_doctor_rec_name;
 	
 	public String getRec_name() {
 		return rec_name;
@@ -62,21 +63,20 @@ public class PatientGnu extends Patient {
 		this.id = id;
 	}
 
-	public String toString(){
-		String returnString = "id: "+id+" ; rec_name: "+rec_name+" ; sex: "+sex+" ; age: "+age+" ; diseases: ";
-		if(diseases.size()>1){
-			for(String disease : diseases){
-				returnString+= disease+" ";
-			}
-		}
-		return returnString;
-	}
-
 	public List<DiagnoseGnu> getDiagnoseList() {
 		return diagnoseList;
 	}
 
 	public void setDiagnoseList(List<DiagnoseGnu> diagnoseList) {
 		this.diagnoseList = diagnoseList;
+	}
+
+	public String getPrimary_care_doctor_rec_name() {
+		return primary_care_doctor_rec_name;
+	}
+
+	public void setPrimary_care_doctor_rec_name(
+			String primary_care_doctor_rec_name) {
+		this.primary_care_doctor_rec_name = primary_care_doctor_rec_name;
 	};
 }

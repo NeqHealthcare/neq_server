@@ -26,50 +26,36 @@ public class PatientHandler {
 	private Connector connector;
 
 	/**
-	 * Example url: http://localhost:8080/patients/one?id=SAMPLE_ID&session=
-	 * SESSION_VARIABLE
-	 * 
-	 * Successfull: {id: 59, result: [{rec_name: Fernandez, Maria, diseases:
-	 * [1], age: 41y 10m 3d, sex: f, id: 4, primary_care_doctor: 1}]} ; Request
-	 * failed: false
+	 * @param session - current session
+	 * @param query - query parameter
+	 * @return successfull: json object
+	 *         Request failed: false
 	 */
 	@GET
-	@Path("/one")
+	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String returnPatient(@QueryParam("session") String session,
-			@QueryParam("id") String id) {
+			@QueryParam("query") String param) {
 
-		String patient = "false";
+		String patientList = "false";
 
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore
 					.getBackendSid(session));
-			patient = connector.execute(connector.getPatientReadMethod(),
-					connector.getReturnPatientParams(session, id));
-
+			patientList = connector.searchForAPatient(session,param);
 		} catch (Exception e) {
 			e.printStackTrace();
-			patient = "false";
+			patientList = "false";
 		}
-		patient = patient.substring(patient.indexOf("["), patient.lastIndexOf("]")+1);
-		logger.info("return patient method returned json object: " + patient);
-		return patient;
+		logger.info("return patient method returned json object: " + patientList);
+		return patientList;
 
 	}
 
 	/**
-	 * Example url: http://localhost:8080/patients/all?session=SESSION_VARIABLE
 	 * 
 	 * @param session
-	 * @return json object
-	 * 
-	 *         Successfull: {"id": 56, "result": [{"rec_name": "Miller, Frank",
-	 *         "diseases": [], "age": "38y 1m 17d", "sex": "m", "id": 1,
-	 *         "primary_care_doctor": 1}, {"rec_name": "Lasson, Sophie",
-	 *         "diseases": [6], "age": "20y 1m 30d", "sex": "f", "id": 2,
-	 *         "primary_care_doctor": 1}, {"rec_name": "Schweizer, Jochen",
-	 *         "diseases": [3], "age": "44y 10m 12d", "sex": "m", "id": 11,
-	 *         "primary_care_doctor": 1}]} ; 
+	 * @return successfull: json object
 	 *         Request failed: false
 	 */
 	@GET
@@ -95,38 +81,27 @@ public class PatientHandler {
 	
 	
 	/**
-	 * Example url: http://localhost:8080/patients/all?session=SESSION_VARIABLE&primary_care_doctor=PRIMARY_CARE_DOCTOR_ID
 	 * 
 	 * @param session
-	 * @return json object
-	 * 
-	 *         Successfull: {"id": 56, "result": [{"rec_name": "Miller, Frank",
-	 *         "diseases": [], "age": "38y 1m 17d", "sex": "m", "id": 1,
-	 *         "primary_care_doctor": 1}, {"rec_name": "Lasson, Sophie",
-	 *         "diseases": [6], "age": "20y 1m 30d", "sex": "f", "id": 2,
-	 *         "primary_care_doctor": 1}, {"rec_name": "Schweizer, Jochen",
-	 *         "diseases": [3], "age": "44y 10m 12d", "sex": "m", "id": 11,
-	 *         "primary_care_doctor": 1}]} ; 
+	 * @return successfull: json object
 	 *         Request failed: false
+	 * 
 	 */
 	@GET
 	@Path("/all_for_user")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String returnAllPatients(@QueryParam("session") String session,@QueryParam("primary_care_doctor") String primaryCareDoctor) {
+	public String returnAUsersPatients(@QueryParam("session") String session) {
 
 		String patientList = "false";
 
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore
 					.getBackendSid(session));
-			patientList = connector.execute(connector.getPatientReadMethod(),
-					connector.getReturnAllPatientsParams(session));
-
+			patientList = connector.returnAUsersPatientsForUIList(session);
 		} catch (Exception e) {
 			e.printStackTrace();
 			patientList = "false";
 		}
-		patientList = patientList.substring(patientList.indexOf("["), patientList.lastIndexOf("]")+1);
 		logger.info("return patients method returned json object filled with all patients for a specific primary care doctor: " + patientList);
 		return patientList;
 

@@ -207,25 +207,39 @@ public class GNUHealthConnectorImpl extends Connector {
 	public String returnAllPatientsForUIList(String session) {
 		String patientListString = "false";
 		patientListString = execute(getPatientReadMethod(), getReturnAllPatientsParams(session));
-		List<PatientGnu> patientList = new ArrayList<PatientGnu>();
 		
 		Type listType = new TypeToken<List<PatientGnu>>(){}.getType();
 		patientListString = patientListString.substring(patientListString.indexOf("["), patientListString.lastIndexOf("]")+1);
-		patientList = new Gson().fromJson(patientListString, listType);
-		
-//		Type type = new TypeToken<DiagnoseGnu>(){}.getType();
+		patientListString = patientListString.replaceAll("primary_care_doctor.rec_name", "primary_care_doctor_rec_name");
+		List<PatientGnu> patientList = new Gson().fromJson(patientListString, listType);
+
 		for(PatientGnu patient : patientList){
 			List<DiagnoseGnu> diagnoseList = new ArrayList<DiagnoseGnu>();
-			for(String diseaseID : patient.getDiseases()){
-				String diseaseString = execute(getDiagnoseReadMethod(),getReturnDiagnoseParams(session, diseaseID));
-				diseaseString = diseaseString.substring(diseaseString.indexOf("[")+1, diseaseString.lastIndexOf("]"));
-				diagnoseList.add((DiagnoseGnu) new Gson().fromJson(diseaseString,DiagnoseGnu.class));
+			if(patient.getDiseases() != null){
+				for(String diseaseID : patient.getDiseases()){
+					String diagnoseString = execute(getDiagnoseReadMethod(),getReturnDiagnoseParams(session, diseaseID));
+					diagnoseString = diagnoseString.substring(diagnoseString.indexOf("[")+1, diagnoseString.lastIndexOf("]"));
+					diagnoseString = diagnoseString.replaceAll("pathology.rec_name", "pathology_rec_name");
+					Type type = new TypeToken<DiagnoseGnu>(){}.getType();
+					diagnoseList.add((DiagnoseGnu) new Gson().fromJson(diagnoseString,type));
+				}
 			}
 			patient.setDiagnoseList(diagnoseList);
 		}
-		
-//		diagnoseList.add(execute(session,getDiagnoseReadMethod(),getReturnDiagnoseParams(session, id));
+
 		return new Gson().toJson(patientList);
+	}
+	
+	@Override
+	public String returnAUsersPatientsForUIList(String session) {
+		// not yet implemented!
+		return returnAllPatientsForUIList(session);
+	}
+
+	@Override
+	public String searchForAPatient(String session, String param) {
+		// not yet implemented!
+		return returnAllPatientsForUIList(session);
 	}
 	
 	
@@ -274,14 +288,14 @@ public class GNUHealthConnectorImpl extends Connector {
 	public  Object[] getReturnAllPatientsParams(String session){
 		
 		return new Object[]{1, session, getAllPatientIds(session), 
-				new String[]{"rec_name","age","diseases","sex","primary_care_doctor"}, 
+				new String[]{"rec_name","age","diseases","sex","primary_care_doctor.rec_name"}, 
 				"REPLACE_CONTEXT"};
 	}
 	
 	@Override
 	public Object[] getReturnPatientParams(String session,String id){
 		return new Object[]{1, session, new int[]{Integer.parseInt(id)}, 
-				new String[]{"rec_name","age","diseases","sex","primary_care_doctor"}, 
+				new String[]{"rec_name","age","diseases","sex","primary_care_doctor.rec_name"}, 
 				"REPLACE_CONTEXT"};
 	}
 	
