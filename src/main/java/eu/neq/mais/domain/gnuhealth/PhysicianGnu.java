@@ -2,6 +2,11 @@ package eu.neq.mais.domain.gnuhealth;
 
 import eu.neq.mais.domain.Physician;
 
+/**
+ * 
+ * @author seba
+ *
+ */
 public class PhysicianGnu implements Physician {
 	
 	String id;

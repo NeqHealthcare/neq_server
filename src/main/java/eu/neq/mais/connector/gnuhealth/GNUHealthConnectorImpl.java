@@ -289,8 +289,62 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	@Override
 	public String searchForAPatient(String session, String param) {
-		// not yet implemented!
-		return returnAllPatientsForUIList(session);
+		String patientListString = "false";
+		patientListString = execute(getPatientReadMethod(),
+				getReturnAllPatientsParams(session));
+
+		Type listType = new TypeToken<List<PatientGnu>>() {
+		}.getType();
+		patientListString = patientListString.substring(
+				patientListString.indexOf("["),
+				patientListString.lastIndexOf("]") + 1);
+		patientListString = patientListString.replaceAll(
+				"primary_care_doctor.rec_name", "primary_care_doctor_rec_name");
+		List<PatientGnu> patientList = new Gson().fromJson(patientListString,
+				listType);
+
+		for (PatientGnu patient : patientList) {
+			List<DiagnoseGnu> diagnoseList = new ArrayList<DiagnoseGnu>();
+			if (patient.getDiseases() != null) {
+				for (String diseaseID : patient.getDiseases()) {
+					String diagnoseString = execute(getDiagnoseReadMethod(),
+							getReturnDiagnoseParams(session, diseaseID));
+					diagnoseString = diagnoseString.substring(
+							diagnoseString.indexOf("[") + 1,
+							diagnoseString.lastIndexOf("]"));
+					diagnoseString = diagnoseString.replaceAll(
+							"pathology.rec_name", "pathology_rec_name");
+					Type type = new TypeToken<DiagnoseGnu>() {
+					}.getType();
+					diagnoseList.add((DiagnoseGnu) new Gson().fromJson(
+							diagnoseString, type));
+				}
+			}
+			patient.setDiagnoseList(diagnoseList);
+		}
+		
+		ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();
+		
+		try {
+			// If a search for an int is executed, param must be of type int and therefore parseable by Integer
+			int id = Integer.parseInt(param);
+			
+			for (PatientGnu p : patientList) {
+				if (Integer.valueOf(p.getId()).equals(id)) relevantList.add(p);
+			}
+			
+		} catch (NumberFormatException e) {
+			// If this block is reached, param is not an int
+			// -> a search looking for a name has been executed
+			
+			for (PatientGnu p : patientList) {
+				if (p.getRec_name().contains(param)) relevantList.add(p);
+			}
+			
+		}
+
+		return new Gson().toJson(relevantList);
+		
 	}
 
 	/*-----  BACKEND METHODS  ----*/

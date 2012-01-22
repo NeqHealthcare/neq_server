@@ -2,6 +2,11 @@ package eu.neq.mais.domain.gnuhealth;
 
 import eu.neq.mais.domain.User;
 
+/**
+ * 
+ * @author seba
+ *
+ */
 public class UserGnu implements User {
 
 	String name;
