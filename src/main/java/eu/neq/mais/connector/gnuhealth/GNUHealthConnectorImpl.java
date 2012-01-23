@@ -146,6 +146,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			result = session_split[1];
 			
 			Integer userId = getUserId(username, result);
+			System.out.println("username: "+username+"     user_id: "+userId+"      session: "+result+"      backendSid: "+backendSid);
 			SessionStore.put(result, backendSid, userId);
 		} else {
 			result = "false";
@@ -511,6 +512,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		// SEARCH FOR ID
 		for (UserGnu u : userList) {
 			if (u.getLogin().equals(username))
+				System.out.println("username: "+username+"    user id: "+Integer.valueOf(u.getId()));
 				return Integer.valueOf(u.getId());
 		}
 
@@ -593,6 +595,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		for (PhysicianGnu u : userList) {
 			if (u.getInternal_user() != null) {
 				if (Integer.valueOf(u.getInternal_user()) == user_id)
+					System.out.println("user_id: "+user_id+"    physician id: "+Integer.valueOf(u.getId()));
 					return Integer.valueOf(u.getId());
 			}
 		}
