@@ -44,7 +44,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			Connector con = ConnectorFactory.getConnector("gnuhealth1");
 
 			// LOGIN
-			String session = con.login("admin", "iswi223<<");
+			String session = con.login("admin", "iswi223<<","gnuhealth1");
 
 			// // Search Patients
 			// Object[] params = new Object[]{1, session, new String[]{}, 0,
@@ -127,7 +127,7 @@ public class GNUHealthConnectorImpl extends Connector {
 	/**
 	 * Login successful: session Login unsuccessful: false as string
 	 */
-	public String login(String username, String password) {
+	public String login(String username, String password, String backendSid) {
 		logger.info("login - connect to: " + getBackEndUrl().toString()
 				+ "with: " + username + ":" + password);
 
@@ -144,6 +144,9 @@ public class GNUHealthConnectorImpl extends Connector {
 			char s = '"';
 			String session_split[] = result.split(String.valueOf(s));
 			result = session_split[1];
+			
+			Integer userId = getUserId(username, result);
+			SessionStore.put(result, backendSid, userId);
 		} else {
 			result = "false";
 		}
@@ -209,7 +212,7 @@ public class GNUHealthConnectorImpl extends Connector {
 	public String returnAllPatientsForUIList(String session) {
 		String patientListString = "false";
 		patientListString = execute(getPatientReadMethod(),
-				getReturnAllPatientsParams(session));
+				getReturnPatientsParams(session));
 
 		Type listType = new TypeToken<List<PatientGnu>>() {
 		}.getType();
@@ -218,6 +221,8 @@ public class GNUHealthConnectorImpl extends Connector {
 				patientListString.lastIndexOf("]") + 1);
 		patientListString = patientListString.replaceAll(
 				"primary_care_doctor.rec_name", "primary_care_doctor_rec_name");
+		patientListString = patientListString.replaceAll(
+				"primary_care_doctor.name", "primary_care_doctor_name");
 		List<PatientGnu> patientList = new Gson().fromJson(patientListString,
 				listType);
 
@@ -248,10 +253,8 @@ public class GNUHealthConnectorImpl extends Connector {
 	public String returnPersonalPatientsForUIList(String session) {
 		String patientListString = "false";
 		
-		Object[] params = new Object[] {1,session,getAllPatientIds(session),new String[] { "rec_name", "age", "diseases","sex","primary_care_doctor.name","primary_care_doctor.rec_name" }, "REPLACE_CONTEXT" };
-		
 		patientListString = execute(getPatientReadMethod(),
-				params);
+				getReturnPatientsParams(session));
 
 		
 		Type listType = new TypeToken<List<PatientGnu>>() {
@@ -259,6 +262,8 @@ public class GNUHealthConnectorImpl extends Connector {
 		patientListString = patientListString.substring(
 				patientListString.indexOf("["),
 				patientListString.lastIndexOf("]") + 1);
+		patientListString = patientListString.replaceAll(
+				"primary_care_doctor.rec_name", "primary_care_doctor_rec_name");
 		patientListString = patientListString.replaceAll(
 				"primary_care_doctor.name", "primary_care_doctor_name");
 		List<PatientGnu> patientList = new Gson().fromJson(patientListString,
@@ -283,8 +288,10 @@ public class GNUHealthConnectorImpl extends Connector {
 			}
 			patient.setDiagnoseList(diagnoseList);
 		}
-		//CHANGE - REAL USER ID NEEDED
-		int party_id = getPhysicianId(session, 1);
+
+		int party_id = getPhysicianId(session, SessionStore.getUserId(session));
+		System.out.println("----------------------------------------------------");
+		System.out.println("party_id for user id: "+SessionStore.getUserId(session)+" is: "+party_id);
 		ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();
 		for (PatientGnu p : patientList) {
 			if (Integer.valueOf(p.getPrimary_care_doctor_id()) == party_id) relevantList.add(p);
@@ -296,7 +303,7 @@ public class GNUHealthConnectorImpl extends Connector {
 	public String searchForAPatient(String session, String param) {
 		String patientListString = "false";
 		patientListString = execute(getPatientReadMethod(),
-				getReturnAllPatientsParams(session));
+				getReturnPatientsParams(session));
 
 		Type listType = new TypeToken<List<PatientGnu>>() {
 		}.getType();
@@ -305,6 +312,8 @@ public class GNUHealthConnectorImpl extends Connector {
 				patientListString.lastIndexOf("]") + 1);
 		patientListString = patientListString.replaceAll(
 				"primary_care_doctor.rec_name", "primary_care_doctor_rec_name");
+		patientListString = patientListString.replaceAll(
+				"primary_care_doctor.name", "primary_care_doctor_name");
 		List<PatientGnu> patientList = new Gson().fromJson(patientListString,
 				listType);
 
@@ -401,13 +410,13 @@ public class GNUHealthConnectorImpl extends Connector {
 	/*-----  BACKEND METHOD PARAMS  ----*/
 
 	@Override
-	public Object[] getReturnAllPatientsParams(String session) {
+	public Object[] getReturnPatientsParams(String session) {
 
 		return new Object[] {
 				1,
 				session,
 				getAllPatientIds(session),
-				new String[] { "rec_name", "age", "diseases", "sex",
+				new String[] { "rec_name", "age", "diseases", "sex","primary_care_doctor.name",
 						"primary_care_doctor.rec_name" }, "REPLACE_CONTEXT" };
 	}
 

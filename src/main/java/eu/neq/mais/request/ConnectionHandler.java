@@ -48,12 +48,7 @@ public class ConnectionHandler {
 
 		try {
 			connector = ConnectorFactory.getConnector(backendSid);
-			session = connector.login(username, password);
-			if (session.length() > 5) {
-				SessionStore.put(session, backendSid);
-			} else {
-				session = "false";
-			}
+			session = connector.login(username, password,backendSid);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -16,11 +16,11 @@ import java.util.Map;
  */
 public abstract class SessionStore {
 
-	private static Map<String,String> sessionToSid = null;
+	private static Map<String,Object[]> sessionToSid = null;
 	
-	private static Map<String,String> getInstance(){
+	private static Map<String,Object[]> getInstance(){
 		if(sessionToSid == null){
-			sessionToSid = new HashMap<String,String>();
+			sessionToSid = new HashMap<String,Object[]>();
 		}
 		
 		return sessionToSid;
@@ -31,9 +31,10 @@ public abstract class SessionStore {
 	 * 
 	 * @param session
 	 * @param backendSid
+	 * @param userId 
 	 */
-	public static void put (String session, String backendSid){	
-		getInstance().put(session, backendSid);	
+	public static void put (String session, String backendSid, Integer userId){	
+		getInstance().put(session, new Object[]{backendSid,userId});	
 	}
 	
 	/**
@@ -48,7 +49,13 @@ public abstract class SessionStore {
 	 * returns the backendSid that fits the session
 	 */
 	public static String getBackendSid(String session){
-		return getInstance().get(session);
+		return (String) getInstance().get(session)[0];
 	}
-	
+
+	/**
+	 * returns the userId that fits the session
+	 */
+	public static Integer getUserId(String session){
+		return (Integer) getInstance().get(session)[1];
+	}
 }

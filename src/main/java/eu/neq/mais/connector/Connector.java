@@ -33,7 +33,7 @@ public abstract class Connector {
 	 * Login successful: session
 	 * Login unsuccessful: false as string
 	 */
-	public abstract String login(String username, String password);
+	public abstract String login(String username, String password, String backendSid);
 	
 	/**
 	 * 
@@ -106,7 +106,7 @@ public abstract class Connector {
 	
 	/*-----  BACKEND METHOD PARAMS  ----*/
 	
-	public abstract Object[] getReturnAllPatientsParams(String session);
+	public abstract Object[] getReturnPatientsParams(String session);
 	
 	public abstract Object[] getReturnPatientParams(String session, String id);
 	public abstract Object[] getReturnDiagnoseParams(String session, String id);
