@@ -42,7 +42,7 @@ public class PatientHandler {
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore
 					.getBackendSid(session));
-			patientList = connector.searchForAPatient(session,param);
+			patientList = connector.searchForAPatient(param);
 		} catch (Exception e) {
 			e.printStackTrace();
 			patientList = "false";
@@ -68,7 +68,7 @@ public class PatientHandler {
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore
 					.getBackendSid(session));
-			patientList = connector.returnAllPatientsForUIList(session);
+			patientList = connector.returnAllPatientsForUIList();
 
 		} catch (Exception e) {
 			e.printStackTrace();

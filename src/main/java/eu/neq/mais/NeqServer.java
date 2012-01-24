@@ -8,6 +8,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
+import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.FileHandler;
 import eu.neq.mais.technicalservice.Settings;
 
@@ -65,6 +66,7 @@ public class NeqServer implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+
 
 	}
 	

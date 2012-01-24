@@ -5,7 +5,9 @@
      "jsonport" : 8000,
      "xmlport" : 7070,
      "connector":"eu.neq.mais.connector.gnuhealth.GNUHealthConnectorImpl",
-     "db": "devel_01"
+     "db": "devel_01",
+     "admin_user":"admin",
+     "admin_pw":"iswi223<<"
  },
  {
      "sid" : gnuhealth2,

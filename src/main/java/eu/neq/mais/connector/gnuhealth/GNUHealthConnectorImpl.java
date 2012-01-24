@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -38,13 +39,17 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	private static Connector instance = null;
 	private static int gnid = 55;
+	private static String adminSession = null;
 
 	public static void main(String[] args) {
 		try {
 			Connector con = ConnectorFactory.getConnector("gnuhealth1");
-
+			
+			String login_name = "jgansen";
+			String password = "iswi223<<";
+				
 			// LOGIN
-			String session = con.login("admin", "iswi223<<","gnuhealth1");
+			String user_session = con.login(login_name, password,"gnuhealth1");
 
 			// // Search Patients
 			// Object[] params = new Object[]{1, session, new String[]{}, 0,
@@ -72,20 +77,26 @@ public class GNUHealthConnectorImpl extends Connector {
 			// System.out.println(patientListForUI.toString());
 
 			// return all ids
-//			String login_name = "jolee"; // <<-- search string
-//			int idfound = con.getUserId(login_name, session);
-//			int pid = con.getPhysicianId(session, idfound);
-//			System.out.println("[" + login_name +"] User.id:" + idfound + ", Parties.id: "
-//					+ pid + " (system intern record id = equal to physician id)");
-//			System.out.println(con.returnPersonalPatientsForUIList(session));
+			int idfound = con.getUserId(login_name);
+			int pid = con.getPhysicianId(idfound);
+			System.out.println("\n\n");
+			System.out.println("SEARCH FOR USER_ID AND PARTY_ID");
+			System.out.println("----------------------------------------------------");
+			System.out.println("[" + login_name +"] User.id:" + idfound + ", Parties.id: "
+				+ pid + " (system intern record id = equal to physician id)");
+			System.out.println("\n\n");
+			System.out.println("PERSONAL PATIENTS FOR "+login_name+" ("+user_session+")");
+			System.out.println("----------------------------------------------------");
+			System.out.println(con.returnPersonalPatientsForUIList(user_session));
+			System.out.println("\n\n");
 			
 			// searching for a patient
-			String param = "sop";
-			System.out.println(con.searchForAPatient(session, param));
+//			String param = "sop";
+//			System.out.println(con.searchForAPatient(session, param));
 			
 
 			// Logout
-			String res4 = con.logout("admin", session);
+			String res4 = con.logout(login_name, user_session);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -102,13 +113,11 @@ public class GNUHealthConnectorImpl extends Connector {
 	}
 
 	public String logout(String username, String session) {
-		logger.info("Recieved logout request from: " + username + " (Session: "
-				+ session + ")");
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
 		String[] params = new String[] { username, session };
 		String result = new Gson().toJson(proxy.call(this.getLogoutMethod(),
 				params));
-		logger.info("Logout result: " + result);
+		logger.info("! --- logout -> "+username+ ": " + result);
 		return result;
 	}
 
@@ -128,16 +137,11 @@ public class GNUHealthConnectorImpl extends Connector {
 	 * Login successful: session Login unsuccessful: false as string
 	 */
 	public String login(String username, String password, String backendSid) {
-		logger.info("login - connect to: " + getBackEndUrl().toString()
-				+ "with: " + username + ":" + password);
-
 		String[] params = new String[] { username, password };
 
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
 		String result = new Gson().toJson(proxy.call(this.getLoginMethod(),
 				params));
-
-		logger.info("result: " + result);
 
 		// checks if login was successfull
 		if ((result.length() > 5)) {
@@ -145,19 +149,17 @@ public class GNUHealthConnectorImpl extends Connector {
 			String session_split[] = result.split(String.valueOf(s));
 			result = session_split[1];
 			
-			Integer userId = getUserId(username, result);
-			System.out.println("username: "+username+"     user_id: "+userId+"      session: "+result+"      backendSid: "+backendSid);
+			Integer userId = getUserId(username);
 			SessionStore.put(result, backendSid, userId);
 		} else {
 			result = "false";
 		}
-		logger.info("retrieved session: " + result);
+		logger.info("! --- login -> connect to: " + getBackEndUrl().toString()
+				+ "with: " + username + ":" + password +" ----> RESULT: "+result);
 		return result;
 	}
 
 	public String execute(String method, Object[] params) {
-
-		logger.info("CALL EXECUTE: " + method);
 
 		/**
 		 * Get GnuHealthCompatible Json Request file
@@ -210,7 +212,9 @@ public class GNUHealthConnectorImpl extends Connector {
 	}
 
 	@Override
-	public String returnAllPatientsForUIList(String session) {
+	public String returnAllPatientsForUIList() {
+		String session = getAdminSession();
+		
 		String patientListString = "false";
 		patientListString = execute(getPatientReadMethod(),
 				getReturnPatientsParams(session));
@@ -232,7 +236,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			if (patient.getDiseases() != null) {
 				for (String diseaseID : patient.getDiseases()) {
 					String diagnoseString = execute(getDiagnoseReadMethod(),
-							getReturnDiagnoseParams(session, diseaseID));
+							getReturnDiagnoseParams(diseaseID));
 					diagnoseString = diagnoseString.substring(
 							diagnoseString.indexOf("[") + 1,
 							diagnoseString.lastIndexOf("]"));
@@ -251,7 +255,7 @@ public class GNUHealthConnectorImpl extends Connector {
 	}
 	
 	@Override
-	public String returnPersonalPatientsForUIList(String session) {
+	public String returnPersonalPatientsForUIList(String session) {		
 		String patientListString = "false";
 		
 		patientListString = execute(getPatientReadMethod(),
@@ -275,7 +279,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			if (patient.getDiseases() != null) {
 				for (String diseaseID : patient.getDiseases()) {
 					String diagnoseString = execute(getDiagnoseReadMethod(),
-							getReturnDiagnoseParams(session, diseaseID));
+							getReturnDiagnoseParams(diseaseID));
 					diagnoseString = diagnoseString.substring(
 							diagnoseString.indexOf("[") + 1,
 							diagnoseString.lastIndexOf("]"));
@@ -290,9 +294,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			patient.setDiagnoseList(diagnoseList);
 		}
 
-		int party_id = getPhysicianId(session, SessionStore.getUserId(session));
-		System.out.println("----------------------------------------------------");
-		System.out.println("party_id for user id: "+SessionStore.getUserId(session)+" is: "+party_id);
+		int party_id = getPhysicianId(SessionStore.getUserId(session));
 		ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();
 		for (PatientGnu p : patientList) {
 			if (Integer.valueOf(p.getPrimary_care_doctor_id()) == party_id) relevantList.add(p);
@@ -301,7 +303,9 @@ public class GNUHealthConnectorImpl extends Connector {
 	}
 
 	@Override
-	public String searchForAPatient(String session, String param) {
+	public String searchForAPatient(String param) {
+		String session = getAdminSession();
+		
 		String patientListString = "false";
 		patientListString = execute(getPatientReadMethod(),
 				getReturnPatientsParams(session));
@@ -323,7 +327,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			if (patient.getDiseases() != null) {
 				for (String diseaseID : patient.getDiseases()) {
 					String diagnoseString = execute(getDiagnoseReadMethod(),
-							getReturnDiagnoseParams(session, diseaseID));
+							getReturnDiagnoseParams(diseaseID));
 					diagnoseString = diagnoseString.substring(
 							diagnoseString.indexOf("[") + 1,
 							diagnoseString.lastIndexOf("]"));
@@ -415,8 +419,8 @@ public class GNUHealthConnectorImpl extends Connector {
 
 		return new Object[] {
 				1,
-				session,
-				getAllPatientIds(session),
+				getAdminSession(),
+				getAllPatientIds(),
 				new String[] { "rec_name", "age", "diseases", "sex","primary_care_doctor.name",
 						"primary_care_doctor.rec_name" }, "REPLACE_CONTEXT" };
 	}
@@ -432,10 +436,10 @@ public class GNUHealthConnectorImpl extends Connector {
 	}
 
 	@Override
-	public Object[] getReturnDiagnoseParams(String session, String id) {
+	public Object[] getReturnDiagnoseParams(String id) {
 		return new Object[] {
 				1,
-				session,
+				getAdminSession(),
 				new int[] { Integer.parseInt(id) },
 				new String[] { "status", "pregnancy_warning", "is_active",
 						"short_comment", "diagnosed_date", "healed_date",
@@ -444,8 +448,8 @@ public class GNUHealthConnectorImpl extends Connector {
 				"REPLACE_CONTEXT" };
 	}
 
-	private int[] getAllPatientIds(String session) {
-
+	private int[] getAllPatientIds() {
+		String session = getAdminSession();
 		int[] idList;
 
 		// LOGIN
@@ -469,7 +473,8 @@ public class GNUHealthConnectorImpl extends Connector {
 		return idList;
 	}
 
-	public int[] getAllUserIds(String session) {
+	public int[] getAllUserIds() {
+		String session = getAdminSession();
 		int[] idList;
 
 		// Search Patients
@@ -489,10 +494,11 @@ public class GNUHealthConnectorImpl extends Connector {
 		return idList;
 	}
 
-	public int getUserId(String username, String session) {
-
+	public int getUserId(String username) {
+		String session = getAdminSession();
+		
 		// Getting all User Ids
-		int[] ids = getAllUserIds(session);
+		int[] ids = getAllUserIds();
 
 		// Searching for all Ids and fields: name, login
 		Object[] params = new Object[] { 1, session, ids,
@@ -521,9 +527,9 @@ public class GNUHealthConnectorImpl extends Connector {
 	}
 
 	public String getUserRecName(String username, String session) {
-
+		
 		// Getting all User Ids
-		int[] ids = getAllUserIds(session);
+		int[] ids = getAllUserIds();
 		for (int i : ids)
 			System.out.println(i);
 
@@ -552,7 +558,9 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	}
 
-	public int[] getAllPartyIds(String session) {
+	public int[] getAllPartyIds() {
+		String session = getAdminSession();
+		
 		int[] idList;
 
 		// Search Patients
@@ -573,9 +581,9 @@ public class GNUHealthConnectorImpl extends Connector {
 	}
 
 	@Override
-	public int getPhysicianId(String session, int user_id) {
-
-		int[] allphys = getAllPartyIds(session);
+	public int getPhysicianId(int user_id) {
+		String session = getAdminSession();
+		int[] allphys = getAllPartyIds();
 
 		Object[] params = new Object[] { 1, session, allphys,
 				new String[] { "id", "internal_user" }, "REPLACE_CONTEXT" };
@@ -595,11 +603,38 @@ public class GNUHealthConnectorImpl extends Connector {
 		for (PhysicianGnu u : userList) {
 			if (u.getInternal_user() != null) {
 				if (Integer.valueOf(u.getInternal_user()) == user_id)
-					System.out.println("user_id: "+user_id+"    physician id: "+Integer.valueOf(u.getId()));
 					return Integer.valueOf(u.getId());
 			}
 		}
 		return -1;
 	}
 
+	
+	private String getAdminSession() {
+		if (adminSession == null) {
+			Backend info = this.getBackend();
+			logger.info("! --- SYSTEM RETRIEVING ADMINISTRATOR AUTHENTIFICATION AS:");
+			logger.info("! --- \""+info.getAdmin_user()+"\" on " + getBackEndUrl().toString()
+					+ "with: " + info.getAdmin_user() + ":" + info.getAdmin_pw());
+
+			String[] params = new String[] { info.getAdmin_user(), info.getAdmin_pw() };
+
+			ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
+			String result = new Gson().toJson(proxy.call(this.getLoginMethod(),
+					params));
+			
+			if ((result.length() > 5)) {
+				char s = '"';
+				String session_split[] = result.split(String.valueOf(s));
+				result = session_split[1];
+			} else {
+				result = "false";
+			}
+			adminSession = result;
+			logger.info("! --- SYSTEM SESSION: "+adminSession);
+		}
+		
+		return adminSession;
+		
+	}
 }

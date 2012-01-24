@@ -44,7 +44,7 @@ public class DiagnoseHandler {
 			connector = ConnectorFactory.getConnector(SessionStore
 					.getBackendSid(session));
 			diagnose = connector.execute(connector.getDiagnoseReadMethod(),
-					connector.getReturnDiagnoseParams(session, id));
+					connector.getReturnDiagnoseParams(id));
 
 		} catch (Exception e) {
 			e.printStackTrace();

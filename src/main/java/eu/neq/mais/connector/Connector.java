@@ -59,19 +59,19 @@ public abstract class Connector {
 	 * @param session current session
 	 * @return special patient list that can be used in the ui patient list view
 	 */
-	public abstract int[] getAllUserIds(String session);
-	public abstract int getUserId(String session, String username);
-	public abstract int getPhysicianId(String session, int user_id);
+	public abstract int[] getAllUserIds();
+	public abstract int getUserId(String username);
+	public abstract int getPhysicianId(int user_id);
 	public abstract String getUserRecName(String username, String session);
-	public abstract String returnAllPatientsForUIList(String session);
-	public abstract String returnPersonalPatientsForUIList(String session);
+	public abstract String returnAllPatientsForUIList();
+	public abstract String returnPersonalPatientsForUIList(String personalUsersession);
 	
 	/**
 	 * 
 	 * @param session - current session
 	 * @return the search result 
 	 */
-	public abstract String searchForAPatient(String session, String param);
+	public abstract String searchForAPatient(String param);
 		
 	public void setBackend(Backend backend){
 		this.backend = backend;
@@ -109,7 +109,7 @@ public abstract class Connector {
 	public abstract Object[] getReturnPatientsParams(String session);
 	
 	public abstract Object[] getReturnPatientParams(String session, String id);
-	public abstract Object[] getReturnDiagnoseParams(String session, String id);
+	public abstract Object[] getReturnDiagnoseParams(String id);
 
 	
 

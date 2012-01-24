@@ -8,6 +8,8 @@ public class Backend {
 	private int xmlport;
 	private String connector;
 	private String db;
+	private String admin_user;
+	private String admin_pw;
 	
 	
 	public String toString(){
@@ -72,6 +74,26 @@ public class Backend {
 
 	public void setConnector(String connector) {
 		this.connector = connector;
+	}
+
+
+	public String getAdmin_user() {
+		return admin_user;
+	}
+
+
+	public void setAdmin_user(String admin_user) {
+		this.admin_user = admin_user;
+	}
+
+
+	public String getAdmin_pw() {
+		return admin_pw;
+	}
+
+
+	public void setAdmin_pw(String admin_pw) {
+		this.admin_pw = admin_pw;
 	}
 
 }
