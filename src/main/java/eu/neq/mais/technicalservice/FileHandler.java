@@ -16,24 +16,26 @@ import com.google.gson.reflect.TypeToken;
 
 public abstract class FileHandler {
 
+	private static Map<String,Backend> backendMap;
 	
-	private static BufferedReader returnBrforFile(String filePath) throws FileNotFoundException{
-		BufferedReader br = new BufferedReader(new FileReader(filePath));	
-		return br;
+	public static Map<String,Backend> getBackendMap () throws IOException{
+		
+		if(backendMap == null){
+			reloadBackendMap();
+		}
+		return backendMap;
 	}
 	
-	public static Map<String,Backend> getBackendMap () throws JsonIOException, JsonSyntaxException, FileNotFoundException{
-		
-		Map<String,Backend> backendMap = new HashMap<String,Backend>();
+	public static void reloadBackendMap() throws IOException{
+		backendMap = new HashMap<String,Backend>();
 		
 		Type listType = new TypeToken<List<Backend>>(){}.getType();
-		List<Backend> backendList = new Gson().fromJson(FileHandler.returnBrforFile(Settings.BACKEND_CONFIG_FILE), listType);
-
+		BufferedReader br = new BufferedReader(new FileReader(Settings.BACKEND_CONFIG_FILE));	
+		List<Backend> backendList = new Gson().fromJson(br, listType);
+		br.close();
 		for(Backend backend : backendList){
 			backendMap.put(backend.getSid(), backend);
-		}
-		
-		return backendMap;
+		}	
 	}
 	
 	public static java.util.logging.FileHandler getLogFileHandler(String logFile) {

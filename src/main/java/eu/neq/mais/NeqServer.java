@@ -10,6 +10,7 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.FileHandler;
+import eu.neq.mais.technicalservice.Monitor;
 import eu.neq.mais.technicalservice.Settings;
 
 /**
@@ -55,7 +56,12 @@ public class NeqServer implements Runnable {
 		
 		logger.info("starting server");
 		try {
+			//Starts the NEQ MAIS
 			server.start();
+			
+			//Starts the Monitoring Activities
+			Thread monitoringThread = new Thread( new Monitor() ); 
+			monitoringThread.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 

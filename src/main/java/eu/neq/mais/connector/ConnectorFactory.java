@@ -16,15 +16,17 @@ public abstract class ConnectorFactory {
 
 	public static Connector getConnector(String backendSid) throws Exception {
 		
-		if(backendMap == null){
-			backendMap = FileHandler.getBackendMap();
+		Backend requiredBackend = FileHandler.getBackendMap().get(backendSid);
+		
+		Connector connector;
+		
+		if(requiredBackend.getConnectorImpl() == null){
+			connector = (Connector) (Connector.class.getClassLoader().loadClass(requiredBackend.getConnector())).newInstance();
+			connector.setBackend(requiredBackend);
+			requiredBackend.setConnectorImpl(connector);
+		}else{
+			connector = requiredBackend.getConnectorImpl();
 		}
-		
-		Backend requiredBackend = backendMap.get(backendSid);
-		
-		Connector connector = (Connector) (Connector.class.getClassLoader().loadClass(requiredBackend.getConnector())).newInstance();
-		connector.setBackend(requiredBackend);
-
 		return connector;
 	}
 	

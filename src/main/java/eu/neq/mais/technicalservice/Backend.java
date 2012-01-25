@@ -1,5 +1,7 @@
 package eu.neq.mais.technicalservice;
 
+import eu.neq.mais.connector.Connector;
+
 public class Backend {
 	
 	private String url;
@@ -10,6 +12,8 @@ public class Backend {
 	private String db;
 	private String admin_user;
 	private String admin_pw;
+	
+	private Connector connectorImpl;
 	
 	
 	public String toString(){
@@ -94,6 +98,16 @@ public class Backend {
 
 	public void setAdmin_pw(String admin_pw) {
 		this.admin_pw = admin_pw;
+	}
+
+
+	public Connector getConnectorImpl() {
+		return connectorImpl;
+	}
+
+
+	public void setConnectorImpl(Connector connectorImpl) {
+		this.connectorImpl = connectorImpl;
 	}
 
 }
