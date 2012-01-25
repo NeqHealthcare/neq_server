@@ -59,10 +59,6 @@ public abstract class Connector {
 	 * @param session current session
 	 * @return special patient list that can be used in the ui patient list view
 	 */
-	public abstract int[] getAllUserIds();
-	public abstract int getUserId(String username);
-	public abstract int getPhysicianId(int user_id);
-	public abstract String getUserRecName(String username, String session);
 	public abstract String returnAllPatientsForUIList();
 	public abstract String returnPersonalPatientsForUIList(String personalUsersession);
 	

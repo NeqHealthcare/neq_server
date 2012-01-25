@@ -77,8 +77,8 @@ public class GNUHealthConnectorImpl extends Connector {
 			// System.out.println(patientListForUI.toString());
 
 			// return all ids
-			int idfound = con.getUserId(login_name);
-			int pid = con.getPhysicianId(idfound);
+			int idfound = ((GNUHealthConnectorImpl)con).getUserId(login_name);
+			int pid = ((GNUHealthConnectorImpl)con).getPhysicianId(idfound);
 			System.out.println("\n\n");
 			System.out.println("SEARCH FOR USER_ID AND PARTY_ID");
 			System.out.println("----------------------------------------------------");
@@ -580,7 +580,6 @@ public class GNUHealthConnectorImpl extends Connector {
 		return idList;
 	}
 
-	@Override
 	public int getPhysicianId(int user_id) {
 		String session = getAdminSession();
 		int[] allphys = getAllPartyIds();

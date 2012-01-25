@@ -16,5 +16,7 @@
      "xmlport" : 7070,
      "connector":"eu.neq.mais.connector.gnuhealth.GNUHealthConnectorImpl",
      "db": "db_03"
+     "admin_user":"admin",
+     "admin_pw":"kHq0hE"
  }
  ]
