@@ -12,7 +12,11 @@ import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.SessionStore;
 
-
+/**
+ * 
+ * @author Denny, Jan
+ *
+ */
 @Path("/diagnose/")
 public class DiagnoseHandler {
 	
@@ -25,10 +29,10 @@ public class DiagnoseHandler {
 //	http://localhost:8080/diagnosis?id=1&session=SESSION
 
 	//Example response:
-//	{"id": 60, "result": [{"status": "u", "pathology.rec_name": "Paratyphoid fever B", "pregnancy_warning": 
+//	 {"status": "u", "pathology.rec_name": "Paratyphoid fever B", "pregnancy_warning": 
 //		false, "is_active": true, "short_comment": null, "id": 1, "diagnosed_date": {"month": 1, "__class__": "date", "day": 13, "year": 2011}, 
 //		"healed_date": {"month": 1, "__class__": "date", "day": 3, "year": 2012}, "pathology": 8, "disease_severity": "2_mo", "is_infectious": true, 
-//		"is_allergy": true}]}
+//		"is_allergy": true}
 //	
 	
 	
@@ -43,14 +47,12 @@ public class DiagnoseHandler {
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore
 					.getBackendSid(session));
-			diagnose = connector.execute(connector.getDiagnoseReadMethod(),
-					connector.getReturnDiagnoseParams(id));
+			diagnose = connector.returnDiagnose(session, id);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			diagnose = "false";
 		}
-		diagnose = diagnose.substring(diagnose.indexOf("["), diagnose.lastIndexOf("]")+1);
 		logger.info("return diagnose method returned json object: " + diagnose);
 		return diagnose;
 		

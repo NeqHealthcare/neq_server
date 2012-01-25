@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -90,6 +91,8 @@ public class GNUHealthConnectorImpl extends Connector {
 			System.out.println(con.returnPersonalPatientsForUIList(user_session));
 			System.out.println("\n\n");
 			
+			
+			((GNUHealthConnectorImpl)con).returnPersonalInformation("blub",true,true);
 			// searching for a patient
 //			String param = "sop";
 //			System.out.println(con.searchForAPatient(session, param));
@@ -159,7 +162,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		return result;
 	}
 
-	public String execute(String method, Object[] params) {
+	private String execute(String method, Object[] params) {
 
 		/**
 		 * Get GnuHealthCompatible Json Request file
@@ -365,57 +368,75 @@ public class GNUHealthConnectorImpl extends Connector {
 		return new Gson().toJson(relevantList);
 		
 	}
+	
+	@Override
+	public String returnDiagnose(String session, String diagnoseID) {
+		String diagnose = this.execute(this.getDiagnoseReadMethod(),
+				this.getReturnDiagnoseParams(diagnoseID));
+		diagnose = diagnose.substring(diagnose.indexOf("["), diagnose.lastIndexOf("]")+1);
+		return diagnose;
+	}
+	
+	@Override
+	public String returnPersonalInformation(String userSession, boolean name, boolean picture) {
+		HashMap<String,String> personalInfo = new HashMap<String,String>();
+		if(name){
+//			getUserRecName(SessionStore.getUserId(session))
+		    personalInfo.put("name","Frank Miller");
+		}
+		if(picture){
+			personalInfo.put("picture","http://i43.tinypic.com/29lzamh.png");
+		}
+		return new Gson().toJson(personalInfo);
+	}
 
 	/*-----  BACKEND METHODS  ----*/
-	@Override
-	public String getLoginMethod() {
+
+	private String getLoginMethod() {
 		return "common.db.login";
 	}
 
-	@Override
-	public String getLogoutMethod() {
+
+	private String getLogoutMethod() {
 		return "common.db.logout";
 	}
 
-	@Override
-	public String getPatientSearchMethod() {
+
+	private String getPatientSearchMethod() {
 		return "model.gnuhealth.patient.search";
 	}
 
-	@Override
-	public String getPatientReadMethod() {
+
+	private String getPatientReadMethod() {
 		return "model.gnuhealth.patient.read";
 	}
 
-	@Override
-	public String getPreferencesMethod() {
+	private String getPreferencesMethod() {
 		return "model.res.user.get_preferences";
 	}
 
-	@Override
-	public String getDiagnoseReadMethod() {
+
+	private String getDiagnoseReadMethod() {
 		return "model.gnuhealth.patient.disease.read";
 	}
 
-	@Override
-	public String getUserSearchMethod() {
+
+	private String getUserSearchMethod() {
 		return "model.res.user.search";
 	}
 
-	@Override
-	public String getUserReadMethod() {
+	private String getUserReadMethod() {
 		return "model.res.user.read";
 	}
 
-	@Override
-	public String getPhysicianSearchMethod() {
+	private String getPhysicianSearchMethod() {
 		return "model.gnuhealth.physician.search";
 	}
 
 	/*-----  BACKEND METHOD PARAMS  ----*/
 
-	@Override
-	public Object[] getReturnPatientsParams(String session) {
+
+	private Object[] getReturnPatientsParams(String session) {
 
 		return new Object[] {
 				1,
@@ -425,8 +446,8 @@ public class GNUHealthConnectorImpl extends Connector {
 						"primary_care_doctor.rec_name" }, "REPLACE_CONTEXT" };
 	}
 
-	@Override
-	public Object[] getReturnPatientParams(String session, String id) {
+
+	private Object[] getReturnPatientParams(String session, String id) {
 		return new Object[] {
 				1,
 				session,
@@ -435,8 +456,8 @@ public class GNUHealthConnectorImpl extends Connector {
 						"primary_care_doctor.rec_name" }, "REPLACE_CONTEXT" };
 	}
 
-	@Override
-	public Object[] getReturnDiagnoseParams(String id) {
+
+	private Object[] getReturnDiagnoseParams(String id) {
 		return new Object[] {
 				1,
 				getAdminSession(),
@@ -473,7 +494,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		return idList;
 	}
 
-	public int[] getAllUserIds() {
+	private int[] getAllUserIds() {
 		String session = getAdminSession();
 		int[] idList;
 
@@ -494,7 +515,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		return idList;
 	}
 
-	public int getUserId(String username) {
+	private int getUserId(String username) {
 		String session = getAdminSession();
 		
 		// Getting all User Ids
@@ -526,7 +547,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	}
 
-	public String getUserRecName(String username, String session) {
+	private String getUserRecName(String username, String session) {
 		
 		// Getting all User Ids
 		int[] ids = getAllUserIds();
@@ -558,7 +579,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	}
 
-	public int[] getAllPartyIds() {
+	private int[] getAllPartyIds() {
 		String session = getAdminSession();
 		
 		int[] idList;
@@ -580,7 +601,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		return idList;
 	}
 
-	public int getPhysicianId(int user_id) {
+	private int getPhysicianId(int user_id) {
 		String session = getAdminSession();
 		int[] allphys = getAllPartyIds();
 

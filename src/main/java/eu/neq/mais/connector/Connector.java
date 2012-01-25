@@ -43,16 +43,6 @@ public abstract class Connector {
 	 */
 	public abstract String logout(String username, String Session);
 	
-
-	/**
-	 * 
-	 * @param session
-	 * @param method
-	 * @param params
-	 * @return
-	 */
-	public abstract String execute(String method, Object[] params);
-	
 	
 	/**
 	 * 
@@ -60,15 +50,12 @@ public abstract class Connector {
 	 * @return special patient list that can be used in the ui patient list view
 	 */
 	public abstract String returnAllPatientsForUIList();
-	public abstract String returnPersonalPatientsForUIList(String personalUsersession);
-	
-	/**
-	 * 
-	 * @param session - current session
-	 * @return the search result 
-	 */
+	public abstract String returnPersonalPatientsForUIList(String userSession);
+	public abstract String returnDiagnose(String session, String diagnoseID);
 	public abstract String searchForAPatient(String param);
-		
+	public abstract String returnPersonalInformation(String userSession, boolean name, boolean picture);
+	
+	
 	public void setBackend(Backend backend){
 		this.backend = backend;
 	}
@@ -86,29 +73,4 @@ public abstract class Connector {
 	}
 	
 	
-	
-	/*-----  BACKEND METHODS  ----*/
-	
-	public abstract String getLoginMethod();
-	public abstract String getLogoutMethod();
-	public abstract String getPatientSearchMethod();
-	public abstract String getPatientReadMethod();
-	public abstract String getPreferencesMethod();
-	public abstract String getDiagnoseReadMethod();
-	public abstract String getUserSearchMethod();
-	public abstract String getUserReadMethod();
-	public abstract String getPhysicianSearchMethod();
-	
-	
-	/*-----  BACKEND METHOD PARAMS  ----*/
-	
-	public abstract Object[] getReturnPatientsParams(String session);
-	
-	public abstract Object[] getReturnPatientParams(String session, String id);
-	public abstract Object[] getReturnDiagnoseParams(String id);
-
-	
-
-
-
 }
