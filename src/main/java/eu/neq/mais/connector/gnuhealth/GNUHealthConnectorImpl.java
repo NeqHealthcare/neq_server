@@ -46,7 +46,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		try {
 			Connector con = ConnectorFactory.getConnector("gnuhealth1");
 			
-			String login_name = "jgansen";
+			String login_name = "seba";
 			String password = "iswi223<<";
 				
 			// LOGIN
@@ -78,7 +78,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			// System.out.println(patientListForUI.toString());
 
 			// return all ids
-			int idfound = ((GNUHealthConnectorImpl)con).getUserId(login_name);
+			int idfound = SessionStore.getUserId(user_session);
 			int pid = ((GNUHealthConnectorImpl)con).getPhysicianId(idfound);
 			System.out.println("\n\n");
 			System.out.println("SEARCH FOR USER_ID AND PARTY_ID");
@@ -539,7 +539,6 @@ public class GNUHealthConnectorImpl extends Connector {
 		// SEARCH FOR ID
 		for (UserGnu u : userList) {
 			if (u.getLogin().equals(username))
-				System.out.println("username: "+username+"    user id: "+Integer.valueOf(u.getId()));
 				return Integer.valueOf(u.getId());
 		}
 
