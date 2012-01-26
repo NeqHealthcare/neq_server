@@ -46,7 +46,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		try {
 			Connector con = ConnectorFactory.getConnector("gnuhealth1");
 			
-			String login_name = "seba";
+			String login_name = "jgansen";
 			String password = "iswi223<<";
 				
 			// LOGIN
@@ -83,7 +83,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			System.out.println("\n\n");
 			System.out.println("SEARCH FOR USER_ID AND PARTY_ID");
 			System.out.println("----------------------------------------------------");
-			System.out.println("[" + login_name +"] User.id:" + idfound + ", Parties.id: "
+			System.out.println("[" + login_name +"] User.id:" + idfound + ", Parties.id (getPhysicianId): "
 				+ pid + " (system intern record id = equal to physician id)");
 			System.out.println("\n\n");
 			System.out.println("PERSONAL PATIENTS FOR "+login_name+" ("+user_session+")");
@@ -91,8 +91,11 @@ public class GNUHealthConnectorImpl extends Connector {
 			System.out.println(con.returnPersonalPatientsForUIList(user_session));
 			System.out.println("\n\n");
 			
+		    
+		    //return personal information of user: 
+			System.out.println("--------PERSONAL INFORMATION OF USER: "+((GNUHealthConnectorImpl)con).returnPersonalInformation(user_session,true,true));
 			
-			((GNUHealthConnectorImpl)con).returnPersonalInformation("blub",true,true);
+			
 			// searching for a patient
 //			String param = "sop";
 //			System.out.println(con.searchForAPatient(session, param));
@@ -381,8 +384,7 @@ public class GNUHealthConnectorImpl extends Connector {
 	public String returnPersonalInformation(String userSession, boolean name, boolean picture) {
 		HashMap<String,String> personalInfo = new HashMap<String,String>();
 		if(name){
-//			getUserRecName(SessionStore.getUserId(session))
-		    personalInfo.put("name","Frank Miller");
+		    personalInfo.put("name",getUserRecName(SessionStore.getUserId(userSession).toString()));
 		}
 		if(picture){
 			personalInfo.put("picture","http://i43.tinypic.com/29lzamh.png");
@@ -546,12 +548,10 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	}
 
-	private String getUserRecName(String username, String session) {
-		
+	private String getUserRecName(String id) {
+		String session = getAdminSession();
 		// Getting all User Ids
 		int[] ids = getAllUserIds();
-		for (int i : ids)
-			System.out.println(i);
 
 		// Searching for all Ids and fields: name, login
 		Object[] params = new Object[] { 1, session, ids,
@@ -570,8 +570,8 @@ public class GNUHealthConnectorImpl extends Connector {
 
 		// SEARCH FOR ID
 		for (UserGnu u : userList) {
-			if (u.getLogin().equals(username))
-				return u.getRec_name() + ":" + u.getId();
+			if (u.getId().equals(id))
+				return u.getRec_name();
 		}
 
 		return "no name found";
