@@ -27,14 +27,6 @@ public class DiagnoseHandler {
 	
 //	Example request:
 //	http://localhost:8080/diagnosis?id=1&session=SESSION
-
-	//Example response:
-//	 {"status": "u", "pathology.rec_name": "Paratyphoid fever B", "pregnancy_warning": 
-//		false, "is_active": true, "short_comment": null, "id": 1, "diagnosed_date": {"month": 1, "__class__": "date", "day": 13, "year": 2011}, 
-//		"healed_date": {"month": 1, "__class__": "date", "day": 3, "year": 2012}, "pathology": 8, "disease_severity": "2_mo", "is_infectious": true, 
-//		"is_allergy": true}
-//	
-	
 	
 	@GET
 	@Path("/one")
