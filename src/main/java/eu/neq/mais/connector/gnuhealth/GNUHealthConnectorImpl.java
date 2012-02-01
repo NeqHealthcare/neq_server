@@ -9,7 +9,10 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +46,10 @@ public class GNUHealthConnectorImpl extends Connector {
 	private static String adminSession = null;
 
 	public static void main(String[] args) {
+		
+//		System.out.println("birthday: "+calculateDateOfBirth("69y 5m 4d"));
+		
+		
 		try {
 			Connector con = ConnectorFactory.getConnector("gnuhealth1");
 			
@@ -72,28 +79,27 @@ public class GNUHealthConnectorImpl extends Connector {
 			// params3);
 			// logger.info("res3: "+res3);
 
-			// returnAllPatientsForUIList
-			// String patientListForUI =
-			// con.returnAllPatientsForUIList(session);
-			// System.out.println(patientListForUI.toString());
+			 String patientListForUI =
+			 con.returnPersonalPatientsForUIList(user_session);
+			 System.out.println(patientListForUI.toString());
 
 			// return all ids
-			int idfound = SessionStore.getUserId(user_session);
-			int pid = ((GNUHealthConnectorImpl)con).getPhysicianId(idfound);
-			System.out.println("\n\n");
-			System.out.println("SEARCH FOR USER_ID AND PARTY_ID");
-			System.out.println("----------------------------------------------------");
-			System.out.println("[" + login_name +"] User.id:" + idfound + ", Parties.id (getPhysicianId): "
-				+ pid + " (system intern record id = equal to physician id)");
-			System.out.println("\n\n");
-			System.out.println("PERSONAL PATIENTS FOR "+login_name+" ("+user_session+")");
-			System.out.println("----------------------------------------------------");
-			System.out.println(con.returnPersonalPatientsForUIList(user_session));
-			System.out.println("\n\n");
+//			int idfound = SessionStore.getUserId(user_session);
+//			int pid = ((GNUHealthConnectorImpl)con).getPhysicianId(idfound);
+//			System.out.println("\n\n");
+//			System.out.println("SEARCH FOR USER_ID AND PARTY_ID");
+//			System.out.println("----------------------------------------------------");
+//			System.out.println("[" + login_name +"] User.id:" + idfound + ", Parties.id (getPhysicianId): "
+//				+ pid + " (system intern record id = equal to physician id)");
+//			System.out.println("\n\n");
+//			System.out.println("PERSONAL PATIENTS FOR "+login_name+" ("+user_session+")");
+//			System.out.println("----------------------------------------------------");
+//			System.out.println(con.returnPersonalPatientsForUIList(user_session));
+//			System.out.println("\n\n");
 			
 		    
 		    //return personal information of user: 
-			System.out.println("--------PERSONAL INFORMATION OF USER: "+((GNUHealthConnectorImpl)con).returnPersonalInformation(user_session,true,true));
+//			System.out.println("--------PERSONAL INFORMATION OF USER: "+((GNUHealthConnectorImpl)con).returnPersonalInformation(user_session,true,true));
 			
 			
 			// searching for a patient
@@ -236,11 +242,11 @@ public class GNUHealthConnectorImpl extends Connector {
 				"primary_care_doctor.name", "primary_care_doctor_name");
 		List<PatientGnu> patientList = new Gson().fromJson(patientListString,
 				listType);
-
-		for (PatientGnu patient : patientList) {
-			List<DiagnoseGnu> diagnoseList = new ArrayList<DiagnoseGnu>();
-			if (patient.getDiseases() != null) {
-				for (String diseaseID : patient.getDiseases()) {
+		for (PatientGnu patient : patientList) {			
+			
+			DiagnoseGnu latestDiagnose = null;
+			if (patient.getDiagnoseIds() != null) {
+				for (String diseaseID : patient.getDiagnoseIds()) {
 					String diagnoseString = execute(getDiagnoseReadMethod(),
 							getReturnDiagnoseParams(diseaseID));
 					diagnoseString = diagnoseString.substring(
@@ -250,13 +256,18 @@ public class GNUHealthConnectorImpl extends Connector {
 							"pathology.rec_name", "pathology_rec_name");
 					Type type = new TypeToken<DiagnoseGnu>() {
 					}.getType();
-					diagnoseList.add((DiagnoseGnu) new Gson().fromJson(
+					DiagnoseGnu tempDiagnose = ((DiagnoseGnu) new Gson().fromJson(
 							diagnoseString, type));
+					if(latestDiagnose != null){
+						latestDiagnose = latestDiagnose.returnLatest(tempDiagnose);
+						
+					}else{
+						latestDiagnose = tempDiagnose;
+					}
 				}
 			}
-			patient.setDiagnoseList(diagnoseList);
+			patient.setLatestDiagnose(latestDiagnose);
 		}
-
 		return new Gson().toJson(patientList);
 	}
 	
@@ -280,10 +291,11 @@ public class GNUHealthConnectorImpl extends Connector {
 		List<PatientGnu> patientList = new Gson().fromJson(patientListString,
 				listType);
 
-		for (PatientGnu patient : patientList) {
-			List<DiagnoseGnu> diagnoseList = new ArrayList<DiagnoseGnu>();
-			if (patient.getDiseases() != null) {
-				for (String diseaseID : patient.getDiseases()) {
+		for (PatientGnu patient : patientList) {			
+			
+			DiagnoseGnu latestDiagnose = null;
+			if (patient.getDiagnoseIds() != null) {
+				for (String diseaseID : patient.getDiagnoseIds()) {
 					String diagnoseString = execute(getDiagnoseReadMethod(),
 							getReturnDiagnoseParams(diseaseID));
 					diagnoseString = diagnoseString.substring(
@@ -293,11 +305,17 @@ public class GNUHealthConnectorImpl extends Connector {
 							"pathology.rec_name", "pathology_rec_name");
 					Type type = new TypeToken<DiagnoseGnu>() {
 					}.getType();
-					diagnoseList.add((DiagnoseGnu) new Gson().fromJson(
+					DiagnoseGnu tempDiagnose = ((DiagnoseGnu) new Gson().fromJson(
 							diagnoseString, type));
+					if(latestDiagnose != null){
+						latestDiagnose = latestDiagnose.returnLatest(tempDiagnose);
+						
+					}else{
+						latestDiagnose = tempDiagnose;
+					}
 				}
 			}
-			patient.setDiagnoseList(diagnoseList);
+			patient.setLatestDiagnose(latestDiagnose);
 		}
 
 		int party_id = getPhysicianId(SessionStore.getUserId(session));
@@ -328,10 +346,11 @@ public class GNUHealthConnectorImpl extends Connector {
 		List<PatientGnu> patientList = new Gson().fromJson(patientListString,
 				listType);
 
-		for (PatientGnu patient : patientList) {
-			List<DiagnoseGnu> diagnoseList = new ArrayList<DiagnoseGnu>();
-			if (patient.getDiseases() != null) {
-				for (String diseaseID : patient.getDiseases()) {
+		for (PatientGnu patient : patientList) {			
+			
+			DiagnoseGnu latestDiagnose = null;
+			if (patient.getDiagnoseIds() != null) {
+				for (String diseaseID : patient.getDiagnoseIds()) {
 					String diagnoseString = execute(getDiagnoseReadMethod(),
 							getReturnDiagnoseParams(diseaseID));
 					diagnoseString = diagnoseString.substring(
@@ -341,11 +360,17 @@ public class GNUHealthConnectorImpl extends Connector {
 							"pathology.rec_name", "pathology_rec_name");
 					Type type = new TypeToken<DiagnoseGnu>() {
 					}.getType();
-					diagnoseList.add((DiagnoseGnu) new Gson().fromJson(
+					DiagnoseGnu tempDiagnose = ((DiagnoseGnu) new Gson().fromJson(
 							diagnoseString, type));
+					if(latestDiagnose != null){
+						latestDiagnose = latestDiagnose.returnLatest(tempDiagnose);
+						
+					}else{
+						latestDiagnose = tempDiagnose;
+					}
 				}
 			}
-			patient.setDiagnoseList(diagnoseList);
+			patient.setLatestDiagnose(latestDiagnose);
 		}
 		
 		ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();
@@ -655,5 +680,25 @@ public class GNUHealthConnectorImpl extends Connector {
 		
 		return adminSession;
 		
+	}
+	// "69y 5m 4d" ---> "2003-01-07" 
+	// does not work
+	private static String calculateDateOfBirth(String gnuHealthAge){
+		DateFormat df = DateFormat.getDateInstance( DateFormat.SHORT ); 
+		
+		Integer year = new Integer(gnuHealthAge.substring(0, gnuHealthAge.indexOf("y")));
+		Integer month = new Integer(gnuHealthAge.substring(gnuHealthAge.indexOf(" ")+1,gnuHealthAge.indexOf("m")));
+		Integer day = new Integer(gnuHealthAge.substring(gnuHealthAge.lastIndexOf(" ")+1,gnuHealthAge.indexOf("d")));
+		
+		GregorianCalendar age = new GregorianCalendar(year, month-1, day);
+		System.out.println("age: "+df.format( age.getTime() ));
+		GregorianCalendar dateToday = new GregorianCalendar();
+		System.out.println("today: "+df.format( dateToday.getTime()));
+				
+		GregorianCalendar birthday = new GregorianCalendar();
+		birthday.setTimeInMillis(dateToday.getTimeInMillis()-age.getTimeInMillis());
+		
+
+		return df.format( birthday.getTime() );
 	}
 }
