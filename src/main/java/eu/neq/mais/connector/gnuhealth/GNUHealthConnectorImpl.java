@@ -266,7 +266,7 @@ public class GNUHealthConnectorImpl extends Connector {
 					}
 				}
 			}
-			patient.setLatestDiagnose(latestDiagnose);
+			patient.setLatestDiagnoseRecName(latestDiagnose.getPathology_rec_name());
 		}
 		return new Gson().toJson(patientList);
 	}
@@ -315,7 +315,9 @@ public class GNUHealthConnectorImpl extends Connector {
 					}
 				}
 			}
-			patient.setLatestDiagnose(latestDiagnose);
+			if(latestDiagnose != null){
+				patient.setLatestDiagnoseRecName(latestDiagnose.getPathology_rec_name());
+			}
 		}
 
 		int party_id = getPhysicianId(SessionStore.getUserId(session));
@@ -370,7 +372,7 @@ public class GNUHealthConnectorImpl extends Connector {
 					}
 				}
 			}
-			patient.setLatestDiagnose(latestDiagnose);
+			patient.setLatestDiagnoseRecName(latestDiagnose.getPathology_rec_name());
 		}
 		
 		ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();

@@ -14,7 +14,7 @@ public class PatientGnu extends Patient {
 	private String rec_name;
 	//contains diagnoses id, but has to be named diseases because of automatic json to instance process
 	private List<String> diseases;
-	private DiagnoseGnu latestDiagnose;
+	private String latestDiagnoseRecName;
 //	private List<DiagnoseGnu> diagnoseList;
 	private String age;
 	private String sex;
@@ -91,11 +91,11 @@ public class PatientGnu extends Patient {
 		this.primary_care_doctor_name = primary_care_doctor_id;
 	}
 
-	public DiagnoseGnu getLatestDiagnose() {
-		return latestDiagnose;
+	public String getLatestDiagnoseRecName() {
+		return latestDiagnoseRecName;
 	}
 
-	public void setLatestDiagnose(DiagnoseGnu latestDiagnose) {
-		this.latestDiagnose = latestDiagnose;
+	public void setLatestDiagnoseRecName(String latestDiagnoseRecName) {
+		this.latestDiagnoseRecName = latestDiagnoseRecName;
 	};
 }
