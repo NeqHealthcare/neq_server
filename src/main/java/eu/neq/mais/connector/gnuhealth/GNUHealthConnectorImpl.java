@@ -80,7 +80,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			// logger.info("res3: "+res3);
 
 			 String patientListForUI =
-			 con.returnPersonalPatientsForUIList(user_session);
+			 con.returnAllPatientsForUIList();
 			 System.out.println(patientListForUI.toString());
 
 			// return all ids
@@ -242,32 +242,7 @@ public class GNUHealthConnectorImpl extends Connector {
 				"primary_care_doctor.name", "primary_care_doctor_name");
 		List<PatientGnu> patientList = new Gson().fromJson(patientListString,
 				listType);
-		for (PatientGnu patient : patientList) {			
-			
-			DiagnoseGnu latestDiagnose = null;
-			if (patient.getDiagnoseIds() != null) {
-				for (String diseaseID : patient.getDiagnoseIds()) {
-					String diagnoseString = execute(getDiagnoseReadMethod(),
-							getReturnDiagnoseParams(diseaseID));
-					diagnoseString = diagnoseString.substring(
-							diagnoseString.indexOf("[") + 1,
-							diagnoseString.lastIndexOf("]"));
-					diagnoseString = diagnoseString.replaceAll(
-							"pathology.rec_name", "pathology_rec_name");
-					Type type = new TypeToken<DiagnoseGnu>() {
-					}.getType();
-					DiagnoseGnu tempDiagnose = ((DiagnoseGnu) new Gson().fromJson(
-							diagnoseString, type));
-					if(latestDiagnose != null){
-						latestDiagnose = latestDiagnose.returnLatest(tempDiagnose);
-						
-					}else{
-						latestDiagnose = tempDiagnose;
-					}
-				}
-			}
-			patient.setLatestDiagnoseRecName(latestDiagnose.getPathology_rec_name());
-		}
+		patientList = addLatestDiagnoseToPatient(patientList);
 		return new Gson().toJson(patientList);
 	}
 	
@@ -291,34 +266,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		List<PatientGnu> patientList = new Gson().fromJson(patientListString,
 				listType);
 
-		for (PatientGnu patient : patientList) {			
-			
-			DiagnoseGnu latestDiagnose = null;
-			if (patient.getDiagnoseIds() != null) {
-				for (String diseaseID : patient.getDiagnoseIds()) {
-					String diagnoseString = execute(getDiagnoseReadMethod(),
-							getReturnDiagnoseParams(diseaseID));
-					diagnoseString = diagnoseString.substring(
-							diagnoseString.indexOf("[") + 1,
-							diagnoseString.lastIndexOf("]"));
-					diagnoseString = diagnoseString.replaceAll(
-							"pathology.rec_name", "pathology_rec_name");
-					Type type = new TypeToken<DiagnoseGnu>() {
-					}.getType();
-					DiagnoseGnu tempDiagnose = ((DiagnoseGnu) new Gson().fromJson(
-							diagnoseString, type));
-					if(latestDiagnose != null){
-						latestDiagnose = latestDiagnose.returnLatest(tempDiagnose);
-						
-					}else{
-						latestDiagnose = tempDiagnose;
-					}
-				}
-			}
-			if(latestDiagnose != null){
-				patient.setLatestDiagnoseRecName(latestDiagnose.getPathology_rec_name());
-			}
-		}
+		patientList = addLatestDiagnoseToPatient(patientList);
 
 		int party_id = getPhysicianId(SessionStore.getUserId(session));
 		ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();
@@ -348,6 +296,33 @@ public class GNUHealthConnectorImpl extends Connector {
 		List<PatientGnu> patientList = new Gson().fromJson(patientListString,
 				listType);
 
+		patientList = addLatestDiagnoseToPatient(patientList);
+		
+		ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();
+		
+		try {
+			// If a search for an int is executed, param must be of type int and therefore parseable by Integer
+			int id = Integer.parseInt(param);
+			
+			for (PatientGnu p : patientList) {
+				if (Integer.valueOf(p.getId()).equals(id)) relevantList.add(p);
+			}
+			
+		} catch (NumberFormatException e) {
+			// If this block is reached, param is not an int
+			// -> a search looking for a name has been executed
+			
+			for (PatientGnu p : patientList) {
+				if (p.getRec_name().toLowerCase().contains(param.toLowerCase())) relevantList.add(p);
+			}
+			
+		}
+
+		return new Gson().toJson(relevantList);
+		
+	}
+	
+	private List<PatientGnu> addLatestDiagnoseToPatient(List<PatientGnu> patientList) {
 		for (PatientGnu patient : patientList) {			
 			
 			DiagnoseGnu latestDiagnose = null;
@@ -372,31 +347,12 @@ public class GNUHealthConnectorImpl extends Connector {
 					}
 				}
 			}
-			patient.setLatestDiagnoseRecName(latestDiagnose.getPathology_rec_name());
+			if(latestDiagnose != null){
+				patient.setLatestDiagnoseRecName(latestDiagnose.getPathology_rec_name());
+			}
 		}
 		
-		ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();
-		
-		try {
-			// If a search for an int is executed, param must be of type int and therefore parseable by Integer
-			int id = Integer.parseInt(param);
-			
-			for (PatientGnu p : patientList) {
-				if (Integer.valueOf(p.getId()).equals(id)) relevantList.add(p);
-			}
-			
-		} catch (NumberFormatException e) {
-			// If this block is reached, param is not an int
-			// -> a search looking for a name has been executed
-			
-			for (PatientGnu p : patientList) {
-				if (p.getRec_name().toLowerCase().contains(param.toLowerCase())) relevantList.add(p);
-			}
-			
-		}
-
-		return new Gson().toJson(relevantList);
-		
+		return patientList;
 	}
 	
 	@Override
