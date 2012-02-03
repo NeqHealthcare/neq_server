@@ -22,7 +22,7 @@ public class DiagnoseGnu extends Diagnose{
 	
 	private boolean status, pregnancy_warning, is_active, is_infectious, is_allergy;
     private String short_comment, disease_severity, id, pathology,pathology_rec_name;
-    private DateGnu diagnosed_date;
+    private DateGnu diagnosed_date, healed_date;
 	
 //	public DiagnoseGnu(Date diagnoseDate, Date healed_date, Doctor doctor,
 //			List<Disease> disease, boolean status, boolean pregnancy_warning,
@@ -64,7 +64,16 @@ public class DiagnoseGnu extends Diagnose{
 //	public void setDiagnoseDate(Date diagnoseDate) {
 //		this.diagnoseDate = diagnoseDate;
 //	}
-	
+    
+    public DiagnoseGnu returnLatest(DiagnoseGnu dg){
+    	
+    	if(this.getDiagnosed_date().latest(dg.getDiagnosed_date())){
+    		return this;
+    	}else{
+    		return dg;
+    	}
+    }
+    
 	public Doctor getDoctor() {
 		return doctor;
 	}
@@ -183,6 +192,12 @@ public class DiagnoseGnu extends Diagnose{
 	}
 	public void setPathology_rec_name(String pathology_rec_name) {
 		this.pathology_rec_name = pathology_rec_name;
+	}
+	public DateGnu getHealed_date() {
+		return healed_date;
+	}
+	public void setHealed_date(DateGnu healed_date) {
+		this.healed_date = healed_date;
 	}
 
 //	/**

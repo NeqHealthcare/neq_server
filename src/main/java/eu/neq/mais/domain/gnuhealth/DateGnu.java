@@ -27,5 +27,26 @@ public class DateGnu {
 	}
 	
 	
+    public boolean latest(DateGnu dg){
+    	if(this.year > dg.getYear()){
+    		return true;
+    	}
+    	if(this.year == dg.getYear()){
+    		if(this.getMonth()>dg.getMonth()){
+    			return true;
+    		}
+    		if(this.getMonth() == dg.getMonth()){
+    			if(this.getDay() > dg.getDay()){
+    				return true;
+    			}else{
+    				return false;
+    			}
+    		}else{
+    			return false;
+    		}
+    	}else{
+    		return false;
+    	}
+    }
 		
 }

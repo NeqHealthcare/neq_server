@@ -12,8 +12,10 @@ import eu.neq.mais.domain.Patient;
 public class PatientGnu extends Patient {
 	
 	private String rec_name;
+	//contains diagnoses id, but has to be named diseases because of automatic json to instance process
 	private List<String> diseases;
-	private List<DiagnoseGnu> diagnoseList;
+	private String latestDiagnoseRecName;
+//	private List<DiagnoseGnu> diagnoseList;
 	private String age;
 	private String sex;
 	private String id;
@@ -28,12 +30,12 @@ public class PatientGnu extends Patient {
 		this.rec_name = rec_name;
 	}
 
-	public List<String> getDiseases() {
+	public List<String> getDiagnoseIds() {
 		return diseases;
 	}
 
-	public void setDiseases(List<String> diseases) {
-		this.diseases = diseases;
+	public void setDiagnoseIds(List<String> diagnoseIds) {
+		this.diseases = diagnoseIds;
 	}
 
 	public String getAge() {
@@ -64,13 +66,13 @@ public class PatientGnu extends Patient {
 		this.id = id;
 	}
 
-	public List<DiagnoseGnu> getDiagnoseList() {
-		return diagnoseList;
-	}
-
-	public void setDiagnoseList(List<DiagnoseGnu> diagnoseList) {
-		this.diagnoseList = diagnoseList;
-	}
+//	public List<DiagnoseGnu> getDiagnoseList() {
+//		return diagnoseList;
+//	}
+//
+//	public void setDiagnoseList(List<DiagnoseGnu> diagnoseList) {
+//		this.diagnoseList = diagnoseList;
+//	}
 
 	public String getPrimary_care_doctor_rec_name() {
 		return primary_care_doctor_rec_name;
@@ -87,5 +89,13 @@ public class PatientGnu extends Patient {
 
 	public void setPrimary_care_doctor_id(String primary_care_doctor_id) {
 		this.primary_care_doctor_name = primary_care_doctor_id;
+	}
+
+	public String getLatestDiagnoseRecName() {
+		return latestDiagnoseRecName;
+	}
+
+	public void setLatestDiagnoseRecName(String latestDiagnoseRecName) {
+		this.latestDiagnoseRecName = latestDiagnoseRecName;
 	};
 }
