@@ -277,7 +277,12 @@ public class GNUHealthConnectorImpl extends Connector {
 	}
 
 	@Override
-	public String searchForAPatient(String param) {
+	public String searchForAPatient(String param)
+	{
+		return new Gson().toJson(generatePatientListObjectById(param));
+	}
+	
+	private ArrayList<PatientGnu> generatePatientListObjectById(String param) {
 		String session = getAdminSession();
 		
 		String patientListString = "false";
@@ -318,7 +323,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			
 		}
 
-		return new Gson().toJson(relevantList);
+		return relevantList;
 		
 	}
 	
@@ -335,10 +340,14 @@ public class GNUHealthConnectorImpl extends Connector {
 							diagnoseString.lastIndexOf("]"));
 					diagnoseString = diagnoseString.replaceAll(
 							"pathology.rec_name", "pathology_rec_name");
-					Type type = new TypeToken<DiagnoseGnu>() {
-					}.getType();
+					diagnoseString = diagnoseString.replaceAll(
+							"doctor.rec_name", "doctor_rec_name");
+					//diagnoseString = diagnoseString.replaceAll(
+					//		"cs_code.rec_name", "cs_code_rec_name");
+					//Type type = new TypeToken<DiagnoseGnu>() {
+					//}.getType();
 					DiagnoseGnu tempDiagnose = ((DiagnoseGnu) new Gson().fromJson(
-							diagnoseString, type));
+							diagnoseString, DiagnoseGnu.class));
 					if(latestDiagnose != null){
 						latestDiagnose = latestDiagnose.returnLatest(tempDiagnose);
 						
@@ -353,6 +362,46 @@ public class GNUHealthConnectorImpl extends Connector {
 		}
 		
 		return patientList;
+	}
+	
+	@Override
+	public String returnDashBoardData(String session, String id) {	
+		
+		List<PatientGnu> patientList = this.generatePatientListObjectById(id);
+		List<DiagnoseGnu> diagnoseList = new ArrayList<DiagnoseGnu>(); 
+		for (PatientGnu patient : patientList) {
+			
+		DiagnoseGnu allDiagnosis = null;
+		if (patient.getDiagnoseIds() != null) {
+			for (String diseaseID : patient.getDiagnoseIds()) {
+				String diagnoseString = execute(getDiagnoseReadMethod(),
+						getReturnDiagnoseParams(diseaseID));
+				diagnoseString = diagnoseString.substring(
+						diagnoseString.indexOf("[") + 1,
+						diagnoseString.lastIndexOf("]"));
+				diagnoseString = diagnoseString.replaceAll(
+						"pathology.rec_name", "pathology_rec_name");
+				Type type = new TypeToken<DiagnoseGnu>() {
+				}.getType();
+				diagnoseList.add(((DiagnoseGnu) new Gson().fromJson(
+						diagnoseString, type)));
+				
+			}
+		}
+		}
+		
+		if(diagnoseList.isEmpty()){
+			return "false";
+		}
+			else 
+		{
+				//Type listType = new TypeToken<List<DiagnoseGnu>>() {
+				//}.getType();
+				return new Gson().toJson(diagnoseList);
+				
+				}
+				
+	
 	}
 	
 	@Override
@@ -450,7 +499,12 @@ public class GNUHealthConnectorImpl extends Connector {
 				new String[] { "status", "pregnancy_warning", "is_active",
 						"short_comment", "diagnosed_date", "healed_date",
 						"pathology", "disease_severity", "is_infectious",
-						"is_allergy", "pathology.rec_name", },
+						"is_allergy", "pathology.rec_name",
+						"date_start_treatment", "doctor", "age", "weeks_of_pregnancy",
+						"is_on_treatment", "treatment_description", "extra_info", 
+						"date_stop_treatment", "pcs_code", "allergy_type", 
+						"doctor.rec_name", "pcs_code.rec_name"
+				},
 				"REPLACE_CONTEXT" };
 	}
 

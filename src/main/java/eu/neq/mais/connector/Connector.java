@@ -54,7 +54,7 @@ public abstract class Connector {
 	public abstract String returnDiagnose(String session, String diagnoseID);
 	public abstract String searchForAPatient(String param);
 	public abstract String returnPersonalInformation(String userSession, boolean name, boolean picture);
-	
+	public abstract String returnDashBoardData(String session, String id);
 	
 	public void setBackend(Backend backend){
 		this.backend = backend;
@@ -71,6 +71,9 @@ public abstract class Connector {
 	public static void setLogger(Logger logger) {
 		Connector.logger = logger;
 	}
+
+	
+	
 	
 	
 }

@@ -41,7 +41,7 @@ public class PatientDashBoardHandler {
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore
 					.getBackendSid(session));
-			//dashboard = connector.returnDashBoardData(session, id);
+			dashboard = connector.returnDashBoardData(session, id);
 
 		} catch (Exception e) {
 			e.printStackTrace();

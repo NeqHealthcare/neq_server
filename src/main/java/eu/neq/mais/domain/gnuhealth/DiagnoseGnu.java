@@ -17,12 +17,14 @@ public class DiagnoseGnu extends Diagnose{
 
 	
 //	private Date diagnoseDate, healed_date;
-	private Doctor doctor;
+	private DoctorGnu doctor;
 	private List<Disease> disease;
 	
-	private boolean status, pregnancy_warning, is_active, is_infectious, is_allergy;
-    private String short_comment, disease_severity, id, pathology,pathology_rec_name;
-    private DateGnu diagnosed_date, healed_date;
+	private boolean pregnancy_warning, is_active, is_infectious, is_allergy, is_on_treatment;
+    private String short_comment, disease_severity, id, pathology_rec_name,  doctor_rec_name,
+    treatment_description, extra_info, allergy_type, pds_code_rec_name, status;
+    int  pcs_code, pathology, age, weeks_of_pregnancy;
+    private DateGnu diagnosed_date, healed_date, date_start_treatment, date_stop_treatment;
 	
 //	public DiagnoseGnu(Date diagnoseDate, Date healed_date, Doctor doctor,
 //			List<Disease> disease, boolean status, boolean pregnancy_warning,
@@ -74,12 +76,12 @@ public class DiagnoseGnu extends Diagnose{
     	}
     }
     
-	public Doctor getDoctor() {
-		return doctor;
-	}
-	public void setDoctor(Doctor doctor) {
-		this.doctor = doctor;
-	}
+//	public Doctor getDoctor() {
+//		return doctor;
+//	}
+//	public void setDoctor(DoctorGnu doctor) {
+//		this.doctor = doctor;
+//	}
 	public List<Disease> getDisease() {
 		return disease;
 	}
@@ -91,16 +93,16 @@ public class DiagnoseGnu extends Diagnose{
 	/**
 	 * @return the status
 	 */
-	public boolean isStatus() {
-		return status;
-	}
+//	public boolean isStatus() {
+//		return status;
+//	}
 
 	/**
 	 * @param status the status to set
 	 */
-	public void setStatus(boolean status) {
-		this.status = status;
-	}
+//	public void setStatus(boolean status) {
+//		this.status = status;
+//	}
 
 	/**
 	 * @return the pregnancy_warning
@@ -175,12 +177,12 @@ public class DiagnoseGnu extends Diagnose{
 	public void setId(String id) {
 		this.id = id;
 	}
-	public String getPathology() {
-		return pathology;
-	}
-	public void setPathology(String pathology) {
-		this.pathology = pathology;
-	}
+//	public String getPathology() {
+//		return pathology;
+//	}
+//	public void setPathology(String pathology) {
+//		this.pathology = pathology;
+//	}
 	public String getDisease_severity() {
 		return disease_severity;
 	}
