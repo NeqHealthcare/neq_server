@@ -342,12 +342,14 @@ public class GNUHealthConnectorImpl extends Connector {
 							"pathology.rec_name", "pathology_rec_name");
 					diagnoseString = diagnoseString.replaceAll(
 							"doctor.rec_name", "doctor_rec_name");
-					//diagnoseString = diagnoseString.replaceAll(
-					//		"cs_code.rec_name", "cs_code_rec_name");
-					//Type type = new TypeToken<DiagnoseGnu>() {
-					//}.getType();
+					diagnoseString = diagnoseString.replaceAll(
+							"cs_code.rec_name", "cs_code_rec_name");
+					Type type = new TypeToken<DiagnoseGnu>() {
+					}.getType();
+					
+					
 					DiagnoseGnu tempDiagnose = ((DiagnoseGnu) new Gson().fromJson(
-							diagnoseString, DiagnoseGnu.class));
+							diagnoseString, type));
 					if(latestDiagnose != null){
 						latestDiagnose = latestDiagnose.returnLatest(tempDiagnose);
 						
@@ -381,10 +383,13 @@ public class GNUHealthConnectorImpl extends Connector {
 						diagnoseString.lastIndexOf("]"));
 				diagnoseString = diagnoseString.replaceAll(
 						"pathology.rec_name", "pathology_rec_name");
-				Type type = new TypeToken<DiagnoseGnu>() {
-				}.getType();
+				diagnoseString = diagnoseString.replaceAll(
+						"doctor.rec_name", "doctor_rec_name");
+				//Type type = new TypeToken<DiagnoseGnu>() {
+				//}.getType();
+				//System.out.println(new Gson().toJson(DiagnoseGnu.class));
 				diagnoseList.add(((DiagnoseGnu) new Gson().fromJson(
-						diagnoseString, type)));
+						diagnoseString, DiagnoseGnu.class)));
 				
 			}
 		}

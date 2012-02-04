@@ -17,55 +17,15 @@ public class DiagnoseGnu extends Diagnose{
 
 	
 //	private Date diagnoseDate, healed_date;
-	private DoctorGnu doctor;
+//	private DoctorGnu doctor;
 	private List<Disease> disease;
 	
 	private boolean pregnancy_warning, is_active, is_infectious, is_allergy, is_on_treatment;
-    private String short_comment, disease_severity, id, pathology_rec_name,  doctor_rec_name,
+    private String short_comment, disease_severity, pathology_rec_name,  doctor_rec_name,
     treatment_description, extra_info, allergy_type, pds_code_rec_name, status;
-    int  pcs_code, pathology, age, weeks_of_pregnancy;
+    int  pcs_code, pathology, age, weeks_of_pregnancy, id, doctor;
     private DateGnu diagnosed_date, healed_date, date_start_treatment, date_stop_treatment;
 	
-//	public DiagnoseGnu(Date diagnoseDate, Date healed_date, Doctor doctor,
-//			List<Disease> disease, boolean status, boolean pregnancy_warning,
-//			boolean is_active, boolean is_infectious, boolean is_allergy,
-//			String short_comment, String disease_severity) {
-//		
-//		this.setDiagnoseDate(diagnoseDate);
-//		this.setHealed_date(healed_date);
-//		this.setDoctor(doctor);
-//		this.setDisease(disease);
-//		
-//		this.status = status;
-//		this.pregnancy_warning = pregnancy_warning;
-//		this.is_active = is_active;
-//		this.is_infectious = is_infectious;
-//		this.is_allergy = is_allergy;
-//		this.short_comment = short_comment;
-//		this.disease_severity = disease_severity;
-//		
-//	}
-//	
-
-//	/**
-//	 * @return the healed_date
-//	 */
-//	public Date getHealed_date() {
-//		return healed_date;
-//	}
-//	/**
-//	 * @param healed_date the healed_date to set
-//	 */
-//	
-//	public void setHealed_date(Date healed_date) {
-//		this.healed_date = healed_date;
-//	}
-//	public Date getDiagnoseDate() {
-//		return diagnoseDate;
-//	}
-//	public void setDiagnoseDate(Date diagnoseDate) {
-//		this.diagnoseDate = diagnoseDate;
-//	}
     
     public DiagnoseGnu returnLatest(DiagnoseGnu dg){
     	
@@ -75,34 +35,39 @@ public class DiagnoseGnu extends Diagnose{
     		return dg;
     	}
     }
-    
-//	public Doctor getDoctor() {
-//		return doctor;
-//	}
-//	public void setDoctor(DoctorGnu doctor) {
-//		this.doctor = doctor;
-//	}
+
+
+	/**
+	 * @return the doctor
+	 */
+	public int getDoctor() {
+		return doctor;
+	}
+
+
+	/**
+	 * @param doctor the doctor to set
+	 */
+	public void setDoctor(int doctor) {
+		this.doctor = doctor;
+	}
+
+
+	/**
+	 * @return the disease
+	 */
 	public List<Disease> getDisease() {
 		return disease;
 	}
+
+
+	/**
+	 * @param disease the disease to set
+	 */
 	public void setDisease(List<Disease> disease) {
 		this.disease = disease;
 	}
-	
 
-	/**
-	 * @return the status
-	 */
-//	public boolean isStatus() {
-//		return status;
-//	}
-
-	/**
-	 * @param status the status to set
-	 */
-//	public void setStatus(boolean status) {
-//		this.status = status;
-//	}
 
 	/**
 	 * @return the pregnancy_warning
@@ -111,12 +76,14 @@ public class DiagnoseGnu extends Diagnose{
 		return pregnancy_warning;
 	}
 
+
 	/**
 	 * @param pregnancy_warning the pregnancy_warning to set
 	 */
 	public void setPregnancy_warning(boolean pregnancy_warning) {
 		this.pregnancy_warning = pregnancy_warning;
 	}
+
 
 	/**
 	 * @return the is_active
@@ -125,12 +92,14 @@ public class DiagnoseGnu extends Diagnose{
 		return is_active;
 	}
 
+
 	/**
 	 * @param is_active the is_active to set
 	 */
 	public void setIs_active(boolean is_active) {
 		this.is_active = is_active;
 	}
+
 
 	/**
 	 * @return the is_infectious
@@ -139,12 +108,14 @@ public class DiagnoseGnu extends Diagnose{
 		return is_infectious;
 	}
 
+
 	/**
 	 * @param is_infectious the is_infectious to set
 	 */
 	public void setIs_infectious(boolean is_infectious) {
 		this.is_infectious = is_infectious;
 	}
+
 
 	/**
 	 * @return the is_allergy
@@ -153,113 +124,317 @@ public class DiagnoseGnu extends Diagnose{
 		return is_allergy;
 	}
 
+
 	/**
 	 * @param is_allergy the is_allergy to set
 	 */
 	public void setIs_allergy(boolean is_allergy) {
 		this.is_allergy = is_allergy;
 	}
-	public DateGnu getDiagnosed_date() {
-		return diagnosed_date;
+
+
+	/**
+	 * @return the is_on_treatment
+	 */
+	public boolean isIs_on_treatment() {
+		return is_on_treatment;
 	}
-	public void setDiagnosed_date(DateGnu diagnosed_date) {
-		this.diagnosed_date = diagnosed_date;
+
+
+	/**
+	 * @param is_on_treatment the is_on_treatment to set
+	 */
+	public void setIs_on_treatment(boolean is_on_treatment) {
+		this.is_on_treatment = is_on_treatment;
 	}
+
+
+	/**
+	 * @return the short_comment
+	 */
 	public String getShort_comment() {
 		return short_comment;
 	}
+
+
+	/**
+	 * @param short_comment the short_comment to set
+	 */
 	public void setShort_comment(String short_comment) {
 		this.short_comment = short_comment;
 	}
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-//	public String getPathology() {
-//		return pathology;
-//	}
-//	public void setPathology(String pathology) {
-//		this.pathology = pathology;
-//	}
+
+
+	/**
+	 * @return the disease_severity
+	 */
 	public String getDisease_severity() {
 		return disease_severity;
 	}
+
+
+	/**
+	 * @param disease_severity the disease_severity to set
+	 */
 	public void setDisease_severity(String disease_severity) {
 		this.disease_severity = disease_severity;
 	}
+
+
+	/**
+	 * @return the pathology_rec_name
+	 */
 	public String getPathology_rec_name() {
 		return pathology_rec_name;
 	}
+
+
+	/**
+	 * @param pathology_rec_name the pathology_rec_name to set
+	 */
 	public void setPathology_rec_name(String pathology_rec_name) {
 		this.pathology_rec_name = pathology_rec_name;
 	}
+
+
+	/**
+	 * @return the doctor_rec_name
+	 */
+	public String getDoctor_rec_name() {
+		return doctor_rec_name;
+	}
+
+
+	/**
+	 * @param doctor_rec_name the doctor_rec_name to set
+	 */
+	public void setDoctor_rec_name(String doctor_rec_name) {
+		this.doctor_rec_name = doctor_rec_name;
+	}
+
+
+	/**
+	 * @return the treatment_description
+	 */
+	public String getTreatment_description() {
+		return treatment_description;
+	}
+
+
+	/**
+	 * @param treatment_description the treatment_description to set
+	 */
+	public void setTreatment_description(String treatment_description) {
+		this.treatment_description = treatment_description;
+	}
+
+
+	/**
+	 * @return the extra_info
+	 */
+	public String getExtra_info() {
+		return extra_info;
+	}
+
+
+	/**
+	 * @param extra_info the extra_info to set
+	 */
+	public void setExtra_info(String extra_info) {
+		this.extra_info = extra_info;
+	}
+
+
+	/**
+	 * @return the allergy_type
+	 */
+	public String getAllergy_type() {
+		return allergy_type;
+	}
+
+
+	/**
+	 * @param allergy_type the allergy_type to set
+	 */
+	public void setAllergy_type(String allergy_type) {
+		this.allergy_type = allergy_type;
+	}
+
+
+	/**
+	 * @return the pds_code_rec_name
+	 */
+	public String getPds_code_rec_name() {
+		return pds_code_rec_name;
+	}
+
+
+	/**
+	 * @param pds_code_rec_name the pds_code_rec_name to set
+	 */
+	public void setPds_code_rec_name(String pds_code_rec_name) {
+		this.pds_code_rec_name = pds_code_rec_name;
+	}
+
+
+	/**
+	 * @return the status
+	 */
+	public String getStatus() {
+		return status;
+	}
+
+
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+
+	/**
+	 * @return the pcs_code
+	 */
+	public int getPcs_code() {
+		return pcs_code;
+	}
+
+
+	/**
+	 * @param pcs_code the pcs_code to set
+	 */
+	public void setPcs_code(int pcs_code) {
+		this.pcs_code = pcs_code;
+	}
+
+
+	/**
+	 * @return the pathology
+	 */
+	public int getPathology() {
+		return pathology;
+	}
+
+
+	/**
+	 * @param pathology the pathology to set
+	 */
+	public void setPathology(int pathology) {
+		this.pathology = pathology;
+	}
+
+
+	/**
+	 * @return the age
+	 */
+	public int getAge() {
+		return age;
+	}
+
+
+	/**
+	 * @param age the age to set
+	 */
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+
+	/**
+	 * @return the weeks_of_pregnancy
+	 */
+	public int getWeeks_of_pregnancy() {
+		return weeks_of_pregnancy;
+	}
+
+
+	/**
+	 * @param weeks_of_pregnancy the weeks_of_pregnancy to set
+	 */
+	public void setWeeks_of_pregnancy(int weeks_of_pregnancy) {
+		this.weeks_of_pregnancy = weeks_of_pregnancy;
+	}
+
+
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
+	}
+
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+
+
+	/**
+	 * @return the diagnosed_date
+	 */
+	public DateGnu getDiagnosed_date() {
+		return diagnosed_date;
+	}
+
+
+	/**
+	 * @param diagnosed_date the diagnosed_date to set
+	 */
+	public void setDiagnosed_date(DateGnu diagnosed_date) {
+		this.diagnosed_date = diagnosed_date;
+	}
+
+
+	/**
+	 * @return the healed_date
+	 */
 	public DateGnu getHealed_date() {
 		return healed_date;
 	}
+
+
+	/**
+	 * @param healed_date the healed_date to set
+	 */
 	public void setHealed_date(DateGnu healed_date) {
 		this.healed_date = healed_date;
 	}
 
-//	/**
-//	 * @return the short_comment
-//	 */
-//	public String getShort_comment() {
-//		return short_comment;
-//	}
-//
-//	/**
-//	 * @param short_comment the short_comment to set
-//	 */
-//	public void setShort_comment(String short_comment) {
-//		this.short_comment = short_comment;
-//	}
-//
-//	/**
-//	 * @return the disease_severity
-//	 */
-//	public String getDisease_severity() {
-//		return disease_severity;
-//	}
-//
-//	/**
-//	 * @param disease_severity the disease_severity to set
-//	 */
-//	public void setDisease_severity(String disease_severity) {
-//		this.disease_severity = disease_severity;
-//	}
-//
-//	public String getId() {
-//		return id;
-//	}
-//
-//	public void setId(String id) {
-//		this.id = id;
-//	}
-//
-//	public String getRec_name() {
-//		return rec_name;
-//	}
-//
-//	public void setRec_name(String rec_name) {
-//		this.rec_name = rec_name;
-//	}
-//
-//	public String getDiagnosed_date() {
-//		return diagnosed_date;
-//	}
-//
-//	public void setDiagnosed_date(String diagnosed_date) {
-//		this.diagnosed_date = diagnosed_date;
-//	}
-//
-//	public String getPathology() {
-//		return pathology;
-//	}
-//
-//	public void setPathology(String pathology) {
-//		this.pathology = pathology;
-//	}
+
+	/**
+	 * @return the date_start_treatment
+	 */
+	public DateGnu getDate_start_treatment() {
+		return date_start_treatment;
+	}
+
+
+	/**
+	 * @param date_start_treatment the date_start_treatment to set
+	 */
+	public void setDate_start_treatment(DateGnu date_start_treatment) {
+		this.date_start_treatment = date_start_treatment;
+	}
+
+
+	/**
+	 * @return the date_stop_treatment
+	 */
+	public DateGnu getDate_stop_treatment() {
+		return date_stop_treatment;
+	}
+
+
+	/**
+	 * @param date_stop_treatment the date_stop_treatment to set
+	 */
+	public void setDate_stop_treatment(DateGnu date_stop_treatment) {
+		this.date_stop_treatment = date_stop_treatment;
+	}
+    
 
 }
