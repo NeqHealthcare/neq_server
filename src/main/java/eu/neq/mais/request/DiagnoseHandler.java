@@ -39,7 +39,7 @@ public class DiagnoseHandler {
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore
 					.getBackendSid(session));
-			diagnose = connector.returnDiagnose(session, id);
+			diagnose = connector.returnDiagnose(id);
 
 		} catch (Exception e) {
 			e.printStackTrace();

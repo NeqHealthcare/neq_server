@@ -48,7 +48,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	/**
 	 * Main method is for a test run of several functions of the connector and
-	 * should not be used for testing purposes only.
+	 * should not be used! For testing purposes only.
 	 * 
 	 * @param args
 	 *            - no influence
@@ -119,8 +119,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
 	 * @see eu.neq.mais.connector.Connector#logout(java.lang.String,
 	 * java.lang.String)
@@ -134,7 +133,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		return result;
 	}
 
-	/**
+	/*
 	 * Returns the http-style URL for the back-end assigned to this connector.
 	 * 
 	 * @return URL
@@ -151,8 +150,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
 	 * @see eu.neq.mais.connector.Connector#login(java.lang.String,
 	 * java.lang.String, java.lang.String)
@@ -181,7 +179,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		return result;
 	}
 
-	/**
+	/*
 	 * Helping method for executing commands in the back-end system using
 	 * JSON-RPC
 	 * 
@@ -193,13 +191,13 @@ public class GNUHealthConnectorImpl extends Connector {
 	 */
 	private String execute(String method, Object[] params) {
 
-		/**
+		/*
 		 * Get GnuHealthCompatible Json Request file
 		 */
 		GnuHealthJsonObject dom = new GnuHealthJsonObject(method, params,
 				gnid++);
 
-		/**
+		/*
 		 * Send json file to GNUHealth and recieve response
 		 */
 		URLConnection connection;
@@ -242,12 +240,11 @@ public class GNUHealthConnectorImpl extends Connector {
 		return result;
 	}
 
-	@Override
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
 	 * @see eu.neq.mais.connector.Connector#returnAllPatientsForUIList()
 	 */
+	@Override
 	public String returnAllPatientsForUIList() {
 		String session = getAdminSession();
 
@@ -270,14 +267,12 @@ public class GNUHealthConnectorImpl extends Connector {
 		return new Gson().toJson(patientList);
 	}
 
-	@Override
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see
 	 * eu.neq.mais.connector.Connector#returnPersonalPatientsForUIList(java.
 	 * lang.String)
 	 */
+	@Override
 	public String returnPersonalPatientsForUIList(String session) {
 		String patientListString = "false";
 
@@ -307,17 +302,16 @@ public class GNUHealthConnectorImpl extends Connector {
 		return new Gson().toJson(relevantList);
 	}
 
-	@Override
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
 	 * @see eu.neq.mais.connector.Connector#searchForAPatient(java.lang.String)
 	 */
+	@Override
 	public String searchForAPatient(String param) {
 		return new Gson().toJson(generatePatientListObjectById(param));
 	}
 
-	/**
+	/*
 	 * Helping method for gathering all relevant patients with a specific name or id
 	 * @param param search term as a name:String or id:Integer
 	 * @return list of relevant results
@@ -370,7 +364,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	}
 
-	/**
+	/*
 	 * Helping method adding the latest diagnosis to patient objects.
 	 * @param patientList patients who should be assigned to their latest diagnoses
 	 * @return List of patients w/ diagnoses.
@@ -416,11 +410,11 @@ public class GNUHealthConnectorImpl extends Connector {
 		return patientList;
 	}
 
-	@Override
-	/*
-	 * (non-Javadoc)
+	/**
+	 * 
 	 * @see eu.neq.mais.connector.Connector#returnDashBoardData(java.lang.String, java.lang.String)
 	 */
+	@Override
 	public String returnDashBoardData(String session, String id) {
 
 		List<PatientGnu> patientList = this.generatePatientListObjectById(id);
@@ -456,8 +450,7 @@ public class GNUHealthConnectorImpl extends Connector {
 	}
 
 	@Override
-	/*
-	 * (non-Javadoc)
+	/**
 	 * @see eu.neq.mais.connector.Connector#returnDiagnose(java.lang.String)
 	 */
 	public String returnDiagnose(String diagnoseID) {
@@ -469,8 +462,7 @@ public class GNUHealthConnectorImpl extends Connector {
 	}
 
 	@Override
-	/*
-	 * (non-Javadoc)
+	/**
 	 * @see eu.neq.mais.connector.Connector#returnPersonalInformation(java.lang.String, boolean, boolean)
 	 */
 	public String returnPersonalInformation(String userSession, boolean name,
@@ -487,7 +479,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		return new Gson().toJson(personalInfo);
 	}
 	
-	/**
+	/*
 	 * Helping method to find all registered patients.
 	 * @return Integer array of all patient IDs.
 	 */
@@ -513,7 +505,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		return idList;
 	}
 
-	/**
+	/*
 	 * Helping method to get all user IDs
 	 * @return Integer array of all user IDs.
 	 */
@@ -538,7 +530,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		return idList;
 	}
 
-	/**
+	/*
 	 * Helping method, returning a ID corresponding to a user-name.
 	 * @param username
 	 * @return ID
@@ -574,7 +566,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	}
 
-	/**
+	/*
 	 * Helping method returning the cecord name of a user.
 	 * @param id user's ID
 	 * @return Record name
@@ -609,7 +601,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	}
 
-	/**
+	/*
 	 * Helping method returning the ID's of all parties of the GNUHealth back-end.
 	 * @return Array of IDs.
 	 */
@@ -635,7 +627,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		return idList;
 	}
 
-	/**
+	/*
 	 * Helping method returning the corresponding physician ID of a user.
 	 * @param user_id
 	 * @return physician id
@@ -668,7 +660,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		return -1;
 	}
 
-	/**
+	/*
 	 * Helping method necessary to execute certain actions which need admin-level permissions. 
 	 * Therefore, this method makes sure that the connector logs into the back-end only once 
 	 * and returns the connector's admin session.
