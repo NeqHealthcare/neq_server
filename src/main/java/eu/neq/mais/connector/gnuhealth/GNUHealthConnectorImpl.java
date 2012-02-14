@@ -34,30 +34,35 @@ import eu.neq.mais.technicalservice.SessionStore;
 import eu.neq.mais.technicalservice.Settings;
 
 /**
- * 
+ * Connector implementation for a GNU Health Hospital Information System. All
+ * methods provided by this class deal with accessing information of the
+ * GNUHealth system only. The underlying technology is JSON-RPC.
  * 
  * @author Jan Gansen, Sebastian Schütz, Denny Stohr
  * 
  */
 public class GNUHealthConnectorImpl extends Connector {
 
-	private static Connector instance = null;
 	private static int gnid = 55;
 	private static String adminSession = null;
 
+	/**
+	 * Main method is for a test run of several functions of the connector and
+	 * should not be used for testing purposes only.
+	 * 
+	 * @param args
+	 *            - no influence
+	 */
 	public static void main(String[] args) {
-		
-//		System.out.println("birthday: "+calculateDateOfBirth("69y 5m 4d"));
-		
-		
+
 		try {
 			Connector con = ConnectorFactory.getConnector("gnuhealth1");
-			
+
 			String login_name = "jgansen";
 			String password = "iswi223<<";
-				
+
 			// LOGIN
-			String user_session = con.login(login_name, password,"gnuhealth1");
+			String user_session = con.login(login_name, password, "gnuhealth1");
 
 			// // Search Patients
 			// Object[] params = new Object[]{1, session, new String[]{}, 0,
@@ -79,33 +84,31 @@ public class GNUHealthConnectorImpl extends Connector {
 			// params3);
 			// logger.info("res3: "+res3);
 
-			 String patientListForUI =
-			 con.returnAllPatientsForUIList();
-			 System.out.println(patientListForUI.toString());
+			// Find Patient List for UI
+			String patientListForUI = con.returnAllPatientsForUIList();
+			System.out.println(patientListForUI.toString());
 
 			// return all ids
-//			int idfound = SessionStore.getUserId(user_session);
-//			int pid = ((GNUHealthConnectorImpl)con).getPhysicianId(idfound);
-//			System.out.println("\n\n");
-//			System.out.println("SEARCH FOR USER_ID AND PARTY_ID");
-//			System.out.println("----------------------------------------------------");
-//			System.out.println("[" + login_name +"] User.id:" + idfound + ", Parties.id (getPhysicianId): "
-//				+ pid + " (system intern record id = equal to physician id)");
-//			System.out.println("\n\n");
-//			System.out.println("PERSONAL PATIENTS FOR "+login_name+" ("+user_session+")");
-//			System.out.println("----------------------------------------------------");
-//			System.out.println(con.returnPersonalPatientsForUIList(user_session));
-//			System.out.println("\n\n");
-			
-		    
-		    //return personal information of user: 
-//			System.out.println("--------PERSONAL INFORMATION OF USER: "+((GNUHealthConnectorImpl)con).returnPersonalInformation(user_session,true,true));
-			
-			
+			// int idfound = SessionStore.getUserId(user_session);
+			// int pid = ((GNUHealthConnectorImpl)con).getPhysicianId(idfound);
+			// System.out.println("\n\n");
+			// System.out.println("SEARCH FOR USER_ID AND PARTY_ID");
+			// System.out.println("----------------------------------------------------");
+			// System.out.println("[" + login_name +"] User.id:" + idfound +
+			// ", Parties.id (getPhysicianId): "
+			// + pid + " (system intern record id = equal to physician id)");
+			// System.out.println("\n\n");
+			// System.out.println("PERSONAL PATIENTS FOR "+login_name+" ("+user_session+")");
+			// System.out.println("----------------------------------------------------");
+			// System.out.println(con.returnPersonalPatientsForUIList(user_session));
+			// System.out.println("\n\n");
+
+			// return personal information of user:
+			// System.out.println("--------PERSONAL INFORMATION OF USER: "+((GNUHealthConnectorImpl)con).returnPersonalInformation(user_session,true,true));
+
 			// searching for a patient
-//			String param = "sop";
-//			System.out.println(con.searchForAPatient(session, param));
-			
+			// String param = "sop";
+			// System.out.println(con.searchForAPatient(session, param));
 
 			// Logout
 			String res4 = con.logout(login_name, user_session);
@@ -116,23 +119,26 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	}
 
-	public static Connector getInstance() {
-
-		if (instance == null) {
-			instance = new GNUHealthConnectorImpl();
-		}
-		return instance;
-	}
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see eu.neq.mais.connector.Connector#logout(java.lang.String,
+	 * java.lang.String)
+	 */
 	public String logout(String username, String session) {
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
 		String[] params = new String[] { username, session };
 		String result = new Gson().toJson(proxy.call(this.getLogoutMethod(),
 				params));
-		logger.info("! --- logout -> "+username+ ": " + result);
+		logger.info("! --- logout -> " + username + ": " + result);
 		return result;
 	}
 
+	/**
+	 * Returns the http-style URL for the back-end assigned to this connector.
+	 * 
+	 * @return URL
+	 */
 	private URL getBackEndUrl() {
 		try {
 			return new URL("http://" + this.getBackend().getUrl() + ":"
@@ -145,8 +151,11 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	}
 
-	/**
-	 * Login successful: session Login unsuccessful: false as string
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see eu.neq.mais.connector.Connector#login(java.lang.String,
+	 * java.lang.String, java.lang.String)
 	 */
 	public String login(String username, String password, String backendSid) {
 		String[] params = new String[] { username, password };
@@ -160,17 +169,28 @@ public class GNUHealthConnectorImpl extends Connector {
 			char s = '"';
 			String session_split[] = result.split(String.valueOf(s));
 			result = session_split[1];
-			
+
 			Integer userId = getUserId(username);
 			SessionStore.put(result, backendSid, userId);
 		} else {
 			result = "false";
 		}
 		logger.info("! --- login -> connect to: " + getBackEndUrl().toString()
-				+ "with: " + username + ":" + password +" ----> RESULT: "+result);
+				+ "with: " + username + ":" + password + " ----> RESULT: "
+				+ result);
 		return result;
 	}
 
+	/**
+	 * Helping method for executing commands in the back-end system using
+	 * JSON-RPC
+	 * 
+	 * @param method
+	 *            the method which is supposed to be called
+	 * @param params
+	 *            it's parameters
+	 * @return result of the method invocation
+	 */
 	private String execute(String method, Object[] params) {
 
 		/**
@@ -193,7 +213,6 @@ public class GNUHealthConnectorImpl extends Connector {
 			connection.setDoOutput(true);
 
 			String jsonfile = dom.getJson();
-			// System.out.println("json req: "+jsonfile); // DEBUG LINE
 
 			OutputStream out = connection.getOutputStream();
 			out.write(jsonfile.getBytes());
@@ -224,9 +243,14 @@ public class GNUHealthConnectorImpl extends Connector {
 	}
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see eu.neq.mais.connector.Connector#returnAllPatientsForUIList()
+	 */
 	public String returnAllPatientsForUIList() {
 		String session = getAdminSession();
-		
+
 		String patientListString = "false";
 		patientListString = execute(getPatientReadMethod(),
 				getReturnPatientsParams(session));
@@ -245,15 +269,21 @@ public class GNUHealthConnectorImpl extends Connector {
 		patientList = addLatestDiagnoseToPatient(patientList);
 		return new Gson().toJson(patientList);
 	}
-	
+
 	@Override
-	public String returnPersonalPatientsForUIList(String session) {		
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * eu.neq.mais.connector.Connector#returnPersonalPatientsForUIList(java.
+	 * lang.String)
+	 */
+	public String returnPersonalPatientsForUIList(String session) {
 		String patientListString = "false";
-		
+
 		patientListString = execute(getPatientReadMethod(),
 				getReturnPatientsParams(session));
 
-		
 		Type listType = new TypeToken<List<PatientGnu>>() {
 		}.getType();
 		patientListString = patientListString.substring(
@@ -271,20 +301,30 @@ public class GNUHealthConnectorImpl extends Connector {
 		int party_id = getPhysicianId(SessionStore.getUserId(session));
 		ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();
 		for (PatientGnu p : patientList) {
-			if (Integer.valueOf(p.getPrimary_care_doctor_id()) == party_id) relevantList.add(p);
+			if (Integer.valueOf(p.getPrimary_care_doctor_id()) == party_id)
+				relevantList.add(p);
 		}
 		return new Gson().toJson(relevantList);
 	}
 
 	@Override
-	public String searchForAPatient(String param)
-	{
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see eu.neq.mais.connector.Connector#searchForAPatient(java.lang.String)
+	 */
+	public String searchForAPatient(String param) {
 		return new Gson().toJson(generatePatientListObjectById(param));
 	}
-	
+
+	/**
+	 * Helping method for gathering all relevant patients with a specific name or id
+	 * @param param search term as a name:String or id:Integer
+	 * @return list of relevant results
+	 */
 	private ArrayList<PatientGnu> generatePatientListObjectById(String param) {
 		String session = getAdminSession();
-		
+
 		String patientListString = "false";
 		patientListString = execute(getPatientReadMethod(),
 				getReturnPatientsParams(session));
@@ -302,34 +342,43 @@ public class GNUHealthConnectorImpl extends Connector {
 				listType);
 
 		patientList = addLatestDiagnoseToPatient(patientList);
-		
+
 		ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();
-		
+
 		try {
-			// If a search for an int is executed, param must be of type int and therefore parseable by Integer
+			// If a search for an int is executed, param must be of type int and
+			// therefore parseable by Integer
 			int id = Integer.parseInt(param);
-			
+
 			for (PatientGnu p : patientList) {
-				if (Integer.valueOf(p.getId()).equals(id)) relevantList.add(p);
+				if (Integer.valueOf(p.getId()).equals(id))
+					relevantList.add(p);
 			}
-			
+
 		} catch (NumberFormatException e) {
 			// If this block is reached, param is not an int
 			// -> a search looking for a name has been executed
-			
+
 			for (PatientGnu p : patientList) {
-				if (p.getRec_name().toLowerCase().contains(param.toLowerCase())) relevantList.add(p);
+				if (p.getRec_name().toLowerCase().contains(param.toLowerCase()))
+					relevantList.add(p);
 			}
-			
+
 		}
 
 		return relevantList;
-		
+
 	}
-	
-	private List<PatientGnu> addLatestDiagnoseToPatient(List<PatientGnu> patientList) {
-		for (PatientGnu patient : patientList) {			
-			
+
+	/**
+	 * Helping method adding the latest diagnosis to patient objects.
+	 * @param patientList patients who should be assigned to their latest diagnoses
+	 * @return List of patients w/ diagnoses.
+	 */
+	private List<PatientGnu> addLatestDiagnoseToPatient(
+			List<PatientGnu> patientList) {
+		for (PatientGnu patient : patientList) {
+
 			DiagnoseGnu latestDiagnose = null;
 			if (patient.getDiagnoseIds() != null) {
 				for (String diseaseID : patient.getDiagnoseIds()) {
@@ -346,179 +395,105 @@ public class GNUHealthConnectorImpl extends Connector {
 							"cs_code.rec_name", "cs_code_rec_name");
 					Type type = new TypeToken<DiagnoseGnu>() {
 					}.getType();
-					
-					
-					DiagnoseGnu tempDiagnose = ((DiagnoseGnu) new Gson().fromJson(
-							diagnoseString, type));
-					if(latestDiagnose != null){
-						latestDiagnose = latestDiagnose.returnLatest(tempDiagnose);
-						
-					}else{
+
+					DiagnoseGnu tempDiagnose = ((DiagnoseGnu) new Gson()
+							.fromJson(diagnoseString, type));
+					if (latestDiagnose != null) {
+						latestDiagnose = latestDiagnose
+								.returnLatest(tempDiagnose);
+
+					} else {
 						latestDiagnose = tempDiagnose;
 					}
 				}
 			}
-			if(latestDiagnose != null){
-				patient.setLatestDiagnoseRecName(latestDiagnose.getPathology_rec_name());
+			if (latestDiagnose != null) {
+				patient.setLatestDiagnoseRecName(latestDiagnose
+						.getPathology_rec_name());
 			}
 		}
-		
+
 		return patientList;
 	}
-	
+
 	@Override
-	public String returnDashBoardData(String session, String id) {	
-		
+	/*
+	 * (non-Javadoc)
+	 * @see eu.neq.mais.connector.Connector#returnDashBoardData(java.lang.String, java.lang.String)
+	 */
+	public String returnDashBoardData(String session, String id) {
+
 		List<PatientGnu> patientList = this.generatePatientListObjectById(id);
-		List<DiagnoseGnu> diagnoseList = new ArrayList<DiagnoseGnu>(); 
+		List<DiagnoseGnu> diagnoseList = new ArrayList<DiagnoseGnu>();
 		for (PatientGnu patient : patientList) {
-			
-		DiagnoseGnu allDiagnosis = null;
-		if (patient.getDiagnoseIds() != null) {
-			for (String diseaseID : patient.getDiagnoseIds()) {
-				String diagnoseString = execute(getDiagnoseReadMethod(),
-						getReturnDiagnoseParams(diseaseID));
-				diagnoseString = diagnoseString.substring(
-						diagnoseString.indexOf("[") + 1,
-						diagnoseString.lastIndexOf("]"));
-				diagnoseString = diagnoseString.replaceAll(
-						"pathology.rec_name", "pathology_rec_name");
-				diagnoseString = diagnoseString.replaceAll(
-						"doctor.rec_name", "doctor_rec_name");
-				//Type type = new TypeToken<DiagnoseGnu>() {
-				//}.getType();
-				//System.out.println(new Gson().toJson(DiagnoseGnu.class));
-				diagnoseList.add(((DiagnoseGnu) new Gson().fromJson(
-						diagnoseString, DiagnoseGnu.class)));
-				
+
+			DiagnoseGnu allDiagnosis = null;
+			if (patient.getDiagnoseIds() != null) {
+				for (String diseaseID : patient.getDiagnoseIds()) {
+					String diagnoseString = execute(getDiagnoseReadMethod(),
+							getReturnDiagnoseParams(diseaseID));
+					diagnoseString = diagnoseString.substring(
+							diagnoseString.indexOf("[") + 1,
+							diagnoseString.lastIndexOf("]"));
+					diagnoseString = diagnoseString.replaceAll(
+							"pathology.rec_name", "pathology_rec_name");
+					diagnoseString = diagnoseString.replaceAll(
+							"doctor.rec_name", "doctor_rec_name");
+					diagnoseList.add(((DiagnoseGnu) new Gson().fromJson(
+							diagnoseString, DiagnoseGnu.class)));
+
+				}
 			}
 		}
-		}
-		
-		if(diagnoseList.isEmpty()){
+
+		if (diagnoseList.isEmpty()) {
 			return "false";
+		} else {
+			return new Gson().toJson(diagnoseList);
+
 		}
-			else 
-		{
-				//Type listType = new TypeToken<List<DiagnoseGnu>>() {
-				//}.getType();
-				return new Gson().toJson(diagnoseList);
-				
-				}
-				
-	
+
 	}
-	
+
 	@Override
-	public String returnDiagnose(String session, String diagnoseID) {
+	/*
+	 * (non-Javadoc)
+	 * @see eu.neq.mais.connector.Connector#returnDiagnose(java.lang.String)
+	 */
+	public String returnDiagnose(String diagnoseID) {
 		String diagnose = this.execute(this.getDiagnoseReadMethod(),
 				this.getReturnDiagnoseParams(diagnoseID));
-		diagnose = diagnose.substring(diagnose.indexOf("["), diagnose.lastIndexOf("]")+1);
+		diagnose = diagnose.substring(diagnose.indexOf("["),
+				diagnose.lastIndexOf("]") + 1);
 		return diagnose;
 	}
-	
+
 	@Override
-	public String returnPersonalInformation(String userSession, boolean name, boolean picture) {
-		HashMap<String,String> personalInfo = new HashMap<String,String>();
-		if(name){
-		    personalInfo.put("name",getUserRecName(SessionStore.getUserId(userSession).toString()));
+	/*
+	 * (non-Javadoc)
+	 * @see eu.neq.mais.connector.Connector#returnPersonalInformation(java.lang.String, boolean, boolean)
+	 */
+	public String returnPersonalInformation(String userSession, boolean name,
+			boolean picture) {
+		HashMap<String, String> personalInfo = new HashMap<String, String>();
+		if (name) {
+			personalInfo.put("name",
+					getUserRecName(SessionStore.getUserId(userSession)
+							.toString()));
 		}
-		if(picture){
-			personalInfo.put("picture","http://i43.tinypic.com/29lzamh.png");
+		if (picture) {
+			personalInfo.put("picture", "http://i43.tinypic.com/29lzamh.png");
 		}
 		return new Gson().toJson(personalInfo);
 	}
-
-	/*-----  BACKEND METHODS  ----*/
-
-	private String getLoginMethod() {
-		return "common.db.login";
-	}
-
-
-	private String getLogoutMethod() {
-		return "common.db.logout";
-	}
-
-
-	private String getPatientSearchMethod() {
-		return "model.gnuhealth.patient.search";
-	}
-
-
-	private String getPatientReadMethod() {
-		return "model.gnuhealth.patient.read";
-	}
-
-	private String getPreferencesMethod() {
-		return "model.res.user.get_preferences";
-	}
-
-
-	private String getDiagnoseReadMethod() {
-		return "model.gnuhealth.patient.disease.read";
-	}
-
-
-	private String getUserSearchMethod() {
-		return "model.res.user.search";
-	}
-
-	private String getUserReadMethod() {
-		return "model.res.user.read";
-	}
-
-	private String getPhysicianSearchMethod() {
-		return "model.gnuhealth.physician.search";
-	}
-
-	/*-----  BACKEND METHOD PARAMS  ----*/
-
-
-	private Object[] getReturnPatientsParams(String session) {
-
-		return new Object[] {
-				1,
-				getAdminSession(),
-				getAllPatientIds(),
-				new String[] { "rec_name", "age", "diseases", "sex","primary_care_doctor.name",
-						"primary_care_doctor.rec_name" }, "REPLACE_CONTEXT" };
-	}
-
-
-	private Object[] getReturnPatientParams(String session, String id) {
-		return new Object[] {
-				1,
-				session,
-				new int[] { Integer.parseInt(id) },
-				new String[] { "rec_name", "age", "diseases", "sex",
-						"primary_care_doctor.rec_name" }, "REPLACE_CONTEXT" };
-	}
-
-
-	private Object[] getReturnDiagnoseParams(String id) {
-		return new Object[] {
-				1,
-				getAdminSession(),
-				new int[] { Integer.parseInt(id) },
-				new String[] { "status", "pregnancy_warning", "is_active",
-						"short_comment", "diagnosed_date", "healed_date",
-						"pathology", "disease_severity", "is_infectious",
-						"is_allergy", "pathology.rec_name",
-						"date_start_treatment", "doctor", "age", "weeks_of_pregnancy",
-						"is_on_treatment", "treatment_description", "extra_info", 
-						"date_stop_treatment", "pcs_code", "allergy_type", 
-						"doctor.rec_name", "pcs_code.rec_name"
-				},
-				"REPLACE_CONTEXT" };
-	}
-
+	
+	/**
+	 * Helping method to find all registered patients.
+	 * @return Integer array of all patient IDs.
+	 */
 	private int[] getAllPatientIds() {
 		String session = getAdminSession();
 		int[] idList;
-
-		// LOGIN
-		// String session = login("admin", "iswi223<<");
 
 		// Search Patients
 		Object[] params = new Object[] { 1, session, new String[] {}, 0, 1000,
@@ -538,6 +513,10 @@ public class GNUHealthConnectorImpl extends Connector {
 		return idList;
 	}
 
+	/**
+	 * Helping method to get all user IDs
+	 * @return Integer array of all user IDs.
+	 */
 	private int[] getAllUserIds() {
 		String session = getAdminSession();
 		int[] idList;
@@ -559,9 +538,14 @@ public class GNUHealthConnectorImpl extends Connector {
 		return idList;
 	}
 
+	/**
+	 * Helping method, returning a ID corresponding to a user-name.
+	 * @param username
+	 * @return ID
+	 */
 	private int getUserId(String username) {
 		String session = getAdminSession();
-		
+
 		// Getting all User Ids
 		int[] ids = getAllUserIds();
 
@@ -571,7 +555,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
 		// Execute search
 		String res = execute("model.res.user.read", params);
-		
+
 		// cleanse json transmission overhead (transaction id, etc..)
 		String cleansed = res.substring(res.indexOf("["), res.indexOf("]") + 1);
 
@@ -590,6 +574,11 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	}
 
+	/**
+	 * Helping method returning the cecord name of a user.
+	 * @param id user's ID
+	 * @return Record name
+	 */
 	private String getUserRecName(String id) {
 		String session = getAdminSession();
 		// Getting all User Ids
@@ -620,9 +609,13 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	}
 
+	/**
+	 * Helping method returning the ID's of all parties of the GNUHealth back-end.
+	 * @return Array of IDs.
+	 */
 	private int[] getAllPartyIds() {
 		String session = getAdminSession();
-		
+
 		int[] idList;
 
 		// Search Patients
@@ -642,6 +635,11 @@ public class GNUHealthConnectorImpl extends Connector {
 		return idList;
 	}
 
+	/**
+	 * Helping method returning the corresponding physician ID of a user.
+	 * @param user_id
+	 * @return physician id
+	 */
 	private int getPhysicianId(int user_id) {
 		String session = getAdminSession();
 		int[] allphys = getAllPartyIds();
@@ -670,20 +668,27 @@ public class GNUHealthConnectorImpl extends Connector {
 		return -1;
 	}
 
-	
+	/**
+	 * Helping method necessary to execute certain actions which need admin-level permissions. 
+	 * Therefore, this method makes sure that the connector logs into the back-end only once 
+	 * and returns the connector's admin session.
+	 * @return admin session necessary for execution of actions.
+	 */
 	private String getAdminSession() {
 		if (adminSession == null) {
 			Backend info = this.getBackend();
 			logger.info("! --- SYSTEM RETRIEVING ADMINISTRATOR AUTHENTIFICATION AS:");
-			logger.info("! --- \""+info.getAdmin_user()+"\" on " + getBackEndUrl().toString()
-					+ "with: " + info.getAdmin_user() + ":" + info.getAdmin_pw());
+			logger.info("! --- \"" + info.getAdmin_user() + "\" on "
+					+ getBackEndUrl().toString() + "with: "
+					+ info.getAdmin_user() + ":" + info.getAdmin_pw());
 
-			String[] params = new String[] { info.getAdmin_user(), info.getAdmin_pw() };
+			String[] params = new String[] { info.getAdmin_user(),
+					info.getAdmin_pw() };
 
 			ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
 			String result = new Gson().toJson(proxy.call(this.getLoginMethod(),
 					params));
-			
+
 			if ((result.length() > 5)) {
 				char s = '"';
 				String session_split[] = result.split(String.valueOf(s));
@@ -692,30 +697,117 @@ public class GNUHealthConnectorImpl extends Connector {
 				result = "false";
 			}
 			adminSession = result;
-			logger.info("! --- SYSTEM SESSION: "+adminSession);
+			logger.info("! --- SYSTEM SESSION: " + adminSession);
 		}
-		
-		return adminSession;
-		
-	}
-	// "69y 5m 4d" ---> "2003-01-07" 
-	// does not work
-	private static String calculateDateOfBirth(String gnuHealthAge){
-		DateFormat df = DateFormat.getDateInstance( DateFormat.SHORT ); 
-		
-		Integer year = new Integer(gnuHealthAge.substring(0, gnuHealthAge.indexOf("y")));
-		Integer month = new Integer(gnuHealthAge.substring(gnuHealthAge.indexOf(" ")+1,gnuHealthAge.indexOf("m")));
-		Integer day = new Integer(gnuHealthAge.substring(gnuHealthAge.lastIndexOf(" ")+1,gnuHealthAge.indexOf("d")));
-		
-		GregorianCalendar age = new GregorianCalendar(year, month-1, day);
-		System.out.println("age: "+df.format( age.getTime() ));
-		GregorianCalendar dateToday = new GregorianCalendar();
-		System.out.println("today: "+df.format( dateToday.getTime()));
-				
-		GregorianCalendar birthday = new GregorianCalendar();
-		birthday.setTimeInMillis(dateToday.getTimeInMillis()-age.getTimeInMillis());
-		
 
-		return df.format( birthday.getTime() );
+		return adminSession;
+
 	}
+
+	// "69y 5m 4d" ---> "2003-01-07"
+	// does not work
+	private static String calculateDateOfBirth(String gnuHealthAge) {
+		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+
+		Integer year = new Integer(gnuHealthAge.substring(0,
+				gnuHealthAge.indexOf("y")));
+		Integer month = new Integer(gnuHealthAge.substring(
+				gnuHealthAge.indexOf(" ") + 1, gnuHealthAge.indexOf("m")));
+		Integer day = new Integer(gnuHealthAge.substring(
+				gnuHealthAge.lastIndexOf(" ") + 1, gnuHealthAge.indexOf("d")));
+
+		GregorianCalendar age = new GregorianCalendar(year, month - 1, day);
+		System.out.println("age: " + df.format(age.getTime()));
+		GregorianCalendar dateToday = new GregorianCalendar();
+		System.out.println("today: " + df.format(dateToday.getTime()));
+
+		GregorianCalendar birthday = new GregorianCalendar();
+		birthday.setTimeInMillis(dateToday.getTimeInMillis()
+				- age.getTimeInMillis());
+
+		return df.format(birthday.getTime());
+	}
+	
+	
+
+	/*-----  BACKEND METHODS  ----*/
+	/*............................*/
+	
+
+	private String getLoginMethod() {
+		return "common.db.login";
+	}
+
+	private String getLogoutMethod() {
+		return "common.db.logout";
+	}
+
+	private String getPatientSearchMethod() {
+		return "model.gnuhealth.patient.search";
+	}
+
+	private String getPatientReadMethod() {
+		return "model.gnuhealth.patient.read";
+	}
+
+	private String getPreferencesMethod() {
+		return "model.res.user.get_preferences";
+	}
+
+	private String getDiagnoseReadMethod() {
+		return "model.gnuhealth.patient.disease.read";
+	}
+
+	private String getUserSearchMethod() {
+		return "model.res.user.search";
+	}
+
+	private String getUserReadMethod() {
+		return "model.res.user.read";
+	}
+
+	private String getPhysicianSearchMethod() {
+		return "model.gnuhealth.physician.search";
+	}
+
+	/*-----  BACKEND METHOD PARAMS  ----*/
+
+	private Object[] getReturnPatientsParams(String session) {
+
+		return new Object[] {
+				1,
+				getAdminSession(),
+				getAllPatientIds(),
+				new String[] { "rec_name", "age", "diseases", "sex",
+						"primary_care_doctor.name",
+						"primary_care_doctor.rec_name" }, "REPLACE_CONTEXT" };
+	}
+
+	private Object[] getReturnPatientParams(String session, String id) {
+		return new Object[] {
+				1,
+				session,
+				new int[] { Integer.parseInt(id) },
+				new String[] { "rec_name", "age", "diseases", "sex",
+						"primary_care_doctor.rec_name" }, "REPLACE_CONTEXT" };
+	}
+
+	private Object[] getReturnDiagnoseParams(String id) {
+		return new Object[] {
+				1,
+				getAdminSession(),
+				new int[] { Integer.parseInt(id) },
+				new String[] { "status", "pregnancy_warning", "is_active",
+						"short_comment", "diagnosed_date", "healed_date",
+						"pathology", "disease_severity", "is_infectious",
+						"is_allergy", "pathology.rec_name",
+						"date_start_treatment", "doctor", "age",
+						"weeks_of_pregnancy", "is_on_treatment",
+						"treatment_description", "extra_info",
+						"date_stop_treatment", "pcs_code", "allergy_type",
+						"doctor.rec_name", "pcs_code.rec_name" },
+				"REPLACE_CONTEXT" };
+	}
+
+	
 }
