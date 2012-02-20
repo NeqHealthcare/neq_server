@@ -6,7 +6,6 @@ package eu.neq.mais.domain.gnuhealth;
 import java.util.List;
 
 import eu.neq.mais.domain.Diagnose;
-import eu.neq.mais.domain.Disease;
 import eu.neq.mais.domain.Doctor;
 
 /**
@@ -15,10 +14,6 @@ import eu.neq.mais.domain.Doctor;
  */
 public class DiagnoseGnu extends Diagnose{
 
-	
-//	private Date diagnoseDate, healed_date;
-//	private DoctorGnu doctor;
-	private List<Disease> disease;
 	
 	private boolean pregnancy_warning, is_active, is_infectious, is_allergy, is_on_treatment;
     private String short_comment, disease_severity, pathology_rec_name,  doctor_rec_name,
@@ -51,23 +46,6 @@ public class DiagnoseGnu extends Diagnose{
 	public void setDoctor(int doctor) {
 		this.doctor = doctor;
 	}
-
-
-	/**
-	 * @return the disease
-	 */
-	public List<Disease> getDisease() {
-		return disease;
-	}
-
-
-	/**
-	 * @param disease the disease to set
-	 */
-	public void setDisease(List<Disease> disease) {
-		this.disease = disease;
-	}
-
 
 	/**
 	 * @return the pregnancy_warning
