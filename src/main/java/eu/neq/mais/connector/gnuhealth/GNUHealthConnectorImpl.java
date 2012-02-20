@@ -252,8 +252,6 @@ public class GNUHealthConnectorImpl extends Connector {
 	 */
 	@Override
 	public String returnAllPatientsForUIList() {
-		String session = getAdminSession();
-
 		String patientListString = "false";
 		patientListString = execute(getPatientReadMethod(),
 				getReturnPatientsParams());
@@ -325,8 +323,6 @@ public class GNUHealthConnectorImpl extends Connector {
 	 * @return list of relevant results
 	 */
 	private ArrayList<PatientGnu> generatePatientListObjectById(String param) {
-		String session = getAdminSession();
-
 		String patientListString = "false";
 		patientListString = execute(getPatientReadMethod(),
 				getReturnPatientsParams());
@@ -433,7 +429,6 @@ public class GNUHealthConnectorImpl extends Connector {
 		List<DiagnoseGnu> diagnoseList = new ArrayList<DiagnoseGnu>();
 		for (PatientGnu patient : patientList) {
 
-			DiagnoseGnu allDiagnosis = null;
 			if (patient.getDiagnoseIds() != null) {
 				for (String diseaseID : patient.getDiagnoseIds()) {
 					String diagnoseString = execute(getDiagnoseReadMethod(),
@@ -506,7 +501,9 @@ public class GNUHealthConnectorImpl extends Connector {
 		List<MedicationGnu> result = new ArrayList<MedicationGnu>();
 		for (String medId : medicationIds) {
 			String singleMed = fixMedicationString(returnMedication(medId));
-			result.add(new Gson().fromJson(singleMed, MedicationGnu.class));
+			MedicationGnu medObj = new Gson().fromJson(singleMed, MedicationGnu.class);
+			medObj.prepareDateFormat();
+			result.add(medObj);
 		}
 
 		return new Gson().toJson(result);
@@ -526,27 +523,6 @@ public class GNUHealthConnectorImpl extends Connector {
 				getMedicationParams(medicationID));
 
 		return result;
-	}
-
-	private int[] getAllMedicationIds() {
-		String session = getAdminSession();
-		int[] idList;
-
-		Object[] params = new Object[] { 1, session, new String[] {}, 0, 1000,
-				null, "REPLACE_CONTEXT" };
-
-		String result = execute(getMedicationSearchMethod(), params);
-		result = result.substring(result.indexOf("[") + 1,
-				result.lastIndexOf("]"));
-
-		String[] idListString = result.split(", ");
-		idList = new int[idListString.length];
-
-		for (int i = 0; i < idListString.length; i++) {
-			idList[i] = Integer.parseInt(idListString[i]);
-			System.out.println(">" + idList[i]);
-		}
-		return idList;
 	}
 
 	/*

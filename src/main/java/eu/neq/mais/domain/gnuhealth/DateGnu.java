@@ -1,5 +1,7 @@
 package eu.neq.mais.domain.gnuhealth;
 
+import java.util.Date;
+
 public class DateGnu {
 
 	private Integer month;
@@ -24,8 +26,7 @@ public class DateGnu {
 	}
 	public void setYear(Integer year) {
 		this.year = year;
-	}
-	
+	}	
 	
     public boolean latest(DateGnu dg){
     	if(this.year > dg.getYear()){
@@ -48,5 +49,14 @@ public class DateGnu {
     		return false;
     	}
     }
-		
+    
+    public long getTimeInMillis() {
+    	Date d = new Date();
+    	d.setDate(getDay());
+    	d.setYear(getYear());
+    	d.setMonth(getMonth());
+
+    	return d.getTime();	
+    }
+    	
 }

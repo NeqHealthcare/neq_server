@@ -1,39 +1,44 @@
 package eu.neq.mais.domain.gnuhealth;
 
+import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
+
+import com.google.gson.Gson;
+
 import eu.neq.mais.domain.Medication;
 
 /**
  * 
  * @author seba
- *
+ * 
  */
 public class MedicationGnu extends Medication {
-	
-	private String dose,
-	route,
-	duration_period,
-	frequency_unit,
-	dose_unit,
-	frequency,
-	indication,
-	notes,
-	is_active,
-	admin_times,
-	common_dosage,
-	discontinued_reason,
-	duration,
-	form_rec_name,// REPLACE
-	doctor_rec_name,// REPLACE
-	route_rec_name,// REPLACE
-	dose_unit_rec_name,// REPLACE
-	indication_rec_name,// REPLACE
-	common_dosage_rec_name, // REPLACE
-	course_completed,
-	discontinued,
-	medicament_rec_name;
-	
-	DateGnu start_treatment,
-	end_treatment;
+
+	private String dose, route, duration_period, frequency_unit, dose_unit,
+			frequency, indication, notes, is_active, admin_times,
+			common_dosage, discontinued_reason, duration, form_rec_name,// REPLACE
+			doctor_rec_name,// REPLACE
+			route_rec_name,// REPLACE
+			dose_unit_rec_name,// REPLACE
+			indication_rec_name,// REPLACE
+			common_dosage_rec_name, // REPLACE
+			course_completed, discontinued, medicament_rec_name;
+
+	Object start_treatment, end_treatment;
+
+	public void prepareDateFormat() {
+
+		if (!long.class.isInstance(start_treatment)
+				&& !long.class.isInstance(end_treatment)) {
+			DateGnu start_tr = new Gson().fromJson(
+					String.valueOf(start_treatment), DateGnu.class);
+			DateGnu end_tr = new Gson().fromJson(String.valueOf(end_treatment),
+					DateGnu.class);
+			start_treatment = start_tr.getTimeInMillis();
+			end_treatment = end_tr.getTimeInMillis();
+		}
+	}
 
 	public String getDose() {
 		return dose;
@@ -211,22 +216,20 @@ public class MedicationGnu extends Medication {
 		this.medicament_rec_name = medicament_rec_name;
 	}
 
-	public DateGnu getStart_treatment() {
-		return start_treatment;
-	}
-
-	public void setStart_treatment(DateGnu start_treatment) {
-		this.start_treatment = start_treatment;
-	}
-
-	public DateGnu getEnd_treatment() {
-		return end_treatment;
-	}
-
-	public void setEnd_treatment(DateGnu end_treatment) {
-		this.end_treatment = end_treatment;
-	}
-
-
+	// public DateGnu getStart_treatment() {
+	// return start_treatment;
+	// }
+	//
+	// public void setStart_treatment(DateGnu start_treatment) {
+	// this.start_treatment = start_treatment;
+	// }
+	//
+	// public DateGnu getEnd_treatment() {
+	// return end_treatment;
+	// }
+	//
+	// public void setEnd_treatment(DateGnu end_treatment) {
+	// this.end_treatment = end_treatment;
+	// }
 
 }
