@@ -9,11 +9,7 @@ import eu.neq.mais.domain.Medication;
  */
 public class MedicationGnu extends Medication {
 	
-	private String qty, 
-	form, 
-	rec_name, 
-	doctor,
-	dose,
+	private String dose,
 	route,
 	duration_period,
 	frequency_unit,
@@ -36,37 +32,8 @@ public class MedicationGnu extends Medication {
 	discontinued,
 	medicament_rec_name;
 	
-	public String getQty() {
-		return qty;
-	}
-
-	public void setQty(String qty) {
-		this.qty = qty;
-	}
-
-	public String getForm() {
-		return form;
-	}
-
-	public void setForm(String form) {
-		this.form = form;
-	}
-
-	public String getRec_name() {
-		return rec_name;
-	}
-
-	public void setRec_name(String rec_name) {
-		this.rec_name = rec_name;
-	}
-
-	public String getDoctor() {
-		return doctor;
-	}
-
-	public void setDoctor(String doctor) {
-		this.doctor = doctor;
-	}
+	DateGnu start_treatment,
+	end_treatment;
 
 	public String getDose() {
 		return dose;
@@ -243,5 +210,23 @@ public class MedicationGnu extends Medication {
 	public void setMedicament_rec_name(String medicament_rec_name) {
 		this.medicament_rec_name = medicament_rec_name;
 	}
-	
+
+	public DateGnu getStart_treatment() {
+		return start_treatment;
+	}
+
+	public void setStart_treatment(DateGnu start_treatment) {
+		this.start_treatment = start_treatment;
+	}
+
+	public DateGnu getEnd_treatment() {
+		return end_treatment;
+	}
+
+	public void setEnd_treatment(DateGnu end_treatment) {
+		this.end_treatment = end_treatment;
+	}
+
+
+
 }

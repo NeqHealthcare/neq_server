@@ -517,6 +517,7 @@ public class GNUHealthConnectorImpl extends Connector {
 				jsonstring.indexOf("]}"));
 		while (jsonstring.contains("."))
 			jsonstring = jsonstring.replace(".", "_");
+		
 		return jsonstring;
 	}
 
@@ -856,15 +857,15 @@ public class GNUHealthConnectorImpl extends Connector {
 				1,
 				getAdminSession(),
 				new int[] { Integer.parseInt(id) },
-				new String[] { "qty", "form", "course_completed",
-						"discontinued", "rec_name", "doctor", "dose", "route",
+				new String[] { "course_completed",
+						"discontinued", "dose", "route",
 						"duration_period", "frequency_unit", "dose_unit",
 						"frequency", "indication", "notes", "is_active",
 						"admin_times", "common_dosage", "discontinued_reason",
 						"duration", "form.rec_name", "doctor.rec_name",
 						"route.rec_name", "dose_unit.rec_name",
 						"indication.rec_name", "common_dosage.rec_name",
-						"medicament.rec_name" }, "REPLACE_CONTEXT" };
+						"medicament.rec_name", "start_treatment", "end_treatment" }, "REPLACE_CONTEXT" };
 	}
 
 	private Object[] getReturnPatientsParams() {
