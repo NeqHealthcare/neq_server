@@ -29,6 +29,7 @@ import eu.neq.mais.domain.gnuhealth.MedicationGnu;
 import eu.neq.mais.domain.gnuhealth.PatientGnu;
 import eu.neq.mais.domain.gnuhealth.PhysicianGnu;
 import eu.neq.mais.domain.gnuhealth.UserGnu;
+import eu.neq.mais.domain.gnuhealth.VaccinationGnu;
 import eu.neq.mais.technicalservice.Backend;
 import eu.neq.mais.technicalservice.FileHandler;
 import eu.neq.mais.technicalservice.SessionStore;
@@ -90,9 +91,15 @@ public class GNUHealthConnectorImpl extends Connector {
 			// System.out.println(patientListForUI.toString());
 
 			// FIND MEDIACTIONS
-
-			String r = con.returnMedicationsForPatient("1");
+			System.out.println("--------- medications ----------");
+			String r = con.returnMedicationsForPatient("4");
 			System.out.println(r);
+			
+			// FIND VACCINATIONS
+			System.out.println("--------- vaccinations ----------");
+			String vacc = con.returnVaccinationsForPatient("7");
+			System.out.println(vacc);
+
 
 			// return all ids
 			// int idfound = SessionStore.getUserId(user_session);
@@ -485,6 +492,44 @@ public class GNUHealthConnectorImpl extends Connector {
 		}
 		return new Gson().toJson(personalInfo);
 	}
+	
+	@Override
+	public String returnVaccinationsForPatient(String patientId){
+		List<VaccinationGnu> result;
+		try{
+			Object[] patientParam = new Object[] { 1, getAdminSession(),
+					new int[] { Integer.parseInt(patientId) },
+					new String[] { "vaccinations" }, "REPLACE_CONTEXT" };
+			String patientVaccinationsString = execute(getPatientReadMethod(), patientParam);
+			String[] patientVaccinations;
+	
+			patientVaccinations = (patientVaccinationsString.substring(patientVaccinationsString.lastIndexOf("[") + 1,
+					patientVaccinationsString.lastIndexOf("]}]}"))).split(", ");
+			
+			
+			result = new ArrayList<VaccinationGnu>();
+			for(String vaccId : patientVaccinations){
+				String vacc = returnVaccination(vaccId);
+				vacc = vacc.replaceAll("vaccine.rec_name", "vaccine_rec_name");
+				vacc = vacc.replaceAll("institution.rec_name", "institution_rec_name");
+				vacc = vacc.substring(vacc.indexOf("[") + 1,
+						vacc.indexOf("]}"));
+				result.add(new Gson().fromJson(vacc, VaccinationGnu.class));
+			}
+		}	
+		catch(Exception e){
+			return "{\"false\"}";
+		}
+		
+		return new Gson().toJson(result);
+	}
+
+	private String returnVaccination(String vaccId) {
+		String result = execute(getVaccinationReadMethod(),
+				getVaccinationParams(vaccId));
+
+		return result;
+	}
 
 	public String returnMedicationsForPatient(String patientID) {
 		Object[] patientParam = new Object[] { 1, getAdminSession(),
@@ -796,6 +841,10 @@ public class GNUHealthConnectorImpl extends Connector {
 	private String getPatientReadMethod() {
 		return "model.gnuhealth.patient.read";
 	}
+	
+	private String getVaccinationReadMethod() {
+		return "model.gnuhealth.vaccination.read";
+	}
 
 	private String getMedicationSearchMethod() {
 		return "model.gnuhealth.patient.medication.search";
@@ -843,6 +892,17 @@ public class GNUHealthConnectorImpl extends Connector {
 						"indication.rec_name", "common_dosage.rec_name",
 						"medicament.rec_name", "start_treatment", "end_treatment" }, "REPLACE_CONTEXT" };
 	}
+	
+	private Object[] getVaccinationParams(String id){
+		return new Object[] {
+				1,
+				getAdminSession(),
+				new int[] { Integer.parseInt(id) },
+				new String[] { "dose",
+						"vaccine.rec_name","observations","vaccine_lot","institution.rec_name",
+						"date", "next_dose_date" }, "REPLACE_CONTEXT" };	
+	}
+
 
 	private Object[] getReturnPatientsParams() {
 

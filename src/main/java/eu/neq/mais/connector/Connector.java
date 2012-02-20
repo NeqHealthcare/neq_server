@@ -77,6 +77,12 @@ public abstract class Connector {
 	public abstract String returnMedicationsForPatient(String patientID);
 	
 	/**
+	 * Get informatiom about a specific vaccinations for a patient
+	 */
+	public abstract String returnVaccinationsForPatient(String patientID);
+	
+	
+	/**
 	 * Gets a user's name or profile picture
 	 * @param userSession the user's session (identifier)
 	 * @param name true if lookup for a name (not interdependent with the param picture)
