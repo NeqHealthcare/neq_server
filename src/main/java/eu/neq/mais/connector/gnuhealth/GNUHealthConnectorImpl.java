@@ -498,10 +498,10 @@ public class GNUHealthConnectorImpl extends Connector {
 		String patient = execute(getPatientReadMethod(), patientParam);
 		patient = patient.substring(patient.indexOf("[") + 1,
 				patient.indexOf("]}"));
-
-		PatientGnu currentPatient = new Gson().fromJson(patient,
-				PatientGnu.class);
-		List<String> medicationIds = currentPatient.getMedications();
+		
+		MedicationHelper medHelper = new Gson().fromJson(patient,
+				MedicationHelper.class);
+		List<String> medicationIds = medHelper.getMedications();
 		
 		List<MedicationGnu> result = new ArrayList<MedicationGnu>();
 		for (String medId : medicationIds) {
@@ -895,6 +895,23 @@ public class GNUHealthConnectorImpl extends Connector {
 						"date_stop_treatment", "pcs_code", "allergy_type",
 						"doctor.rec_name", "pcs_code.rec_name" },
 				"REPLACE_CONTEXT" };
+	}
+	
+	/*
+	 * Helper class for parsing a json string into an object
+	 * @author seba
+	 *
+	 */
+	private class MedicationHelper {
+		List<String> medications;
+
+		public List<String> getMedications() {
+			return medications;
+		}
+
+		public void setMedications(List<String> medications) {
+			this.medications = medications;
+		}
 	}
 
 }
