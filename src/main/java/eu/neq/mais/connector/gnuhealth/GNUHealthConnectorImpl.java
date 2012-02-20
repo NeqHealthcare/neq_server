@@ -92,7 +92,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
 			// FIND MEDIACTIONS
 			System.out.println("--------- medications ----------");
-			String r = con.returnMedicationsForPatient("4");
+			String r = con.returnMedicationsForPatient("1");
 			System.out.println(r);
 			
 			// FIND VACCINATIONS

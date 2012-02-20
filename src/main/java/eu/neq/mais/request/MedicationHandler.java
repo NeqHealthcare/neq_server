@@ -12,14 +12,15 @@ import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.SessionStore;
 
+
 /**
  * 
  * @author Jan Gansen
  *
  */
-@Path("/vaccination/")
-public class VaccinationHandler {
-	
+@Path("/medication/")
+public class MedicationHandler {
+
 	protected static Logger logger = Logger.getLogger("eu.neq.mais.request");
 
 	private Connector connector;
@@ -31,19 +32,19 @@ public class VaccinationHandler {
 	public String returnDiagnose(@QueryParam("session") String session,
 			@QueryParam("patientId") String patientId) {
 		
-		String vaccinations = "false";
+		String medications = "false";
 
 		try {
 			connector = ConnectorFactory.getConnector(SessionStore
 					.getBackendSid(session));
-			vaccinations = connector.returnVaccinationsForPatient(patientId);
+			medications = connector.returnMedicationsForPatient(patientId);
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			vaccinations = "{\"false\"}";
+			medications = "{\"false\"}";
 		}
-		logger.info("return vaccination method returned json object: " + vaccinations);
-		return vaccinations;
+		logger.info("return medication method returned json object: " + medications);
+		return medications;
 		
 		
 	}
