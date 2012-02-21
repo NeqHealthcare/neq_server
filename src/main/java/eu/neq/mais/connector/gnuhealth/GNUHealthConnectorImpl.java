@@ -81,24 +81,23 @@ public class GNUHealthConnectorImpl extends Connector {
 			//
 			//
 			// // Read Patients
-			// Object[] params3 = con.getReturnPatientParams(session,"1");
 			// String res3 = con.execute(session, con.getPatientReadMethod(),
 			// params3);
 			// logger.info("res3: "+res3);
 
-			// // Find Patient List for UI
-			// String patientListForUI = con.returnAllPatientsForUIList();
-			// System.out.println(patientListForUI.toString());
+			// // Find personal Patient List for UI
+			 String patientListForUI = con.returnPersonalPatientsForUIList(user_session);
+			 System.out.println(patientListForUI.toString());
 
 			// FIND MEDIACTIONS
-			System.out.println("--------- medications ----------");
-			String r = con.returnMedicationsForPatient("1");
-			System.out.println(r);
+//			System.out.println("--------- medications ----------");
+//			String r = con.returnMedicationsForPatient("1");
+//			System.out.println(r);
 			
 			// FIND VACCINATIONS
-			System.out.println("--------- vaccinations ----------");
-			String vacc = con.returnVaccinationsForPatient("7");
-			System.out.println(vacc);
+//			System.out.println("--------- vaccinations ----------");
+//			String vacc = con.returnVaccinationsForPatient("7");
+//			System.out.println(vacc);
 
 
 			// return all ids
@@ -518,7 +517,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			}
 		}	
 		catch(Exception e){
-			return "{\"false\"}";
+			return "false";
 		}
 		
 		return new Gson().toJson(result);
@@ -912,7 +911,7 @@ public class GNUHealthConnectorImpl extends Connector {
 				getAllPatientIds(),
 				new String[] { "rec_name", "age", "diseases", "sex",
 						"primary_care_doctor.name",
-						"primary_care_doctor.rec_name", "medication" },
+						"primary_care_doctor.rec_name"},
 				"REPLACE_CONTEXT" };
 	}
 

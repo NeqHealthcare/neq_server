@@ -41,7 +41,7 @@ public class MedicationHandler {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			medications = "{\"false\"}";
+			medications = "false";
 		}
 		logger.info("return medication method returned json object: " + medications);
 		return medications;

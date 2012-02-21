@@ -40,7 +40,7 @@ public class VaccinationHandler {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			vaccinations = "{\"false\"}";
+			vaccinations = "false";
 		}
 		logger.info("return vaccination method returned json object: " + vaccinations);
 		return vaccinations;
