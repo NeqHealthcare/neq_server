@@ -171,6 +171,9 @@ public class GNUHealthConnectorImpl extends Connector {
 		String[] params = new String[] { username, password };
 
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
+		
+		
+		
 		String result = new Gson().toJson(proxy.call(this.getLoginMethod(),
 				params));
 
@@ -218,6 +221,9 @@ public class GNUHealthConnectorImpl extends Connector {
 		try {
 			connection = new URL(getBackEndUrl().toString()).openConnection();
 			connection.setRequestProperty("method", "POST");
+			
+			
+			
 			connection.setUseCaches(false);
 			connection.setDoInput(true);
 			connection.setDoOutput(true);

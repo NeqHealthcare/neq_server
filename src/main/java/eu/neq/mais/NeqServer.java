@@ -51,13 +51,17 @@ public class NeqServer implements Runnable {
 		        "com.sun.jersey.api.core.PackagesResourceConfig"); 
 		servletHolder.setInitParameter("com.sun.jersey.config.property.packages", "eu.neq.mais.request");
 		
+		
+		
 		ServletContextHandler context = new ServletContextHandler(server, "/", ServletContextHandler.SESSIONS); 
 		context.addServlet(servletHolder, "/*"); 
+	
 		
 		logger.info("starting server");
 		try {
 			//Starts the NEQ MAIS
 			server.start();
+			
 			
 			//Starts the Monitoring Activities
 			Thread monitoringThread = new Thread( new Monitor() ); 
@@ -89,5 +93,6 @@ public class NeqServer implements Runnable {
 	public static void main(String[]  args){
 		NeqServer server = NeqServer.getInstance();
 		server.run();
+		
 	}
 }
