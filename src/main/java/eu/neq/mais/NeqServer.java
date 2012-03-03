@@ -80,8 +80,10 @@ public class NeqServer implements Runnable {
 
         
         sec_connector.setKeystore(Settings.SSL_KEYFILE);
-        sec_connector.setKeyPassword("neq2011mrw");
-        sec_connector.setTrustPassword("neq2011mrw");
+        
+        //Has to be added before running the server - contact me!
+        //sec_connector.setKeyPassword("passowrd");
+        //sec_connector.setTrustPassword("passoword");
      
         
          
