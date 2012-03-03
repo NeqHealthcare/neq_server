@@ -2,9 +2,22 @@ package eu.neq.mais;
 
 import java.util.logging.Logger;
 
+import javax.net.ssl.SSLContext;
+
+import org.eclipse.jetty.http.ssl.SslContextFactory;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ConnectHandler;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
+import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+//import org.eclipse.jetty.util.ssl.SslContextFactory;
+
+//import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
@@ -42,7 +55,42 @@ public class NeqServer implements Runnable {
 		logger.addHandler(FileHandler.getLogFileHandler(Settings.LOG_FILE_MAIN));
 		
 		logger.info("Setting up Server - Port 8080");
-		server = new Server(8080); 
+		server = new Server();
+		
+		SelectChannelConnector connector = new SelectChannelConnector();
+        connector.setPort(8080);
+        
+        //default connector
+        connector.setMaxIdleTime(30000);
+        connector.setRequestHeaderSize(8192);
+        
+        //possible solution of error with to many patients
+        connector.setRequestBufferSize(128000);
+        connector.setResponseBufferSize(128000);
+        
+        
+        //secure connector 
+        SslSelectChannelConnector sec_connector = new  SslSelectChannelConnector();
+        sec_connector.setMaxIdleTime(30000);
+        sec_connector.setRequestHeaderSize(8192);
+        sec_connector.setRequestBufferSize(128000);
+        sec_connector.setResponseBufferSize(128000);
+        sec_connector.setPort(8081);
+        
+
+        
+        sec_connector.setKeystore(Settings.SSL_KEYFILE);
+        sec_connector.setKeyPassword("neq2011mrw");
+        sec_connector.setTrustPassword("neq2011mrw");
+     
+        
+         
+        
+        server.setConnectors(new Connector[]{connector, sec_connector });
+		
+		//Connector secConnector = new Connector();
+		//server.addConnector(connector)
+		
 		
 		ServletHolder servletHolder = new ServletHolder(ServletContainer.class); 
 		
@@ -55,6 +103,9 @@ public class NeqServer implements Runnable {
 		
 		ServletContextHandler context = new ServletContextHandler(server, "/", ServletContextHandler.SESSIONS); 
 		context.addServlet(servletHolder, "/*"); 
+		
+		//ContextHandlerCollection contexts = new ContextHandlerCollection();
+        //contexts.setHandlers(new Handler[] { context });
 	
 		
 		logger.info("starting server");
