@@ -24,6 +24,7 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.FileHandler;
 import eu.neq.mais.technicalservice.Monitor;
+import eu.neq.mais.technicalservice.SessionStore;
 import eu.neq.mais.technicalservice.Settings;
 
 /**
@@ -34,6 +35,7 @@ import eu.neq.mais.technicalservice.Settings;
 public class NeqServer implements Runnable {
 	
 	private static NeqServer instance = null;
+	private static SessionStore sessionStore = new SessionStore();
 	
 	private Server server = null;
 	
@@ -147,5 +149,13 @@ public class NeqServer implements Runnable {
 		NeqServer server = NeqServer.getInstance();
 		server.run();
 		
+	}
+
+	public static SessionStore getSessionStore() {
+		return sessionStore;
+	}
+
+	public static void setSessionStore(SessionStore sessionStore) {
+		NeqServer.sessionStore = sessionStore;
 	}
 }
