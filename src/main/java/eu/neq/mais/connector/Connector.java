@@ -1,11 +1,15 @@
 package eu.neq.mais.connector;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import eu.neq.mais.connector.gnuhealth.GNUHealthConnectorImpl;
+import eu.neq.mais.domain.Diagnose;
+import eu.neq.mais.domain.LabTestResult;
 import eu.neq.mais.technicalservice.Backend;
 import eu.neq.mais.technicalservice.FileHandler;
+import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
 import eu.neq.mais.technicalservice.Settings;
 
 /**
@@ -48,38 +52,39 @@ public abstract class Connector {
 	 * Get a set of patients with limited information richness for displaying major data in a list.
 	 * @return a list of patients with limited information richness.
 	 */
-	public abstract String returnAllPatientsForUIList();
+	public abstract List<?> returnAllPatientsForUIList();
 	
 	/**
 	 * Get a set of patients with regards to their allocated primary care doctor.
 	 * @param userSession the session of the primary care doctor
 	 * @return subset of all patients
+	 * @throws NoSessionInSessionStoreException 
 	 */
-	public abstract String returnPersonalPatientsForUIList(String userSession);
+	public abstract List<?> returnPersonalPatientsForUIList(String userSession) throws NoSessionInSessionStoreException;
 	
 	/**
 	 * Get information about a diagnosis
 	 * @param diagnoseID diagnosis identifier
 	 * @return diagnosis details
 	 */
-	public abstract String returnDiagnose(String diagnoseID);
+	public abstract Diagnose returnDiagnose(String diagnoseID);
 	
 	/**
 	 * Search for a specific patient
 	 * @param param Name or ID
 	 * @return list of relevant patients (can be empty if none found)
 	 */
-	public abstract String searchForAPatient(String param);
+	public abstract List<?> searchForAPatient(String param);
 	
 	/**
 	 * Get information about a specific medication
 	 */
-	public abstract String returnMedicationsForPatient(String patientID);
+	public abstract List<?> returnMedicationsForPatient(String patientID);
 	
 	/**
 	 * Get informatiom about a specific vaccinations for a patient
 	 */
-	public abstract String returnVaccinationsForPatient(String patientID);
+	public abstract List<?> returnVaccinationsForPatient(String patientID);
 	
 	
 	/**
@@ -88,8 +93,9 @@ public abstract class Connector {
 	 * @param name true if lookup for a name (not interdependent with the param picture)
 	 * @param picture true if lookup for a picture 
 	 * @return a json-string containing a user's name (if name:true) and a picture (if picture:true)
+	 * @throws NoSessionInSessionStoreException 
 	 */
-	public abstract String returnPersonalInformation(String userSession, boolean name, boolean picture);
+	public abstract String returnPersonalInformation(String userSession, boolean name, boolean picture) throws NoSessionInSessionStoreException;
 	
 	/**
 	 * Getting all relevant data for a user's dashboard:
@@ -99,7 +105,22 @@ public abstract class Connector {
 	 * @param id
 	 * @return JSON-String
 	 */
-	public abstract String returnDashBoardData(String session, String id);
+	public abstract List<?> returnDashBoardData(String session, String id);
+	
+	/**
+	 * Returns all Lab Test Results
+	 * @return list of all lab test results
+	 */
+	public abstract List<?> returnAllLabTestResults();
+	
+	/**
+	 * Returns all lab test results for a specific patient
+	 * @param patientId
+	 * @return  all lab test results for a specific patient
+	 */
+	public abstract List<?> returnLabTestResultsForPatient(String patientId);
+	
+	public abstract LabTestResult returnLabTestResultsDetails(String labTestId);
 	
 	/**
 	 * Sets a Connector's back-end. This is where the target for the Connector's interaction is defined.

@@ -1,6 +1,9 @@
 package eu.neq.mais.domain.gnuhealth;
 
+import com.google.gson.Gson;
+
 import eu.neq.mais.domain.Vaccination;
+import eu.neq.mais.domain.gnuhealth.annotations.MapToGnu;
 
 /**
  * 
@@ -10,12 +13,39 @@ import eu.neq.mais.domain.Vaccination;
  */
 public class VaccinationGnu extends Vaccination {
 
-	private String dose,vaccine_rec_name,observations,vaccine_lot,institution_rec_name;
+	private String dose,observations,vaccine_lot;
+	
+	private Object date, next_dose_date;
+	
+	@MapToGnu("vaccine.rec_name")
+	private String vaccine_rec_name;
+	
+	@MapToGnu("institution.rec_name")
+	private String institution_rec_name;
 	
 	public String getVaccine_lot() {
 		return vaccine_lot;
 	}
 
+	public void prepareDateFormat() {
+
+		if (!long.class.isInstance(date)
+				&& !long.class.isInstance(next_dose_date)) {
+			DateGnu start_tr = new Gson().fromJson(
+					String.valueOf(date), DateGnu.class);
+			DateGnu end_tr = new Gson().fromJson(String.valueOf(next_dose_date),
+					DateGnu.class);
+			date = start_tr.getTimeInMillis();
+			next_dose_date = end_tr.getTimeInMillis();
+			
+			if (date == null) date = 0;
+			else date = start_tr.getTimeInMillis();
+			
+			if (next_dose_date == null) next_dose_date = 0;
+			else next_dose_date = end_tr.getTimeInMillis();
+		}
+	}
+	
 	public void setVaccine_lot(String vaccine_lot) {
 		this.vaccine_lot = vaccine_lot;
 	}
@@ -28,7 +58,7 @@ public class VaccinationGnu extends Vaccination {
 		this.institution_rec_name = institution;
 	}
 
-	private DateGnu date, next_dose_date;
+
 	
 
 	public String getDose() {
@@ -55,7 +85,7 @@ public class VaccinationGnu extends Vaccination {
 		this.observations = observations;
 	}
 
-	public DateGnu getDate() {
+	public Object getDate() {
 		return date;
 	}
 
@@ -63,7 +93,7 @@ public class VaccinationGnu extends Vaccination {
 		this.date = date;
 	}
 
-	public DateGnu getNext_dose_date() {
+	public Object getNext_dose_date() {
 		return next_dose_date;
 	}
 

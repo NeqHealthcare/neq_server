@@ -7,6 +7,7 @@ import java.util.Observer;
 import com.google.gson.Gson;
 
 import eu.neq.mais.domain.Medication;
+import eu.neq.mais.domain.gnuhealth.annotations.MapToGnu;
 
 /**
  * 
@@ -17,13 +18,29 @@ public class MedicationGnu extends Medication {
 
 	private String dose, route, duration_period, frequency_unit, dose_unit,
 			frequency, indication, notes, is_active, admin_times,
-			common_dosage, discontinued_reason, duration, form_rec_name,// REPLACE
-			doctor_rec_name,// REPLACE
-			route_rec_name,// REPLACE
-			dose_unit_rec_name,// REPLACE
-			indication_rec_name,// REPLACE
-			common_dosage_rec_name, // REPLACE
-			course_completed, discontinued, medicament_rec_name;
+			common_dosage, discontinued_reason, duration, 
+			course_completed, discontinued;
+	
+	@MapToGnu("form.rec_name")
+	private String form_rec_name;
+	
+	@MapToGnu("doctor.rec_name")
+	private String doctor_rec_name;
+	
+	@MapToGnu("route.rec_name")
+	private String route_rec_name;
+	
+	@MapToGnu("dose_unit.rec_name")
+	private String dose_unit_rec_name;
+	
+	@MapToGnu("indication.rec_name")
+	private String indication_rec_name;
+	
+	@MapToGnu("common_dosage.rec_name")
+	private String common_dosage_rec_name;
+	
+	@MapToGnu("medicament.rec_name")
+	private String medicament_rec_name;
 
 	Object start_treatment, end_treatment;
 
@@ -35,8 +52,12 @@ public class MedicationGnu extends Medication {
 					String.valueOf(start_treatment), DateGnu.class);
 			DateGnu end_tr = new Gson().fromJson(String.valueOf(end_treatment),
 					DateGnu.class);
-			start_treatment = start_tr.getTimeInMillis();
-			end_treatment = end_tr.getTimeInMillis();
+			
+			if (start_treatment == null) start_treatment = 0;
+			else start_treatment = start_tr.getTimeInMillis();
+			
+			if (end_treatment == null) end_treatment = 0;
+			else end_treatment = end_tr.getTimeInMillis();
 		}
 	}
 

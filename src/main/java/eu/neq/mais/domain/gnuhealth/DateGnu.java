@@ -53,7 +53,7 @@ public class DateGnu {
     public long getTimeInMillis() {
     	Date d = new Date();
     	d.setDate(getDay());
-    	d.setYear(getYear());
+    	d.setYear(getYear()-1900);
     	d.setMonth(getMonth());
 
     	return d.getTime();	
