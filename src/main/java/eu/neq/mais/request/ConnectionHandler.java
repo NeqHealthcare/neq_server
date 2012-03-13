@@ -4,27 +4,24 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.eclipse.jetty.server.Response;
-
+import eu.neq.mais.NeqServer;
 import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
+import eu.neq.mais.technicalservice.DTOWrapper;
 import eu.neq.mais.technicalservice.SessionStore;
+import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
 
 /**
  * 
  * @author Jan Gansen
  *
  */
-
-
-
 @Path("/connection/")
 public class ConnectionHandler {
 
@@ -48,62 +45,34 @@ public class ConnectionHandler {
 	@GET
 	@Path("login")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String login(@Context HttpServletResponse servlerResponse, @QueryParam("backendSid") String backendSid,
-		@QueryParam("username") String username,
-		@QueryParam("password") String password) {
-		
+	public String login(@Context HttpServletResponse servlerResponse,
+			@QueryParam("backendSid") String backendSid,
+			@QueryParam("username") String username,
+			@QueryParam("password") String password) {
+
+
 		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS"); 
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
         servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
         servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
         servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
         
-
-		String session = "false";
-
-		try {
-			
-			connector = ConnectorFactory.getConnector(backendSid);
-			session = connector.login(username, password,backendSid);
-			
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		logger.info("login method returned json object: " + session);
-		servlerResponse.setContentType(session);
-		return servlerResponse.getContentType();
-	}
-	
-	@OPTIONS
-	@Path("login")
-	@Produces(MediaType.APPLICATION_JSON)
-	public String loginOptions(@Context HttpServletResponse servlerResponse, @QueryParam("backendSid") String backendSid,
-		@QueryParam("username") String username,
-		@QueryParam("password") String password) {
-		
-		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS"); 
-        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
-        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
-        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
-        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
+        String response = new DTOWrapper().wrapError("Error while login");
+        String session  = "false";
         
-
-		String session = "false";
-
 		try {
-			
 			connector = ConnectorFactory.getConnector(backendSid);
-			session = connector.login(username, password,backendSid);
+			session = connector.login(username, password, backendSid);
 			
-			
+			if (session.contains("false")) response = new DTOWrapper().wrapError("Wrong login credentials (username/password). Please try again.");
+			else response = new DTOWrapper().wrap(session);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		} 
 
-		logger.info("login method returned json object: " + session);
-		servlerResponse.setContentType(session);
+		logger.info("login method returned json object: " + response);
+		
+		servlerResponse.setContentType(response);
 		return servlerResponse.getContentType();
 	}
 
@@ -122,24 +91,34 @@ public class ConnectionHandler {
 	@GET
 	@Path("logout")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String logout(@QueryParam("username") String username,
+	public String logout(@Context HttpServletResponse servlerResponse,
+			@QueryParam("username") String username,
 			@QueryParam("session") String session) {
 
+		String response = new DTOWrapper().wrapError("Error while logout");
 		String result = "false";
+		
+		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS"); 
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
+        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
+        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
 
 		try {
-			connector = ConnectorFactory.getConnector(SessionStore
-					.getBackendSid(session));
+			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
 			result = connector.logout(username, session);
+			response = new DTOWrapper().wrap(result);
 		} catch (Exception e) {
 			e.printStackTrace();
-			result = "false";
+		} catch (NoSessionInSessionStoreException e) {
+			response = new DTOWrapper().wrapError(e.toString());
 		}
 		if(result.equals("true")){
-			SessionStore.removeKeyValuePair(session);
+			NeqServer.getSessionStore().removeKeyValuePair(session);
 		}
-		logger.info("logout method returned json object: " + result);
-		return result;
+		logger.info("logout method returned json object: " + response);
+		servlerResponse.setContentType(response);
+		return servlerResponse.getContentType();
 	}
 
 }
