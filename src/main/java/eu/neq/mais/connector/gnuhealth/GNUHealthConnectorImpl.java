@@ -514,7 +514,6 @@ public class GNUHealthConnectorImpl extends Connector {
 
 		if (diagnoseList.isEmpty()) {
 			ArrayList<String> tmp = new ArrayList<String>();
-			tmp.add("Error: no diagnoses for id");
 			return tmp;
 		} else {
 			return diagnoseList;
