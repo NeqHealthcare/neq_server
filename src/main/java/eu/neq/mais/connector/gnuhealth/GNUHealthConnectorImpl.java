@@ -493,7 +493,6 @@ public class GNUHealthConnectorImpl extends Connector {
 		List<PatientGnu> patientList = this.generatePatientListObjectById(id);
 		if (patientList == null) {
 			ArrayList<String> tmp = new ArrayList<String>();
-			tmp.add("Error: no patients for id");
 			return tmp;
 		}
 
