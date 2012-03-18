@@ -122,6 +122,7 @@ public abstract class Connector {
 	
 	public abstract LabTestResult returnLabTestResultsDetails(String labTestId);
 	
+	
 	/**
 	 * Sets a Connector's back-end. This is where the target for the Connector's interaction is defined.
 	 * A back-end can be e.g. a running GNU Health instance or similar systems and must be defined in the back-end config.

@@ -42,6 +42,7 @@ import eu.neq.mais.technicalservice.DTOWrapper;
 import eu.neq.mais.technicalservice.FileHandler;
 import eu.neq.mais.technicalservice.SessionStore;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
+import eu.neq.mais.technicalservice.storage.DbHandler;
 import eu.neq.mais.technicalservice.Settings;
 
 /**
@@ -245,7 +246,9 @@ public class GNUHealthConnectorImpl extends Connector {
 			result = session_split[1];
 
 			Integer userId = getUserId(username);
-
+			DbHandler dbH = new DbHandler();
+			dbH.saveLogin(String.valueOf(userId));
+			dbH.close();
 			NeqServer.getSessionStore().put(result, backendSid, userId);
 		} else {
 			// result = "false";
@@ -1083,5 +1086,6 @@ public class GNUHealthConnectorImpl extends Connector {
 			this.medications = medications;
 		}
 	}
+
 
 }

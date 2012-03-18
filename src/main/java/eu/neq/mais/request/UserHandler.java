@@ -19,6 +19,8 @@ import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.DTOWrapper;
 import eu.neq.mais.technicalservice.SessionStore;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
+import eu.neq.mais.technicalservice.storage.DbHandler;
+import eu.neq.mais.technicalservice.storage.Login;
 
 import javax.activation.MimetypesFileTypeMap;
 
@@ -105,6 +107,34 @@ public class UserHandler {
 		return Response.ok(image, mt).build();
 //		servlerResponse.setContentType(session);
 //		return servlerResponse.getContentType();
+	}
+	
+	@GET
+	@Path("/lastLogin")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String returnLastLogin(@Context HttpServletResponse servlerResponse, @QueryParam("session") String session) {
+
+		String response = new DTOWrapper().wrapError("Error while recieving latest login for user");
+		
+		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS"); 
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
+        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
+        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
+		try {
+			String userId = String.valueOf(NeqServer.getSessionStore().getUserId(session));
+			DbHandler dbH = new DbHandler();
+			Login l = dbH.getLatestLogin(userId);
+			dbH.close();
+			response = new DTOWrapper().wrap(l.getDateOfLogin());
+		} catch (Exception e) {
+			e.printStackTrace();
+		} catch (NoSessionInSessionStoreException e) {
+			response = new DTOWrapper().wrapError(e.toString());
+		}
+		servlerResponse.setContentType(response);
+		return servlerResponse.getContentType();
+
 	}
 	
 }
