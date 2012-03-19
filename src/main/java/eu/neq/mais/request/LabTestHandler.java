@@ -121,26 +121,27 @@ public class LabTestHandler {
 	@Produces(MediaType.APPLICATION_JSON)
 	public String requestLabTest(@Context HttpServletResponse servlerResponse,
 			@QueryParam("session") String session, @QueryParam("patientId") String patientId) {
+				
+		String response = new DTOWrapper().wrapError("Error while retrieving lab test requests");
 		
-		String response = new DTOWrapper().wrapError("STILL TO BE IMPLEMENTED BY JAN");
-		
-//		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS"); 
-//        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
-//        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
-//        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
-//        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
-//        
-//		try {
-//			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
-//			List<?> labTests = connector.returnLabTestResultsForPatient(patientId);
-//			response = new DTOWrapper().wrap(labTests);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			
-//		} catch (NoSessionInSessionStoreException e) {
-//			response = new DTOWrapper().wrapError(e.toString());
-//		}
-//		logger.info("return diagnose method returned json object: " + response);
+		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS"); 
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
+        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
+        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
+        
+		try {
+			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
+			
+			List<?> labTestRequests = connector.returnLabTestRequests(patientId);
+			response = new DTOWrapper().wrap(labTestRequests);
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+		} catch (NoSessionInSessionStoreException e) {
+			response = new DTOWrapper().wrapError(e.toString());
+		}
+		logger.info("return diagnose method returned json object: " + response);
 
 		servlerResponse.setContentType(response);
 		return servlerResponse.getContentType();

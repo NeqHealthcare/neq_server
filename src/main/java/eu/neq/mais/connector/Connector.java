@@ -122,6 +122,13 @@ public abstract class Connector {
 	
 	public abstract LabTestResult returnLabTestResultsDetails(String labTestId);
 	
+	/**
+	 * Returns all lab test requests for a specific patient
+	 * 
+	 * @param patientId
+	 * @return all lab test requests for a specific patient
+	 */
+	public abstract List<?> returnLabTestRequests(String patientId);
 	
 	/**
 	 * Sets a Connector's back-end. This is where the target for the Connector's interaction is defined.

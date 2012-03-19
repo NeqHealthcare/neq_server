@@ -31,6 +31,7 @@ import eu.neq.mais.domain.Patient;
 import eu.neq.mais.domain.gnuhealth.DiagnoseGnu;
 import eu.neq.mais.domain.gnuhealth.DomainParserGnu;
 import eu.neq.mais.domain.gnuhealth.LabTestCriteriaGnu;
+import eu.neq.mais.domain.gnuhealth.LabTestRequestGnu;
 import eu.neq.mais.domain.gnuhealth.LabTestResultGnu;
 import eu.neq.mais.domain.gnuhealth.MedicationGnu;
 import eu.neq.mais.domain.gnuhealth.PatientGnu;
@@ -75,10 +76,14 @@ public class GNUHealthConnectorImpl extends Connector {
 
 			// LOGIN
 			String user_session = con.login(login_name, password, "gnuhealth2");
-			List<?> r = con.returnAllLabTestResults();
-			for (Object x : r) {
-				System.out.println(new DTOWrapper().wrap(x));
-			}
+			// lab test results
+//			List<?> r = con.returnAllLabTestResults();
+//			for (Object x : r) {
+//				System.out.println(new DTOWrapper().wrap(x));
+//			}
+			// lab test requests
+			List<?> p = con.returnLabTestRequests("14");
+			System.out.println(new DTOWrapper().wrap(p));
 			// System.out.println("1:returnLabTestResultsForPatient("13")));"
 			// System.out.println("2: " + con.returnAllLabTestResults());
 			// // Search Patients
@@ -143,6 +148,30 @@ public class GNUHealthConnectorImpl extends Connector {
 			e.printStackTrace();
 		}
 
+	}
+
+	public List<?> returnLabTestRequests(String patientId) {
+		int[] labTestRequestIds = getAllLabTestRequestIds();
+		
+		String labTestRequestsResultString = execute(getLabTestRequestReadMethod(),
+				getLabTestRequestParams(labTestRequestIds));
+		
+		Type listType = new TypeToken<List<LabTestRequestGnu>>() {
+		}.getType();
+		List<LabTestRequestGnu> result = DomainParserGnu.fromJson(
+				labTestRequestsResultString, listType, LabTestRequestGnu.class);
+		
+		List<LabTestRequestGnu> resultForSpecificPatient = new ArrayList<LabTestRequestGnu>();
+		
+		for (LabTestRequestGnu ltrg : result) {
+			ltrg.prepareDateFormat();
+			if(ltrg.getPatientId().equals(patientId)){
+				resultForSpecificPatient.add(ltrg);
+			}
+		}
+		
+		return resultForSpecificPatient;
+		
 	}
 	
 	public LabTestResult returnLabTestResultsDetails(String labTestId) {
@@ -816,6 +845,34 @@ public class GNUHealthConnectorImpl extends Connector {
 		}
 		return idList;
 	}
+	
+	/*
+	 * Helping method returning the ID's of all lab test requests of the GNUHealth
+	 * back-end.
+	 * 
+	 * @return Array of IDs.
+	 */
+	private int[] getAllLabTestRequestIds() {
+		String session = getAdminSession();
+
+		int[] idList;
+
+		// Search Patients
+		Object[] params = new Object[] { 1, session, new String[] {}, 0, 1000,
+				null, "REPLACE_CONTEXT" };
+
+		String result = execute(getLabTestRequestSearchMethod(), params);
+		result = result.substring(result.indexOf("[") + 1,
+				result.lastIndexOf("]"));
+
+		String[] idListString = result.split(", ");
+		idList = new int[idListString.length];
+
+		for (int i = 0; i < idListString.length; i++) {
+			idList[i] = Integer.parseInt(idListString[i]);
+		}
+		return idList;
+	}
 
 	/*
 	 * Helping method returning the corresponding physician ID of a user.
@@ -891,30 +948,6 @@ public class GNUHealthConnectorImpl extends Connector {
 		adminSession = null;
 	}
 
-	// "69y 5m 4d" ---> "2003-01-07"
-	// does not work
-	private static String calculateDateOfBirth(String gnuHealthAge) {
-		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-
-		Integer year = new Integer(gnuHealthAge.substring(0,
-				gnuHealthAge.indexOf("y")));
-		Integer month = new Integer(gnuHealthAge.substring(
-				gnuHealthAge.indexOf(" ") + 1, gnuHealthAge.indexOf("m")));
-		Integer day = new Integer(gnuHealthAge.substring(
-				gnuHealthAge.lastIndexOf(" ") + 1, gnuHealthAge.indexOf("d")));
-
-		GregorianCalendar age = new GregorianCalendar(year, month - 1, day);
-		System.out.println("age: " + df.format(age.getTime()));
-		GregorianCalendar dateToday = new GregorianCalendar();
-		System.out.println("today: " + df.format(dateToday.getTime()));
-
-		GregorianCalendar birthday = new GregorianCalendar();
-		birthday.setTimeInMillis(dateToday.getTimeInMillis()
-				- age.getTimeInMillis());
-
-		return df.format(birthday.getTime());
-	}
-
 	/*-----  BACKEND METHODS  ----*/
 	/* ............................ */
 
@@ -965,6 +998,14 @@ public class GNUHealthConnectorImpl extends Connector {
 	private String getPhysicianSearchMethod() {
 		return "model.gnuhealth.physician.search";
 	}
+	
+	private String getLabTestRequestSearchMethod(){
+		return "model.gnuhealth.patient.lab.test.search";
+	}
+	
+	private String getLabTestRequestReadMethod(){
+		return "model.gnuhealth.patient.lab.test.read";
+	}
 
 	private String getLabTestSearchMethod() {
 		return "model.gnuhealth.lab.search";
@@ -987,6 +1028,17 @@ public class GNUHealthConnectorImpl extends Connector {
 				ids,
 				new String[] { "date_analysis", "test", "patient", "name",
 						"test.rec_name", "patient.rec_name"
+				},
+				"REPLACE_CONTEXT" };
+	}
+	
+	private Object[] getLabTestRequestParams(int[] ids){
+		return new Object[] {
+				1,
+				getAdminSession(),
+				ids,
+				new String[] { 
+					"date","patient_id", "state", "doctor_id.rec_name", "name.rec_name"
 				},
 				"REPLACE_CONTEXT" };
 	}
@@ -1086,6 +1138,5 @@ public class GNUHealthConnectorImpl extends Connector {
 			this.medications = medications;
 		}
 	}
-
 
 }

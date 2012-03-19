@@ -47,7 +47,6 @@ public class VaccinationHandler {
 		try {
 			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
 			List<?> vaccinations = connector.returnVaccinationsForPatient(patientId);
-			System.out.println("vaccinations: "+vaccinations.size()+" -- > ");
 			response = new DTOWrapper().wrap(vaccinations);
 		} catch (Exception e) {
 			e.printStackTrace();
