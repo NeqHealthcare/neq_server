@@ -183,33 +183,32 @@ public class LabTestHandler {
 	@Path("/request")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String createLabTestRequest(@Context HttpServletResponse servlerResponse,
-			@QueryParam("session") String session, @QueryParam("patientId") String patientId) {
+			@QueryParam("session") String session, @QueryParam("date") String date,@QueryParam("doctor_id") String doctor_id,@QueryParam("name") String name,@QueryParam("patient_id") String patient_id ) {
 				
-//		String response = new DTOWrapper().wrapError("Error while retrieving lab test requests");
-//		
-//		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS"); 
-//        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
-//        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
-//        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
-//        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
-//        
-//		try {
-//			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
-//			
-//			List<?> labTestRequests = connector.returnLabTestRequests(patientId);
-//			response = new DTOWrapper().wrap(labTestRequests);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			
-//		} catch (NoSessionInSessionStoreException e) {
-//			response = new DTOWrapper().wrapError(e.toString());
-//		}
-//		logger.info("return diagnose method returned json object: " + response);
-//
-//		servlerResponse.setContentType(response);
-//		return servlerResponse.getContentType();
+		String response = new DTOWrapper().wrapError("Error while retrieving lab test requests");
 		
-		return null;
+		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,PUT,OPTIONS"); 
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
+        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
+        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
+        
+		try {
+			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
+			
+			List<?> labTestCreationSuccessMessage = connector.createLabTestRequest(date, doctor_id, name, patient_id);
+			response = new DTOWrapper().wrap(labTestCreationSuccessMessage);
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+		} catch (NoSessionInSessionStoreException e) {
+			response = new DTOWrapper().wrapError(e.toString());
+		}
+		logger.info("return diagnose method returned json object: " + response);
+
+		servlerResponse.setContentType(response);
+		return servlerResponse.getContentType();
+		
 	}
 
 }

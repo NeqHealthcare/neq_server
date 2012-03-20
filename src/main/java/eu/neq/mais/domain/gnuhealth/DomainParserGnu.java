@@ -34,7 +34,7 @@ public class DomainParserGnu {
 	}
 	
 	public static <T> List<T> fromJson(String jsonString, Type listType, Class<T> targetClass) {
-		
+//		System.out.println("jsonstring: "+jsonString);
 		jsonString = jsonString.substring(jsonString.indexOf("["),
 				jsonString.lastIndexOf("]") + 1);
 		

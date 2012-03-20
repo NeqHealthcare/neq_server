@@ -31,12 +31,14 @@ import eu.neq.mais.domain.Patient;
 import eu.neq.mais.domain.gnuhealth.DiagnoseGnu;
 import eu.neq.mais.domain.gnuhealth.DomainParserGnu;
 import eu.neq.mais.domain.gnuhealth.LabTestCriteriaGnu;
+import eu.neq.mais.domain.gnuhealth.LabTestRequestCreationMessage;
 import eu.neq.mais.domain.gnuhealth.LabTestRequestGnu;
 import eu.neq.mais.domain.gnuhealth.LabTestResultGnu;
 import eu.neq.mais.domain.gnuhealth.LabTestTypeGnu;
 import eu.neq.mais.domain.gnuhealth.MedicationGnu;
 import eu.neq.mais.domain.gnuhealth.PatientGnu;
 import eu.neq.mais.domain.gnuhealth.PhysicianGnu;
+import eu.neq.mais.domain.gnuhealth.TimeGnu;
 import eu.neq.mais.domain.gnuhealth.UserGnu;
 import eu.neq.mais.domain.gnuhealth.VaccinationGnu;
 import eu.neq.mais.technicalservice.Backend;
@@ -86,8 +88,11 @@ public class GNUHealthConnectorImpl extends Connector {
 //			List<?> p = con.returnLabTestRequests("14");
 //			System.out.println(new DTOWrapper().wrap(p));
 			// lab test types
-			List<?> q = con.returnLabTestTypes();
-			System.out.println(new DTOWrapper().wrap(q));
+//			List<?> q = con.returnLabTestTypes();
+//			System.out.println(new DTOWrapper().wrap(q));		
+			//create lab test request
+			List<?> r = con.createLabTestRequest("556465486486", "1", "3", "9");
+			System.out.println(new DTOWrapper().wrap(r));
 			
 			// System.out.println("1:returnLabTestResultsForPatient("13")));"
 			// System.out.println("2: " + con.returnAllLabTestResults());
@@ -153,6 +158,22 @@ public class GNUHealthConnectorImpl extends Connector {
 			e.printStackTrace();
 		}
 
+	}
+	
+	@Override
+	public List<?> createLabTestRequest(String date, String doctor_id,
+			String name, String patient_id) {
+
+		String labTestCreationSuccessMessage = execute(getLabTestRequestCreateMethod(),
+				getLabTestRequestCreationParams(date, doctor_id, name, patient_id));
+		
+		Type listType = new TypeToken<List<LabTestTypeGnu>>() {
+		}.getType();
+		List<LabTestRequestCreationMessage> result = new ArrayList<LabTestRequestCreationMessage>();
+		result.add(new LabTestRequestCreationMessage(labTestCreationSuccessMessage.substring(labTestCreationSuccessMessage.lastIndexOf(":")+1, labTestCreationSuccessMessage.lastIndexOf("}"))));
+
+		return result;
+		
 	}
 	
 	@Override
@@ -1075,6 +1096,10 @@ public class GNUHealthConnectorImpl extends Connector {
 	private String getLabTestTypeReadMethod(){
 		return "model.gnuhealth.lab.test_type.read";
 	}
+	
+	private String getLabTestRequestCreateMethod(){
+		return "model.gnuhealth.patient.lab.test.create";
+	}
 
 	/*-----  BACKEND METHOD PARAMS  ----*/
 	
@@ -1107,6 +1132,19 @@ public class GNUHealthConnectorImpl extends Connector {
 				new String[] { 
 					"date","patient_id", "state", "doctor_id.rec_name", "name.rec_name"
 				},
+				"REPLACE_CONTEXT" };
+	}
+	
+	private Object[] getLabTestRequestCreationParams(String date, String doctor_id, String name, String patient_id){
+		Map<Object,Object> paramMap = new HashMap<Object,Object>();
+		paramMap.put("date", new TimeGnu(new Long(date)));
+		paramMap.put("doctor_id", doctor_id);
+		paramMap.put("name", name);
+		paramMap.put("patient_id", patient_id);
+		return new Object[] {
+				1,
+				getAdminSession(),
+				paramMap,
 				"REPLACE_CONTEXT" };
 	}
 	
@@ -1205,5 +1243,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			this.medications = medications;
 		}
 	}
+
+
 
 }
