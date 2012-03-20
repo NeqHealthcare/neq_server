@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -50,7 +51,7 @@ public class LabTestHandler {
 		} catch (NoSessionInSessionStoreException e) {
 			response = new DTOWrapper().wrapError(e.toString());
 		}
-		logger.info("return diagnose method returned json object: " + response);
+		logger.info("lab test result details were returned: " + response);
 
 		servlerResponse.setContentType(response);
 		return servlerResponse.getContentType();
@@ -80,7 +81,7 @@ public class LabTestHandler {
 		} catch (NoSessionInSessionStoreException e) {
 			response = new DTOWrapper().wrapError(e.toString());
 		}
-		logger.info("return diagnose method returned json object: " + response);
+		logger.info("lab test results for patient: "+patientId+" were returned: " + response);
 
 		servlerResponse.setContentType(response);
 		return servlerResponse.getContentType();
@@ -110,7 +111,7 @@ public class LabTestHandler {
 		} catch (NoSessionInSessionStoreException e) {
 			response = new DTOWrapper().wrapError(e.toString());
 		}
-		logger.info("return diagnose method returned json object: " + response);
+		logger.info("all lab test results were returned: " + response);
 
 		servlerResponse.setContentType(response);
 		return servlerResponse.getContentType();
@@ -141,10 +142,74 @@ public class LabTestHandler {
 		} catch (NoSessionInSessionStoreException e) {
 			response = new DTOWrapper().wrapError(e.toString());
 		}
-		logger.info("return diagnose method returned json object: " + response);
+		logger.info("lab test requests for patient: "+patientId+" were returned: " + response);
 
 		servlerResponse.setContentType(response);
 		return servlerResponse.getContentType();
+	}
+	
+	@GET
+	@Path("/params")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String requestLabTest(@Context HttpServletResponse servlerResponse,
+			@QueryParam("session") String session, @QueryParam("labTestTypes") boolean labTestTypes ) {
+				
+		String response = new DTOWrapper().wrapError("Error while retrieving lab test requests");
+		
+		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS"); 
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
+        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
+        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
+        
+		try {
+			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
+			
+			List<?> labTestRequests = connector.returnLabTestTypes();
+			response = new DTOWrapper().wrap(labTestRequests);
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+		} catch (NoSessionInSessionStoreException e) {
+			response = new DTOWrapper().wrapError(e.toString());
+		}
+		logger.info("lab test request types were returned: " + response);
+
+		servlerResponse.setContentType(response);
+		return servlerResponse.getContentType();
+	}
+	
+	@PUT
+	@Path("/request")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String createLabTestRequest(@Context HttpServletResponse servlerResponse,
+			@QueryParam("session") String session, @QueryParam("patientId") String patientId) {
+				
+//		String response = new DTOWrapper().wrapError("Error while retrieving lab test requests");
+//		
+//		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS"); 
+//        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
+//        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
+//        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
+//        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
+//        
+//		try {
+//			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
+//			
+//			List<?> labTestRequests = connector.returnLabTestRequests(patientId);
+//			response = new DTOWrapper().wrap(labTestRequests);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			
+//		} catch (NoSessionInSessionStoreException e) {
+//			response = new DTOWrapper().wrapError(e.toString());
+//		}
+//		logger.info("return diagnose method returned json object: " + response);
+//
+//		servlerResponse.setContentType(response);
+//		return servlerResponse.getContentType();
+		
+		return null;
 	}
 
 }

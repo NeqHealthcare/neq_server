@@ -131,6 +131,12 @@ public abstract class Connector {
 	public abstract List<?> returnLabTestRequests(String patientId);
 	
 	/**
+	 * Returns all lab test types
+	 * @return
+	 */
+	public abstract List<?> returnLabTestTypes();
+	
+	/**
 	 * Sets a Connector's back-end. This is where the target for the Connector's interaction is defined.
 	 * A back-end can be e.g. a running GNU Health instance or similar systems and must be defined in the back-end config.
 	 * @param backend Back-end
@@ -166,6 +172,8 @@ public abstract class Connector {
 		}
 		return instance;
 	}
+
+
 	
 	
 	

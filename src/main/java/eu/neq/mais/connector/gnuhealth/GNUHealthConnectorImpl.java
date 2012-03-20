@@ -33,6 +33,7 @@ import eu.neq.mais.domain.gnuhealth.DomainParserGnu;
 import eu.neq.mais.domain.gnuhealth.LabTestCriteriaGnu;
 import eu.neq.mais.domain.gnuhealth.LabTestRequestGnu;
 import eu.neq.mais.domain.gnuhealth.LabTestResultGnu;
+import eu.neq.mais.domain.gnuhealth.LabTestTypeGnu;
 import eu.neq.mais.domain.gnuhealth.MedicationGnu;
 import eu.neq.mais.domain.gnuhealth.PatientGnu;
 import eu.neq.mais.domain.gnuhealth.PhysicianGnu;
@@ -82,8 +83,12 @@ public class GNUHealthConnectorImpl extends Connector {
 //				System.out.println(new DTOWrapper().wrap(x));
 //			}
 			// lab test requests
-			List<?> p = con.returnLabTestRequests("14");
-			System.out.println(new DTOWrapper().wrap(p));
+//			List<?> p = con.returnLabTestRequests("14");
+//			System.out.println(new DTOWrapper().wrap(p));
+			// lab test types
+			List<?> q = con.returnLabTestTypes();
+			System.out.println(new DTOWrapper().wrap(q));
+			
 			// System.out.println("1:returnLabTestResultsForPatient("13")));"
 			// System.out.println("2: " + con.returnAllLabTestResults());
 			// // Search Patients
@@ -148,6 +153,22 @@ public class GNUHealthConnectorImpl extends Connector {
 			e.printStackTrace();
 		}
 
+	}
+	
+	@Override
+	public List<?> returnLabTestTypes() {
+		int[] labTestTypeIds = getAllLabTestTypeIds();
+		
+		String labTestTypeResultString = execute(getLabTestTypeReadMethod(),
+				getLabTestTypeParams(labTestTypeIds));
+		
+		Type listType = new TypeToken<List<LabTestTypeGnu>>() {
+		}.getType();
+		List<LabTestTypeGnu> result = DomainParserGnu.fromJson(
+				labTestTypeResultString, listType, LabTestTypeGnu.class);
+
+		
+		return result;
 	}
 
 	public List<?> returnLabTestRequests(String patientId) {
@@ -873,6 +894,34 @@ public class GNUHealthConnectorImpl extends Connector {
 		}
 		return idList;
 	}
+	
+	/*
+	 * Helping method returning the ID's of all lab test types of the GNUHealth
+	 * back-end.
+	 * 
+	 * @return Array of IDs.
+	 */
+	private int[] getAllLabTestTypeIds() {
+		String session = getAdminSession();
+
+		int[] idList;
+
+		// Search Patients
+		Object[] params = new Object[] { 1, session, new String[] {}, 0, 1000,
+				null, "REPLACE_CONTEXT" };
+
+		String result = execute(getLabTestTypeSearchMethod(), params);
+		result = result.substring(result.indexOf("[") + 1,
+				result.lastIndexOf("]"));
+
+		String[] idListString = result.split(", ");
+		idList = new int[idListString.length];
+
+		for (int i = 0; i < idListString.length; i++) {
+			idList[i] = Integer.parseInt(idListString[i]);
+		}
+		return idList;
+	}
 
 	/*
 	 * Helping method returning the corresponding physician ID of a user.
@@ -1018,8 +1067,26 @@ public class GNUHealthConnectorImpl extends Connector {
 	private String getLabTestCriteriaReadMethod() {
 		return "model.gnuhealth.lab.test.critearea.read";
 	}
+	
+	private String getLabTestTypeSearchMethod(){
+		return "model.gnuhealth.lab.test_type.search";
+	}
+	
+	private String getLabTestTypeReadMethod(){
+		return "model.gnuhealth.lab.test_type.read";
+	}
 
 	/*-----  BACKEND METHOD PARAMS  ----*/
+	
+	private Object[] getLabTestTypeParams(int[] ids){
+		return new Object[] {
+				1,
+				getAdminSession(),
+				ids,
+				new String[] { "id", "code", "name"
+				},
+				"REPLACE_CONTEXT" };
+	}
 
 	private Object[] getLabTestsParams(int[] ids) {
 		return new Object[] {
