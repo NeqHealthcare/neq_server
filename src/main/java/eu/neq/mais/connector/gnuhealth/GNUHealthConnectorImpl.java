@@ -47,6 +47,7 @@ import eu.neq.mais.technicalservice.FileHandler;
 import eu.neq.mais.technicalservice.SessionStore;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
 import eu.neq.mais.technicalservice.storage.DbHandler;
+import eu.neq.mais.technicalservice.storage.LabTestRequest;
 import eu.neq.mais.technicalservice.Settings;
 
 /**
@@ -79,21 +80,27 @@ public class GNUHealthConnectorImpl extends Connector {
 
 			// LOGIN
 			String user_session = con.login(login_name, password, "gnuhealth2");
+
+			List<?> r = con.createLabTestRequest("556465486486", "1", "3", "9");
+			System.out.println(new DTOWrapper().wrap(r));
+
+			con.checkForTestedLabRequests("1");
 			// lab test results
-//			List<?> r = con.returnAllLabTestResults();
-//			for (Object x : r) {
-//				System.out.println(new DTOWrapper().wrap(x));
-//			}
+			// List<?> r = con.returnAllLabTestResults();
+			// for (Object x : r) {
+			// System.out.println(new DTOWrapper().wrap(x));
+			// }
 			// lab test requests
-//			List<?> p = con.returnLabTestRequests("14");
-//			System.out.println(new DTOWrapper().wrap(p));
+			// List<?> p = con.returnLabTestRequests("14");
+			// System.out.println(new DTOWrapper().wrap(p));
 			// lab test types
-//			List<?> q = con.returnLabTestTypes();
-//			System.out.println(new DTOWrapper().wrap(q));		
-			//create lab test request
-			//List<?> r = con.createLabTestRequest("556465486486", "1", "3", "9");
-			//System.out.println(new DTOWrapper().wrap(r));
-			
+			// List<?> q = con.returnLabTestTypes();
+			// System.out.println(new DTOWrapper().wrap(q));
+			// create lab test request
+			// List<?> r = con.createLabTestRequest("556465486486", "1", "3",
+			// "9");
+			// System.out.println(new DTOWrapper().wrap(r));
+
 			// System.out.println("1:returnLabTestResultsForPatient("13")));"
 			// System.out.println("2: " + con.returnAllLabTestResults());
 			// // Search Patients
@@ -160,85 +167,134 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	}
 
-    /*
-    does not yet include the "real" success / failure test
-     */
+	@Override
+	public List<?> checkForTestedLabRequests(String doctor_id) {
+		DbHandler dbh = new DbHandler();
+		List<LabTestRequest> openRequests = dbh.getLabTestRequests(String
+				.valueOf(doctor_id));
+
+		List<Integer> recentlyTestedRequestsIds = new ArrayList<Integer>();
+
+		if (openRequests.isEmpty()) {
+			dbh.close();
+			return recentlyTestedRequestsIds;
+		}
+
+		List<?> labTests = returnAllLabTestRequests();
+
+		for (LabTestRequest labTestRequest : openRequests) {
+			for (Object uncastLabTest : labTests) {
+				LabTestRequestGnu labTestRequestGnu = (LabTestRequestGnu) uncastLabTest;
+
+				if (Integer.valueOf(
+						labTestRequest.getRequest_id().replaceAll(" ", ""))
+						.equals(labTestRequestGnu.getId())) {
+					if (labTestRequestGnu.getState().equals("tested")) {
+						dbh.removeLabTestRequest(labTestRequest.getRequest_id());
+						recentlyTestedRequestsIds.add(new Integer(labTestRequest
+								.getRequest_id().replaceAll(" ", "")));
+					}
+				}
+
+			}
+		}
+
+		dbh.close();
+		return recentlyTestedRequestsIds;
+	}
+
+	/*
+	 * does not yet include the "real" success / failure test
+	 */
 	@Override
 	public List<?> createLabTestRequest(String date, String doctor_id,
 			String name, String patient_id) {
 
-		String labTestCreationSuccessMessage = execute(getLabTestRequestCreateMethod(),
-				getLabTestRequestCreationParams(date, doctor_id, name, patient_id));
-		
+		String labTestCreationSuccessMessage = execute(
+				getLabTestRequestCreateMethod(),
+				getLabTestRequestCreationParams(date, doctor_id, name,
+						patient_id));
+
 		Type listType = new TypeToken<List<LabTestTypeGnu>>() {
 		}.getType();
 		List<LabTestRequestCreationMessage> result = new ArrayList<LabTestRequestCreationMessage>();
-		result.add(new LabTestRequestCreationMessage(labTestCreationSuccessMessage.substring(labTestCreationSuccessMessage.lastIndexOf(":")+1, labTestCreationSuccessMessage.lastIndexOf("}"))));
+		String successId = labTestCreationSuccessMessage.substring(
+				labTestCreationSuccessMessage.lastIndexOf(":") + 1,
+				labTestCreationSuccessMessage.lastIndexOf("}"));
+		result.add(new LabTestRequestCreationMessage(successId));
+
+		DbHandler dbh = new DbHandler();
+		dbh.saveLabTestRequests(doctor_id, successId);
+		dbh.close();
 
 		return result;
-		
+
 	}
-	
+
 	@Override
 	public List<?> returnLabTestTypes() {
 		int[] labTestTypeIds = getAllLabTestTypeIds();
-		
+
 		String labTestTypeResultString = execute(getLabTestTypeReadMethod(),
 				getLabTestTypeParams(labTestTypeIds));
-		
+
 		Type listType = new TypeToken<List<LabTestTypeGnu>>() {
 		}.getType();
 		List<LabTestTypeGnu> result = DomainParserGnu.fromJson(
 				labTestTypeResultString, listType, LabTestTypeGnu.class);
 
-		
 		return result;
 	}
-	
+
 	@Override
 	public List<?> returnAllLabTestRequests() {
 		int[] labTestRequestIds = getAllLabTestRequestIds();
-		
-		String labTestRequestsResultString = execute(getLabTestRequestReadMethod(),
+
+		String labTestRequestsResultString = execute(
+				getLabTestRequestReadMethod(),
 				getLabTestRequestParams(labTestRequestIds));
-		
+
 		Type listType = new TypeToken<List<LabTestRequestGnu>>() {
 		}.getType();
 		List<LabTestRequestGnu> result = DomainParserGnu.fromJson(
 				labTestRequestsResultString, listType, LabTestRequestGnu.class);
-		
+
 		return result;
 	}
 
 	public List<?> returnLabTestRequests(String patientId) {
 		List<LabTestRequestGnu> result = (List<LabTestRequestGnu>) returnAllLabTestRequests();
-		
+
 		List<LabTestRequestGnu> resultForSpecificPatient = new ArrayList<LabTestRequestGnu>();
-		
+
 		for (LabTestRequestGnu ltrg : result) {
 			ltrg.prepareDateFormat();
-			if(ltrg.getPatientId().equals(patientId)){
+			if (ltrg.getPatientId().equals(patientId)) {
 				resultForSpecificPatient.add(ltrg);
 			}
 		}
-		
+
 		return resultForSpecificPatient;
-		
+
 	}
-	
+
 	public LabTestResult returnLabTestResultsDetails(String labTestId) {
-		
+
 		int[] id = new int[] { Integer.parseInt(labTestId) };
-		String labTestsResult = execute(getLabTestReadMethod(), getLabTestsDetailParams(id));
-		
-		LabTestResultGnu result = DomainParserGnu.fromJson(labTestsResult, LabTestResultGnu.class);
+		String labTestsResult = execute(getLabTestReadMethod(),
+				getLabTestsDetailParams(id));
+
+		LabTestResultGnu result = DomainParserGnu.fromJson(labTestsResult,
+				LabTestResultGnu.class);
 		result.prepareDateFormat();
-		
-		String criteriaResultString = execute(getLabTestCriteriaReadMethod(), getLabTestCriteriaParams(result.getCritearea()));
+
+		String criteriaResultString = execute(getLabTestCriteriaReadMethod(),
+				getLabTestCriteriaParams(result.getCritearea()));
 		Type listType = new TypeToken<List<LabTestCriteriaGnu>>() {
 		}.getType();
-		List<LabTestCriteriaGnu> labTestCriteria = DomainParserGnu.fromJson(criteriaResultString, listType, LabTestCriteriaGnu.class);
-		
+		List<LabTestCriteriaGnu> labTestCriteria = DomainParserGnu.fromJson(
+				criteriaResultString, listType, LabTestCriteriaGnu.class);
+
 		result.setCritearea(null);
 		result.setCriteria(labTestCriteria.toArray());
 		return result;
@@ -254,9 +310,10 @@ public class GNUHealthConnectorImpl extends Connector {
 		}.getType();
 		List<LabTestResultGnu> result = DomainParserGnu.fromJson(
 				labTestsResultString, listType, LabTestResultGnu.class);
-		
-		for (LabTestResultGnu ltrg : result) ltrg.prepareDateFormat();
-		
+
+		for (LabTestResultGnu ltrg : result)
+			ltrg.prepareDateFormat();
+
 		return result;
 	}
 
@@ -314,9 +371,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		String[] params = new String[] { username, password };
 
 		ServiceProxy proxy = new ServiceProxy(getBackEndUrl().toString());
-		
-		
-		
+
 		String result = new Gson().toJson(proxy.call(this.getLoginMethod(),
 				params));
 
@@ -368,9 +423,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		try {
 			connection = new URL(getBackEndUrl().toString()).openConnection();
 			connection.setRequestProperty("method", "POST");
-			
-			
-			
+
 			connection.setUseCaches(false);
 			connection.setDoInput(true);
 			connection.setDoOutput(true);
@@ -896,10 +949,10 @@ public class GNUHealthConnectorImpl extends Connector {
 		}
 		return idList;
 	}
-	
+
 	/*
-	 * Helping method returning the ID's of all lab test requests of the GNUHealth
-	 * back-end.
+	 * Helping method returning the ID's of all lab test requests of the
+	 * GNUHealth back-end.
 	 * 
 	 * @return Array of IDs.
 	 */
@@ -924,7 +977,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		}
 		return idList;
 	}
-	
+
 	/*
 	 * Helping method returning the ID's of all lab test types of the GNUHealth
 	 * back-end.
@@ -1077,12 +1130,12 @@ public class GNUHealthConnectorImpl extends Connector {
 	private String getPhysicianSearchMethod() {
 		return "model.gnuhealth.physician.search";
 	}
-	
-	private String getLabTestRequestSearchMethod(){
+
+	private String getLabTestRequestSearchMethod() {
 		return "model.gnuhealth.patient.lab.test.search";
 	}
-	
-	private String getLabTestRequestReadMethod(){
+
+	private String getLabTestRequestReadMethod() {
 		return "model.gnuhealth.patient.lab.test.read";
 	}
 
@@ -1093,33 +1146,28 @@ public class GNUHealthConnectorImpl extends Connector {
 	private String getLabTestReadMethod() {
 		return "model.gnuhealth.lab.read";
 	}
-	
+
 	private String getLabTestCriteriaReadMethod() {
 		return "model.gnuhealth.lab.test.critearea.read";
 	}
-	
-	private String getLabTestTypeSearchMethod(){
+
+	private String getLabTestTypeSearchMethod() {
 		return "model.gnuhealth.lab.test_type.search";
 	}
-	
-	private String getLabTestTypeReadMethod(){
+
+	private String getLabTestTypeReadMethod() {
 		return "model.gnuhealth.lab.test_type.read";
 	}
-	
-	private String getLabTestRequestCreateMethod(){
+
+	private String getLabTestRequestCreateMethod() {
 		return "model.gnuhealth.patient.lab.test.create";
 	}
 
 	/*-----  BACKEND METHOD PARAMS  ----*/
-	
-	private Object[] getLabTestTypeParams(int[] ids){
-		return new Object[] {
-				1,
-				getAdminSession(),
-				ids,
-				new String[] { "id", "code", "name"
-				},
-				"REPLACE_CONTEXT" };
+
+	private Object[] getLabTestTypeParams(int[] ids) {
+		return new Object[] { 1, getAdminSession(), ids,
+				new String[] { "id", "code", "name" }, "REPLACE_CONTEXT" };
 	}
 
 	private Object[] getLabTestsParams(int[] ids) {
@@ -1128,35 +1176,30 @@ public class GNUHealthConnectorImpl extends Connector {
 				getAdminSession(),
 				ids,
 				new String[] { "date_analysis", "test", "patient", "name",
-						"test.rec_name", "patient.rec_name"
-				},
+						"test.rec_name", "patient.rec_name" },
 				"REPLACE_CONTEXT" };
 	}
-	
-	private Object[] getLabTestRequestParams(int[] ids){
+
+	private Object[] getLabTestRequestParams(int[] ids) {
 		return new Object[] {
 				1,
 				getAdminSession(),
 				ids,
-				new String[] { 
-					"date","patient_id", "state", "doctor_id.rec_name", "name.rec_name"
-				},
+				new String[] { "date", "patient_id", "state",
+						"doctor_id.rec_name", "name.rec_name" },
 				"REPLACE_CONTEXT" };
 	}
-	
-	private Object[] getLabTestRequestCreationParams(String date, String doctor_id, String name, String patient_id){
-		Map<Object,Object> paramMap = new HashMap<Object,Object>();
+
+	private Object[] getLabTestRequestCreationParams(String date,
+			String doctor_id, String name, String patient_id) {
+		Map<Object, Object> paramMap = new HashMap<Object, Object>();
 		paramMap.put("date", new TimeGnu(new Long(date)));
 		paramMap.put("doctor_id", doctor_id);
 		paramMap.put("name", name);
 		paramMap.put("patient_id", patient_id);
-		return new Object[] {
-				1,
-				getAdminSession(),
-				paramMap,
-				"REPLACE_CONTEXT" };
+		return new Object[] { 1, getAdminSession(), paramMap, "REPLACE_CONTEXT" };
 	}
-	
+
 	private Object[] getLabTestsDetailParams(int[] ids) {
 		return new Object[] {
 				1,
@@ -1164,21 +1207,18 @@ public class GNUHealthConnectorImpl extends Connector {
 				ids,
 				new String[] { "date_analysis", "test", "patient", "name",
 						"test.rec_name", "patient.rec_name", "date_requested",
-						"requestor", "results", "pathologist", "critearea", "diagnosis"
-				},
-				"REPLACE_CONTEXT" };
+						"requestor", "results", "pathologist", "critearea",
+						"diagnosis" }, "REPLACE_CONTEXT" };
 	}
-	
+
 	private Object[] getLabTestCriteriaParams(int[] ids) {
 		return new Object[] {
 				1,
 				getAdminSession(),
 				ids,
-				new String[] {
-					"name", "result_text", "remarks", "upper_limit", "lower_limit", "result", "excluded", "units", "warning", "units.rec_name"
-				},
-				"REPLACE_CONTEXT"
-		};
+				new String[] { "name", "result_text", "remarks", "upper_limit",
+						"lower_limit", "result", "excluded", "units",
+						"warning", "units.rec_name" }, "REPLACE_CONTEXT" };
 	}
 
 	private Object[] getMedicationParams(String id) {
@@ -1252,9 +1292,5 @@ public class GNUHealthConnectorImpl extends Connector {
 			this.medications = medications;
 		}
 	}
-
-
-
-
 
 }

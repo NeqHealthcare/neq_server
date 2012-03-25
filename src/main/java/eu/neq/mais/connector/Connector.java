@@ -168,6 +168,11 @@ public abstract class Connector {
 	 */
 	public abstract List<?> returnLabTestRequests(String patientId);
 
+	
+	/**
+	 * Checl
+	 */
+	public abstract List<?> checkForTestedLabRequests(String doctor_id);
 	/**
 	 * Returns all lab test types
 	 * 

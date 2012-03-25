@@ -33,11 +33,12 @@ public class LabTestHandler {
 	private int c = 0;
 
 	@GET
-	@Path("/results")
+	@Path("/check")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String returnNewResults(
 			@Context HttpServletResponse servlerResponse,
-			@QueryParam("session") String session) {
+			@QueryParam("session") String session,
+			@QueryParam("doctor_id") String doctor_id) {
 
 		String response = new DTOWrapper()
 				.wrapError("Error while retrieving new lattest results");
@@ -51,53 +52,11 @@ public class LabTestHandler {
 		servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
 		try {
-			Integer user_id = NeqServer.getSessionStore().getUserId(session);
-
-			DbHandler dbh = new DbHandler();
-			List<LabTestRequest> openRequests = dbh.getLabTestRequests(String
-					.valueOf(user_id));
-			
-			for (LabTestRequest r : openRequests) System.out.print("DB: "+r.getRequest_id()+" ("+r.getUser_id()+")");
-			
-			List<String> recentlyTestedRequestsIds = new ArrayList<String>();
-
-			if (!openRequests.isEmpty()) {
-
-				connector = ConnectorFactory.getConnector(NeqServer
-						.getSessionStore().getBackendSid(session));
-				List<?> labTests = connector.returnAllLabTestRequests();
-				
-				for (Object r : labTests) { System.out.print("GNU: "
-				+ ((LabTestRequestGnu) r).getId()
-				+ " ("
-				+ ((LabTestRequestGnu) r).getState()
-				+")");
-				}
-
-				for (LabTestRequest labTestRequest : openRequests) {
-					for (Object uncastLabTest : labTests) {
-						LabTestRequestGnu labTestRequestGnu = (LabTestRequestGnu) uncastLabTest;
-						
-						if (labTestRequest.getRequest_id().equals(labTestRequestGnu.getId())) {
-							if (labTestRequestGnu.getState().equals("tested")) {
-								dbh.removeLabTestRequest(labTestRequest.getRequest_id());
-								recentlyTestedRequestsIds.add(labTestRequest.getRequest_id());
-							}
-						}
-						
-					}
-				}
-				
-				for (String r : recentlyTestedRequestsIds) System.out.print("RES: "+ r);
-				
-				response = new DTOWrapper().wrap(recentlyTestedRequestsIds);
-			} else {
-				response = new DTOWrapper().wrap(openRequests);
-			}
-			
-			dbh.close();
-
+			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
+			List<?> res = connector.checkForTestedLabRequests(doctor_id);
+			response = new DTOWrapper().wrap(res);
 		} catch (Exception e) {
+
 			e.printStackTrace();
 		} catch (NoSessionInSessionStoreException e) {
 			e.printStackTrace();
@@ -305,7 +264,7 @@ public class LabTestHandler {
 			@QueryParam("patient_id") String patient_id) {
 
 		String response = new DTOWrapper()
-				.wrapError("Error while retrieving lab test requests");
+				.wrapError("Error while creating lab test requests");
 
 		servlerResponse.addHeader("Allow-Control-Allow-Methods",
 				"POST,GET,PUT,OPTIONS");
@@ -324,17 +283,6 @@ public class LabTestHandler {
 
 			List<?> labTestCreationSuccessMessage = connector
 					.createLabTestRequest(date, doctor_id, "", patient_id);
-
-			for (Object i : labTestCreationSuccessMessage) {
-
-				String user_id = String.valueOf(NeqServer.getSessionStore()
-						.getUserId(session));
-				String request_id = ((LabTestRequestCreationMessage) i).getId();
-
-				DbHandler dbh = new DbHandler();
-				dbh.saveLabTestRequests(user_id, request_id);
-				dbh.close();
-			}
 
 			response = new DTOWrapper().wrap(labTestCreationSuccessMessage);
 		} catch (Exception e) {
