@@ -425,8 +425,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	/**
 	 * @throws NoSessionInSessionStoreException
-	 * @see eu.neq.mais.connector.Connector#returnPersonalPatientsForUIList(java.
-	 *      lang.String)
+	 * @see eu.neq.mais.connector.Connector#returnPersonalPatientsForUIList(java.lang.String)
 	 */
 	@Override
 	public List returnPersonalPatientsForUIList(String session)
@@ -1130,7 +1129,7 @@ public class GNUHealthConnectorImpl extends Connector {
 				getAdminSession(),
 				ids,
 				new String[] { 
-					"date","patient_id", "state", "doctor_id.rec_name", "name.rec_name"
+					"date","patient_id", "state","doctor_id", "doctor_id.rec_name", "name.rec_name"
 				},
 				"REPLACE_CONTEXT" };
 	}
