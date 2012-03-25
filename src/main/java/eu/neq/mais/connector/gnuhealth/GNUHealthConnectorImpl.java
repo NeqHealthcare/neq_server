@@ -159,7 +159,10 @@ public class GNUHealthConnectorImpl extends Connector {
 		}
 
 	}
-	
+
+    /*
+    does not yet include the "real" success / failure test
+     */
 	@Override
 	public List<?> createLabTestRequest(String date, String doctor_id,
 			String name, String patient_id) {
@@ -1129,7 +1132,7 @@ public class GNUHealthConnectorImpl extends Connector {
 				getAdminSession(),
 				ids,
 				new String[] { 
-					"date","patient_id", "state","doctor_id", "doctor_id.rec_name", "name.rec_name"
+					"date","patient_id", "state", "doctor_id.rec_name", "name.rec_name"
 				},
 				"REPLACE_CONTEXT" };
 	}

@@ -9,7 +9,7 @@ import eu.neq.mais.domain.gnuhealth.annotations.MapToGnu;
 public class LabTestRequestGnu extends LabTestRequest {
 	
 	
-	String patient_id, state, doctor_id;
+	String patient_id, state;
 	
 	
 	@MapToGnu("name.rec_name")
