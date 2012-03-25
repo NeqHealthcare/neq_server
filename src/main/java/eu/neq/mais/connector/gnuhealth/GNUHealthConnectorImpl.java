@@ -159,7 +159,10 @@ public class GNUHealthConnectorImpl extends Connector {
 		}
 
 	}
-	
+
+    /*
+    does not yet include the "real" success / failure test
+     */
 	@Override
 	public List<?> createLabTestRequest(String date, String doctor_id,
 			String name, String patient_id) {
@@ -432,8 +435,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	/**
 	 * @throws NoSessionInSessionStoreException
-	 * @see eu.neq.mais.connector.Connector#returnPersonalPatientsForUIList(java.
-	 *      lang.String)
+	 * @see eu.neq.mais.connector.Connector#returnPersonalPatientsForUIList(java.lang.String)
 	 */
 	@Override
 	public List returnPersonalPatientsForUIList(String session)
