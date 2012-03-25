@@ -94,8 +94,7 @@ public class NeqServer implements Runnable {
 		
 		//Connector secConnector = new Connector();
 		//server.addConnector(connector)
-		
-		
+		        
 		ServletHolder servletHolder = new ServletHolder(ServletContainer.class); 
 		
 		
@@ -107,6 +106,7 @@ public class NeqServer implements Runnable {
 		
 		ServletContextHandler context = new ServletContextHandler(server, "/", ServletContextHandler.SESSIONS); 
 		context.addServlet(servletHolder, "/*"); 
+		
 		
 		//ContextHandlerCollection contexts = new ContextHandlerCollection();
         //contexts.setHandlers(new Handler[] { context });
@@ -158,4 +158,6 @@ public class NeqServer implements Runnable {
 	public static void setSessionStore(SessionStore sessionStore) {
 		NeqServer.sessionStore = sessionStore;
 	}
+	
+
 }

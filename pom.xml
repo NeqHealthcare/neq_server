@@ -10,7 +10,7 @@
 
 	<properties>
 		<java.version>1.6</java.version>
-		<jettyVersion>8.0.4.v20111024</jettyVersion>
+		<jettyVersion>8.1.0.RC4</jettyVersion>
 		<jerseyVersion>1.10</jerseyVersion>
 		<gsonVersion>2.0</gsonVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,6 +30,21 @@
 	</repositories>
 
 	<dependencies>
+	
+		<!-- Atmosphere -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.atmosphere</groupId> -->
+<!-- 			<artifactId>atmosphere-jersey</artifactId> -->
+<!-- 			<version>0.8.6</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.atmosphere</groupId> -->
+<!-- 					<artifactId>atmosphere-compat-jetty</artifactId> -->
+<!-- 				</exclusion> -->
+
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+		
 		<!-- Jetty -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
@@ -41,6 +56,13 @@
 			<artifactId>jetty-servlet</artifactId>
 			<version>${jettyVersion}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-websocket</artifactId>
+			<version>${jettyVersion}</version>
+			<scope>compile</scope>
+		</dependency>
+
 
 		<!-- Jersey -->
 		<dependency>
@@ -84,7 +106,6 @@
 		<!-- <artifactId>derbytools</artifactId> -->
 		<!-- <version>10.8.1.2</version> -->
 		<!-- </dependency> -->
-
 
 
 

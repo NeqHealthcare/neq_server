@@ -1,10 +1,13 @@
 package eu.neq.mais.request;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -17,37 +20,112 @@ import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.domain.Diagnose;
 import eu.neq.mais.domain.LabTestResult;
+import eu.neq.mais.domain.gnuhealth.LabTestRequestCreationMessage;
+import eu.neq.mais.domain.gnuhealth.LabTestRequestGnu;
 import eu.neq.mais.technicalservice.DTOWrapper;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
+import eu.neq.mais.technicalservice.storage.DbHandler;
+import eu.neq.mais.technicalservice.storage.LabTestRequest;
 
 @Path("/labtest/")
 public class LabTestHandler {
-	
+
 	protected static Logger logger = Logger.getLogger("eu.neq.mais.request");
-	
+
 	private Connector connector;
+	private int c = 0;
+
+	@GET
+	@Path("/results")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String returnNewResults(
+			@Context HttpServletResponse servlerResponse,
+			@QueryParam("session") String session) {
+
+		String response = new DTOWrapper()
+				.wrapError("Error while retrieving new lattest results");
+
+		servlerResponse.addHeader("Allow-Control-Allow-Methods",
+				"POST,GET,OPTIONS");
+		servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+		servlerResponse.addHeader("Access-Control-Allow-Origin", "*");
+		servlerResponse.addHeader("Access-Control-Allow-Headers",
+				"Content-Type,X-Requested-With");
+		servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+		try {
+			Integer user_id = NeqServer.getSessionStore().getUserId(session);
+
+			DbHandler dbh = new DbHandler();
+			List<LabTestRequest> openRequests = dbh.getLabTestRequests(String
+					.valueOf(user_id));
+			List<String> recentlyTestedRequestsIds = new ArrayList<String>();
+
+			if (!openRequests.isEmpty()) {
+
+				connector = ConnectorFactory.getConnector(NeqServer
+						.getSessionStore().getBackendSid(session));
+				List<?> labTests = connector.returnAllLabTestRequests();
+
+				for (LabTestRequest labTestRequest : openRequests) {
+					for (Object uncastLabTest : labTests) {
+						LabTestRequestGnu labTestRequestGnu = (LabTestRequestGnu) uncastLabTest;
+						
+						if (labTestRequest.getRequest_id().equals(labTestRequestGnu.getId())) {
+							if (labTestRequestGnu.getState().equals("tested")) {
+								dbh.removeLabTestRequest(labTestRequest.getRequest_id());
+								recentlyTestedRequestsIds.add(labTestRequest.getRequest_id());
+							}
+						}
+						
+					}
+				}
+				response = new DTOWrapper().wrap(recentlyTestedRequestsIds);
+			} else {
+				response = new DTOWrapper().wrap(openRequests);
+			}
+			
+			dbh.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} catch (NoSessionInSessionStoreException e) {
+			e.printStackTrace();
+		}
+
+		servlerResponse.setContentType(response);
+		return servlerResponse.getContentType();
+	}
 
 	@GET
 	@Path("/one/detail")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String returnLabTestDetails(@Context HttpServletResponse servlerResponse,
-			@QueryParam("session") String session, @QueryParam("labTestId") String labTestId) {
-		
-		String response = new DTOWrapper().wrapError("Error while retrieving detailed info for lab test: "+labTestId);
-		
-		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS"); 
-        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
-        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
-        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
-        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
-        
+	public String returnLabTestDetails(
+			@Context HttpServletResponse servlerResponse,
+			@QueryParam("session") String session,
+			@QueryParam("labTestId") String labTestId) {
+
+		String response = new DTOWrapper()
+				.wrapError("Error while retrieving detailed info for lab test: "
+						+ labTestId);
+
+		servlerResponse.addHeader("Allow-Control-Allow-Methods",
+				"POST,GET,OPTIONS");
+		servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+		servlerResponse.addHeader("Access-Control-Allow-Origin", "*");
+		servlerResponse.addHeader("Access-Control-Allow-Headers",
+				"Content-Type,X-Requested-With");
+		servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
 		try {
-			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
-			LabTestResult labTest = connector.returnLabTestResultsDetails(labTestId);
+			connector = ConnectorFactory.getConnector(NeqServer
+					.getSessionStore().getBackendSid(session));
+			LabTestResult labTest = connector
+					.returnLabTestResultsDetails(labTestId);
 			response = new DTOWrapper().wrap(labTest);
 		} catch (Exception e) {
 			e.printStackTrace();
-			
+
 		} catch (NoSessionInSessionStoreException e) {
 			response = new DTOWrapper().wrapError(e.toString());
 		}
@@ -56,58 +134,72 @@ public class LabTestHandler {
 		servlerResponse.setContentType(response);
 		return servlerResponse.getContentType();
 	}
-	
+
 	@GET
 	@Path("/one")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String returnLabTestResult(@Context HttpServletResponse servlerResponse,
-			@QueryParam("session") String session, @QueryParam("patientId") String patientId) {
-		
-		String response = new DTOWrapper().wrapError("Error while retrieving lab result for patient:"+patientId);
-		
-		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS"); 
-        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
-        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
-        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
-        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
-        
+	public String returnLabTestResult(
+			@Context HttpServletResponse servlerResponse,
+			@QueryParam("session") String session,
+			@QueryParam("patientId") String patientId) {
+
+		String response = new DTOWrapper()
+				.wrapError("Error while retrieving lab result for patient:"
+						+ patientId);
+
+		servlerResponse.addHeader("Allow-Control-Allow-Methods",
+				"POST,GET,OPTIONS");
+		servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+		servlerResponse.addHeader("Access-Control-Allow-Origin", "*");
+		servlerResponse.addHeader("Access-Control-Allow-Headers",
+				"Content-Type,X-Requested-With");
+		servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
 		try {
-			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
-			List<?> labTests = connector.returnLabTestResultsForPatient(patientId);
+			connector = ConnectorFactory.getConnector(NeqServer
+					.getSessionStore().getBackendSid(session));
+			List<?> labTests = connector
+					.returnLabTestResultsForPatient(patientId);
 			response = new DTOWrapper().wrap(labTests);
 		} catch (Exception e) {
 			e.printStackTrace();
-			
+
 		} catch (NoSessionInSessionStoreException e) {
 			response = new DTOWrapper().wrapError(e.toString());
 		}
-		logger.info("lab test results for patient: "+patientId+" were returned: " + response);
+		logger.info("lab test results for patient: " + patientId
+				+ " were returned: " + response);
 
 		servlerResponse.setContentType(response);
 		return servlerResponse.getContentType();
 	}
-	
+
 	@GET
 	@Path("/all")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String returnLabTestResult(@Context HttpServletResponse servlerResponse,
+	public String returnLabTestResult(
+			@Context HttpServletResponse servlerResponse,
 			@QueryParam("session") String session) {
-		
-		String response = new DTOWrapper().wrapError("Error while retrieving all lab result");
-		
-		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS"); 
-        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
-        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
-        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
-        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
-        
+
+		String response = new DTOWrapper()
+				.wrapError("Error while retrieving all lab result");
+
+		servlerResponse.addHeader("Allow-Control-Allow-Methods",
+				"POST,GET,OPTIONS");
+		servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+		servlerResponse.addHeader("Access-Control-Allow-Origin", "*");
+		servlerResponse.addHeader("Access-Control-Allow-Headers",
+				"Content-Type,X-Requested-With");
+		servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
 		try {
-			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
+			connector = ConnectorFactory.getConnector(NeqServer
+					.getSessionStore().getBackendSid(session));
 			List<?> labTests = connector.returnAllLabTestResults();
 			response = new DTOWrapper().wrap(labTests);
 		} catch (Exception e) {
 			e.printStackTrace();
-			
+
 		} catch (NoSessionInSessionStoreException e) {
 			response = new DTOWrapper().wrapError(e.toString());
 		}
@@ -116,60 +208,72 @@ public class LabTestHandler {
 		servlerResponse.setContentType(response);
 		return servlerResponse.getContentType();
 	}
-	
+
 	@GET
 	@Path("/request")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String requestLabTest(@Context HttpServletResponse servlerResponse,
-			@QueryParam("session") String session, @QueryParam("patientId") String patientId) {
-				
-		String response = new DTOWrapper().wrapError("Error while retrieving lab test requests");
-		
-		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS"); 
-        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
-        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
-        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
-        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
-        
+			@QueryParam("session") String session,
+			@QueryParam("patientId") String patientId) {
+
+		String response = new DTOWrapper()
+				.wrapError("Error while retrieving lab test requests");
+
+		servlerResponse.addHeader("Allow-Control-Allow-Methods",
+				"POST,GET,OPTIONS");
+		servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+		servlerResponse.addHeader("Access-Control-Allow-Origin", "*");
+		servlerResponse.addHeader("Access-Control-Allow-Headers",
+				"Content-Type,X-Requested-With");
+		servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
 		try {
-			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
-			
-			List<?> labTestRequests = connector.returnLabTestRequests(patientId);
+			connector = ConnectorFactory.getConnector(NeqServer
+					.getSessionStore().getBackendSid(session));
+
+			List<?> labTestRequests = connector
+					.returnLabTestRequests(patientId);
 			response = new DTOWrapper().wrap(labTestRequests);
 		} catch (Exception e) {
 			e.printStackTrace();
-			
+
 		} catch (NoSessionInSessionStoreException e) {
 			response = new DTOWrapper().wrapError(e.toString());
 		}
-		logger.info("lab test requests for patient: "+patientId+" were returned: " + response);
+		logger.info("lab test requests for patient: " + patientId
+				+ " were returned: " + response);
 
 		servlerResponse.setContentType(response);
 		return servlerResponse.getContentType();
 	}
-	
+
 	@GET
 	@Path("/params")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String requestLabTest(@Context HttpServletResponse servlerResponse,
-			@QueryParam("session") String session, @QueryParam("labTestTypes") boolean labTestTypes ) {
-				
-		String response = new DTOWrapper().wrapError("Error while retrieving lab test requests");
-		
-		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS"); 
-        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
-        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
-        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
-        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
-        
+			@QueryParam("session") String session,
+			@QueryParam("labTestTypes") boolean labTestTypes) {
+
+		String response = new DTOWrapper()
+				.wrapError("Error while retrieving lab test requests");
+
+		servlerResponse.addHeader("Allow-Control-Allow-Methods",
+				"POST,GET,OPTIONS");
+		servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+		servlerResponse.addHeader("Access-Control-Allow-Origin", "*");
+		servlerResponse.addHeader("Access-Control-Allow-Headers",
+				"Content-Type,X-Requested-With");
+		servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
 		try {
-			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
-			
+			connector = ConnectorFactory.getConnector(NeqServer
+					.getSessionStore().getBackendSid(session));
+
 			List<?> labTestRequests = connector.returnLabTestTypes();
 			response = new DTOWrapper().wrap(labTestRequests);
 		} catch (Exception e) {
 			e.printStackTrace();
-			
+
 		} catch (NoSessionInSessionStoreException e) {
 			response = new DTOWrapper().wrapError(e.toString());
 		}
@@ -178,29 +282,51 @@ public class LabTestHandler {
 		servlerResponse.setContentType(response);
 		return servlerResponse.getContentType();
 	}
-	
+
 	@PUT
 	@Path("/request")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String createLabTestRequest(@Context HttpServletResponse servlerResponse,
-			@QueryParam("session") String session, @QueryParam("date") String date,@QueryParam("doctor_id") String doctor_id,@QueryParam("name") String name,@QueryParam("patient_id") String patient_id ) {
-				
-		String response = new DTOWrapper().wrapError("Error while retrieving lab test requests");
-		
-		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,PUT,OPTIONS"); 
-        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
-        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
-        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
-        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
-        
+	public String createLabTestRequest(
+			@Context HttpServletResponse servlerResponse,
+			@QueryParam("session") String session,
+			@QueryParam("date") String date,
+			@QueryParam("doctor_id") String doctor_id,
+			@QueryParam("name") String name,
+			@QueryParam("patient_id") String patient_id) {
+
+		String response = new DTOWrapper()
+				.wrapError("Error while retrieving lab test requests");
+
+		servlerResponse.addHeader("Allow-Control-Allow-Methods",
+				"POST,GET,PUT,OPTIONS");
+		servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+		servlerResponse.addHeader("Access-Control-Allow-Origin", "*");
+		servlerResponse.addHeader("Access-Control-Allow-Headers",
+				"Content-Type,X-Requested-With");
+		servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
 		try {
-			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
-			
-			List<?> labTestCreationSuccessMessage = connector.createLabTestRequest(date, doctor_id, name, patient_id);
+			connector = ConnectorFactory.getConnector(NeqServer
+					.getSessionStore().getBackendSid(session));
+
+			List<?> labTestCreationSuccessMessage = connector
+					.createLabTestRequest(date, doctor_id, name, patient_id);
+			for (Object i : labTestCreationSuccessMessage) {
+				System.out.println("esuccess: "
+						+ ((LabTestRequestCreationMessage) i).getId());
+
+				String user_id = String.valueOf(NeqServer.getSessionStore()
+						.getUserId(session));
+				String request_id = ((LabTestRequestCreationMessage) i).getId();
+
+				DbHandler dbh = new DbHandler();
+				dbh.saveLabTestRequests(user_id, request_id);
+				dbh.close();
+			}
 			response = new DTOWrapper().wrap(labTestCreationSuccessMessage);
 		} catch (Exception e) {
 			e.printStackTrace();
-			
+
 		} catch (NoSessionInSessionStoreException e) {
 			response = new DTOWrapper().wrapError(e.toString());
 		}
@@ -208,7 +334,6 @@ public class LabTestHandler {
 
 		servlerResponse.setContentType(response);
 		return servlerResponse.getContentType();
-		
-	}
 
+	}
 }

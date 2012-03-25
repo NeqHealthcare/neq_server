@@ -91,8 +91,8 @@ public class GNUHealthConnectorImpl extends Connector {
 //			List<?> q = con.returnLabTestTypes();
 //			System.out.println(new DTOWrapper().wrap(q));		
 			//create lab test request
-			List<?> r = con.createLabTestRequest("556465486486", "1", "3", "9");
-			System.out.println(new DTOWrapper().wrap(r));
+			//List<?> r = con.createLabTestRequest("556465486486", "1", "3", "9");
+			//System.out.println(new DTOWrapper().wrap(r));
 			
 			// System.out.println("1:returnLabTestResultsForPatient("13")));"
 			// System.out.println("2: " + con.returnAllLabTestResults());
@@ -191,8 +191,9 @@ public class GNUHealthConnectorImpl extends Connector {
 		
 		return result;
 	}
-
-	public List<?> returnLabTestRequests(String patientId) {
+	
+	@Override
+	public List<?> returnAllLabTestRequests() {
 		int[] labTestRequestIds = getAllLabTestRequestIds();
 		
 		String labTestRequestsResultString = execute(getLabTestRequestReadMethod(),
@@ -202,6 +203,12 @@ public class GNUHealthConnectorImpl extends Connector {
 		}.getType();
 		List<LabTestRequestGnu> result = DomainParserGnu.fromJson(
 				labTestRequestsResultString, listType, LabTestRequestGnu.class);
+		
+		return result;
+	}
+
+	public List<?> returnLabTestRequests(String patientId) {
+		List<LabTestRequestGnu> result = (List<LabTestRequestGnu>) returnAllLabTestRequests();
 		
 		List<LabTestRequestGnu> resultForSpecificPatient = new ArrayList<LabTestRequestGnu>();
 		
@@ -1243,6 +1250,8 @@ public class GNUHealthConnectorImpl extends Connector {
 			this.medications = medications;
 		}
 	}
+
+
 
 
 
