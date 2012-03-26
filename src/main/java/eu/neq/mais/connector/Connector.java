@@ -3,6 +3,7 @@ package eu.neq.mais.connector;
 import eu.neq.mais.connector.gnuhealth.GNUHealthConnectorImpl;
 import eu.neq.mais.domain.Diagnose;
 import eu.neq.mais.domain.LabTestResult;
+import eu.neq.mais.domain.gnuhealth.DocumentGnu;
 import eu.neq.mais.technicalservice.Backend;
 import eu.neq.mais.technicalservice.FileHandler;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
@@ -217,5 +218,10 @@ public abstract class Connector {
         }
         return instance;
     }
+
+    public abstract List<?> returnDocumentList(String id);
+
+    public abstract List<DocumentGnu> returnDocumentData(String documentID);
+
 
 }
