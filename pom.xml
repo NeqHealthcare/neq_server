@@ -1,85 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>eu.neq.mais</groupId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>NeqMais</name>
-    <artifactId>NeqMais</artifactId>
-    <packaging>jar</packaging>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>eu.neq.mais</groupId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>NeqMais</name>
+	<artifactId>NeqMais</artifactId>
+	<packaging>jar</packaging>
 
-    <properties>
-        <java.version>1.6</java.version>
-        <jettyVersion>8.0.4.v20111024</jettyVersion>
-        <jerseyVersion>1.10</jerseyVersion>
-        <gsonVersion>2.0</gsonVersion>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+	<properties>
+		<java.version>1.6</java.version>
+		<jettyVersion>8.1.0.RC4</jettyVersion>
+		<jerseyVersion>1.10</jerseyVersion>
+		<gsonVersion>2.0</gsonVersion>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
-   <!-- Configure repo2.maven.org as a repository. -->
-   <repositories>
-       <repository>
-           <id>repo2_maven_org</id>
-           <url>http://repo2.maven.org/maven2</url>
-       </repository>
-   </repositories>
+	<!-- Configure repo2.maven.org as a repository. -->
+	<repositories>
+		<repository>
+			<id>repo2_maven_org</id>
+			<url>http://repo2.maven.org/maven2</url>
+		</repository>
+		<repository>
+			<id>tmate</id>
+			<url>http://maven.tmatesoft.com/content/repositories/releases</url>
+		</repository>
 
-    <dependencies>
-        <!-- Jetty -->
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>${jettyVersion}</version>
-        </dependency>
-        <dependency>
-     		<groupId>org.eclipse.jetty</groupId>
-     		<artifactId>jetty-servlet</artifactId>
-     		<version>${jettyVersion}</version>
-		</dependency>
+	</repositories>
+
+	<dependencies>
+	
+		<!-- Atmosphere -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.atmosphere</groupId> -->
+<!-- 			<artifactId>atmosphere-jersey</artifactId> -->
+<!-- 			<version>0.8.6</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.atmosphere</groupId> -->
+<!-- 					<artifactId>atmosphere-compat-jetty</artifactId> -->
+<!-- 				</exclusion> -->
+
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
 		
-        <!-- Jersey -->
-        <dependency>
-     		<groupId>com.sun.jersey</groupId>
-     		<artifactId>jersey-servlet</artifactId>
-     		<version>${jerseyVersion}</version>
+		<!-- Jetty -->
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>${jettyVersion}</version>
 		</dependency>
-		
-   		<!-- Gson -->
-    	<dependency>
-      		<groupId>com.google.code.gson</groupId>
-      		<artifactId>gson</artifactId>
-      		<version>${gsonVersion}</version>
-      		<scope>compile</scope>
-    	</dependency>
-    	<!-- J-Unit-->
-    	<dependency>
-      		<groupId>junit</groupId>
-      		<artifactId>junit</artifactId>
-      		<version>4.1</version>
-      		<type>jar</type>
-      		<scope>test</scope>
-      		<optional>true</optional>
-    	</dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlet</artifactId>
+			<version>${jettyVersion}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-websocket</artifactId>
+			<version>${jettyVersion}</version>
+			<scope>compile</scope>
+		</dependency>
 
-    <build>
-        <plugins>
-    		<plugin>
-        		<!-- This plugin is needed for the servlet example -->
-        		<groupId>org.mortbay.jetty</groupId>
-        		<artifactId>jetty-maven-plugin</artifactId>
-        		<version>${jettyVersion}</version>
-      		</plugin>
-      		<plugin>
-        		<groupId>org.codehaus.mojo</groupId>
-        		<artifactId>exec-maven-plugin</artifactId>
-        		<version>1.1</version>
-        		<executions>
-          			<execution><goals><goal>java</goal></goals></execution>
-        		</executions>
-        		<configuration>
-          			<mainClass>eu.neq.mais.Main</mainClass>
-        		</configuration>
-      		</plugin>
-        </plugins>
-    </build>
+
+		<!-- Jersey -->
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-servlet</artifactId>
+			<version>${jerseyVersion}</version>
+		</dependency>
+
+		<!-- Gson -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>${gsonVersion}</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- J-Unit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.1</version>
+			<type>jar</type>
+			<scope>test</scope>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- SQLJet (SQLite java impl) -->
+		<dependency>
+			<groupId>org.tmatesoft.sqljet</groupId>
+			<artifactId>sqljet</artifactId>
+			<version>1.0.7</version>
+		</dependency>
+
+		<!-- DERBY -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.apache.derby</groupId> -->
+		<!-- <artifactId>derby</artifactId> -->
+		<!-- <version>10.8.1.2</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.apache.derby</groupId> -->
+		<!-- <artifactId>derbytools</artifactId> -->
+		<!-- <version>10.8.1.2</version> -->
+		<!-- </dependency> -->
+
+
+
+	</dependencies>
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- This plugin is needed for the servlet example -->
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>${jettyVersion}</version>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>eu.neq.mais.Main</mainClass>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

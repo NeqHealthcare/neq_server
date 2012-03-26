@@ -10,7 +10,7 @@ import com.google.gson.Gson;
  * @author Sebastian Schütz
  *
  */
-public class GnuHealthJsonObject {
+public class GnuHealthJsonObject{
 	
 	Object[] params;
 	int id;
@@ -48,8 +48,6 @@ public class GnuHealthJsonObject {
 		
 	}
 	
-	
-	
 	public String getJson() {
 		Gson gson = new Gson();
 		String almost = gson.toJson(this);
@@ -59,8 +57,9 @@ public class GnuHealthJsonObject {
 		almost = almost.replace("\"REPLACE_CONTEXT\"", context);
 		almost = almost.replace("//", "/");
 		almost = almost.replace("\\\\", "\\");
-//		System.out.println(almost);
+//		System.out.println("result from gnuhealthjsonobject getJson method: "+almost);
 		return almost;
 	}
+
 
 }
