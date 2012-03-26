@@ -1,111 +1,131 @@
 package eu.neq.mais.request;
 
-import java.io.File;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import eu.neq.mais.NeqServer;
 import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.DTOWrapper;
-import eu.neq.mais.technicalservice.SessionStore;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
+import eu.neq.mais.technicalservice.Settings;
 
 import javax.activation.MimetypesFileTypeMap;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.File;
+import java.util.logging.Logger;
 
 /**
- * 
  * @author Jan Gansen
- *
  */
 @Path("/user/")
 public class UserHandler {
-	
-	protected static Logger logger = Logger.getLogger("eu.neq.mais.request");
 
-	private Connector connector;
+    protected static Logger logger = Logger.getLogger("eu.neq.mais.request");
 
-	/**
-	 * 
-	 * @param session
-	 * @return successfull: json object
-	 *         Request failed: false
-	 * 
-	 */
-	@GET
-	@Path("/personalInformation")
-	@Produces(MediaType.APPLICATION_JSON)
-	public String returnPersnoalData(@Context HttpServletResponse servlerResponse, @QueryParam("session") String session,
-			@QueryParam("picture") String picture,
-			@QueryParam("name") String name) {
+    private Connector connector;
 
-		String personalInformation = "false";
-		String response;
-		
-		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS"); 
-        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
-        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
-        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
-        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
-		try {
-			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
-			personalInformation = connector.returnPersonalInformation(session, Boolean.parseBoolean(name), Boolean.parseBoolean(picture));
-		} catch (Exception e) {
-			e.printStackTrace();
-			personalInformation = "false";
-		} catch (NoSessionInSessionStoreException e) {
-			response = new DTOWrapper().wrapError(e.toString());
-		}
-		logger.info("return personal information for a specific user: " + personalInformation);
-		servlerResponse.setContentType(personalInformation);
-		return servlerResponse.getContentType();
+    /**
+     * @return successfull: json object
+     *         Request failed: false
+     */
 
-	}
+    @OPTIONS
+    @Path("/personalInformation")
+    public String returnPersnoalDataOptions(@Context HttpServletResponse servlerResponse) {
 
-	@GET
-	@Path("/image/")
-	@Produces("image/*")
-	public Response returnImage(@Context HttpServletResponse servlerResponse, @QueryParam("session") String session, @QueryParam("size") String size){
-		String imagePath = "false";
-		File image = new File(imagePath);
-		
-		String response = "";
-		
-		servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS"); 
-        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true"); 
-        servlerResponse.addHeader("Access-Control-Allow-Origin", "*"); 
-        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"); 
-        servlerResponse.addHeader("Access-Control-Max-Age", "60"); 
-		
-		if(!image.exists()){
-			throw new WebApplicationException(404);
-		}
-		
-		try {
-			connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+
+        return servlerResponse.getContentType();
+
+    }
+
+    @GET
+    @Path("/personalInformation")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String returnPersnoalData(@Context HttpServletResponse servlerResponse, @QueryParam("session") String session,
+                                     @QueryParam("picture") String picture,
+                                     @QueryParam("name") String name) {
+
+        String personalInformation = "false";
+        String response = "";
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+        try {
+            connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
+            personalInformation = connector.returnPersonalInformation(session, Boolean.parseBoolean(name), Boolean.parseBoolean(picture));
+        } catch (Exception e) {
+            e.printStackTrace();
+            personalInformation = "false";
+        } catch (NoSessionInSessionStoreException e) {
+            response = new DTOWrapper().wrapError(e.toString());
+        }
+        logger.info("return personal information for a specific user: " + personalInformation);
+
+        return response;
+    }
+
+
+    @OPTIONS
+    @Path("//image/")
+    public String returnImageOptions(@Context HttpServletResponse servlerResponse) {
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+
+        return servlerResponse.getContentType();
+
+    }
+
+    @GET
+    @Path("/image/")
+    @Produces("image/*")
+    public Response returnImage(@Context HttpServletResponse servlerResponse, @QueryParam("session") String session, @QueryParam("size") String size) {
+        String imagePath = "false";
+        File image = new File(imagePath);
+
+        String response = "";
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+        if (!image.exists()) {
+            throw new WebApplicationException(404);
+        }
+
+        try {
+            connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
 //			imagePath = connector.getImage(session,size);
-		} catch (Exception e) {
-			e.printStackTrace();
-			imagePath = "false";
-		} catch (NoSessionInSessionStoreException e) {
-			response = new DTOWrapper().wrapError(e.toString());
-		}
-		String mt = new MimetypesFileTypeMap().getContentType(image);
+        } catch (Exception e) {
+            e.printStackTrace();
+            imagePath = "false";
+        } catch (NoSessionInSessionStoreException e) {
+            response = new DTOWrapper().wrapError(e.toString());
+        }
+        String mt = new MimetypesFileTypeMap().getContentType(image);
 
-		logger.info("return image for a specific user: ");
-		return Response.ok(image, mt).build();
+        logger.info("return image for a specific user: ");
+        return Response.ok(image, mt).build();
 //		servlerResponse.setContentType(session);
 //		return servlerResponse.getContentType();
-	}
-	
+    }
+
 }
 
