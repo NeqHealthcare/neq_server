@@ -215,6 +215,22 @@ public class LabTestHandler {
     }
 
 
+    @OPTIONS
+    @Path("/request")
+    public String requestLabTestOptions(@Context HttpServletResponse servlerResponse) {
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+
+        return servlerResponse.getContentType();
+
+    }
+
+
     @GET
     @Path("/request")
     @Produces(MediaType.APPLICATION_JSON)
@@ -251,6 +267,23 @@ public class LabTestHandler {
 
         return response;
     }
+
+
+    @OPTIONS
+    @Path("/params")
+    public String requestLabTestParamsOptions(@Context HttpServletResponse servlerResponse) {
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+
+        return servlerResponse.getContentType();
+
+    }
+
 
     @GET
     @Path("/params")
