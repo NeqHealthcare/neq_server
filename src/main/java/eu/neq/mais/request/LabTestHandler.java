@@ -317,7 +317,7 @@ public class LabTestHandler {
                     .getSessionStore().getBackendSid(session));
 
             List<?> labTestCreationSuccessMessage = connector
-                    .createLabTestRequest(date, doctor_id, "", patient_id);
+                    .createLabTestRequest(date, doctor_id, request_type_id, patient_id);
 
             response = new DTOWrapper().wrap(labTestCreationSuccessMessage);
         } catch (Exception e) {
