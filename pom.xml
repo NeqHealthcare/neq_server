@@ -30,21 +30,36 @@
 	</repositories>
 
 	<dependencies>
-	
-		<!-- Atmosphere -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.atmosphere</groupId> -->
-<!-- 			<artifactId>atmosphere-jersey</artifactId> -->
-<!-- 			<version>0.8.6</version> -->
-<!-- 			<exclusions> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>org.atmosphere</groupId> -->
-<!-- 					<artifactId>atmosphere-compat-jetty</artifactId> -->
-<!-- 				</exclusion> -->
 
-<!-- 			</exclusions> -->
-<!-- 		</dependency> -->
-		
+
+		<!-- CometD -->
+		<dependency>
+			<groupId>org.cometd.java</groupId>
+			<artifactId>bayeux-api</artifactId>
+			<version>2.4.0.RC2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.cometd.java</groupId>
+			<artifactId>cometd-java-server</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+
+
+
+		<!-- Atmosphere -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.atmosphere</groupId> -->
+		<!-- <artifactId>atmosphere-jersey</artifactId> -->
+		<!-- <version>0.8.6</version> -->
+		<!-- <exclusions> -->
+		<!-- <exclusion> -->
+		<!-- <groupId>org.atmosphere</groupId> -->
+		<!-- <artifactId>atmosphere-compat-jetty</artifactId> -->
+		<!-- </exclusion> -->
+
+		<!-- </exclusions> -->
+		<!-- </dependency> -->
+
 		<!-- Jetty -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
