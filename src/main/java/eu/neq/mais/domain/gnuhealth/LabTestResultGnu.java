@@ -6,13 +6,16 @@ import eu.neq.mais.domain.LabTestResult;
 import eu.neq.mais.domain.gnuhealth.annotations.MapToGnu;
 
 public class LabTestResultGnu extends LabTestResult {
-String test, patient, name, result, diagnosis;
+String test, name, result, diagnosis, patient;
 	
 	@MapToGnu("test.rec_name")
 	String test_rec_name;
 	
-	@MapToGnu("patient.rec_name")
-	String patient_rec_name;
+	@MapToGnu("pathologist.rec_name")
+	String pathologist_rec_name;
+	
+	@MapToGnu("requestor.rec_name")
+	String requestor_rec_name;
 	
 	Object date_requested, date_analysis;
 	
@@ -45,13 +48,6 @@ String test, patient, name, result, diagnosis;
 		this.test = test;
 	}
 
-	public String getPatient() {
-		return patient;
-	}
-
-	public void setPatient(String patient) {
-		this.patient = patient;
-	}
 
 	public String getName() {
 		return name;
@@ -69,13 +65,7 @@ String test, patient, name, result, diagnosis;
 		this.test_rec_name = test_rec_name;
 	}
 
-	public String getPatient_rec_name() {
-		return patient_rec_name;
-	}
 
-	public void setPatient_rec_name(String patient_rec_name) {
-		this.patient_rec_name = patient_rec_name;
-	}
 
 	public int[] getCritearea() {
 		return critearea;
@@ -91,5 +81,29 @@ String test, patient, name, result, diagnosis;
 
 	public void setCriteria(Object[] criteria) {
 		this.criteria = criteria;
+	}
+
+	public String getPatient() {
+		return patient;
+	}
+
+	public void setPatient(String patient) {
+		this.patient = patient;
+	}
+
+	public String getPathologist_rec_name() {
+		return pathologist_rec_name;
+	}
+
+	public void setPathologist_rec_name(String pathologist_rec_name) {
+		this.pathologist_rec_name = pathologist_rec_name;
+	}
+
+	public String getRequestor_rec_name() {
+		return requestor_rec_name;
+	}
+
+	public void setRequestor_rec_name(String requestor_rec_name) {
+		this.requestor_rec_name = requestor_rec_name;
 	}
 }

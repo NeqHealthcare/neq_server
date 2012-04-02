@@ -1270,7 +1270,7 @@ public class GNUHealthConnectorImpl extends Connector {
                 ids,
                 new String[]{"date_analysis", "test", "patient", "name",
                         "test.rec_name", "patient.rec_name", "date_requested",
-                        "requestor", "results", "pathologist", "critearea",
+                        "requestor.rec_name", "results", "pathologist.rec_name", "critearea",
                         "diagnosis"}, "REPLACE_CONTEXT"};
     }
 
