@@ -727,21 +727,15 @@ public class GNUHealthConnectorImpl extends Connector {
     /**
      * @see eu.neq.mais.connector.Connector#returnPersonalInformation(java.lang.String, boolean, boolean)
      */
-    public String returnPersonalInformation(String userSession, boolean name,
-                                            boolean picture) throws NoSessionInSessionStoreException {
-        HashMap<String, String> personalInfo = new HashMap<String, String>();
-        if (name) {
-            try {
-                personalInfo.put("name", getUserRecName(NeqServer
-                        .getSessionStore().getUserId(userSession).toString()));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (picture) {
-            personalInfo.put("picture", "http://i43.tinypic.com/29lzamh.png");
-        }
-        return new Gson().toJson(personalInfo);
+    public UserGnu returnPersonalInformation(String user_id) throws NoSessionInSessionStoreException {
+        UserGnu personalInfo = new UserGnu();
+        
+        personalInfo.setName(getUserRecName(user_id));
+        personalInfo.setPhysician_id(String.valueOf(getPhysicianId(Integer.valueOf(user_id))));
+        personalInfo.setId(user_id);
+        personalInfo.setImage_url("http://i43.tinypic.com/29lzamh.png");
+
+        return personalInfo;
     }
 
     @Override
@@ -1008,7 +1002,7 @@ public class GNUHealthConnectorImpl extends Connector {
       *
       * @return physician id
       */
-    private int getPhysicianId(int user_id) {
+    public int getPhysicianId(int user_id) {
         String session = getAdminSession();
         int[] allphys = getAllPartyIds();
 

@@ -3,6 +3,8 @@ package eu.neq.mais.request;
 import eu.neq.mais.NeqServer;
 import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
+import eu.neq.mais.domain.User;
+import eu.neq.mais.domain.gnuhealth.UserGnu;
 import eu.neq.mais.technicalservice.DTOWrapper;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
 import eu.neq.mais.technicalservice.Settings;
@@ -52,29 +54,30 @@ public class UserHandler {
     @GET
     @Path("/personalInformation")
     @Produces(MediaType.APPLICATION_JSON)
-    public String returnPersnoalData(@Context HttpServletResponse servlerResponse, @QueryParam("session") String session,
-                                     @QueryParam("picture") String picture,
-                                     @QueryParam("name") String name) {
+    public String returnPersnoalData(@Context HttpServletResponse servlerResponse, @QueryParam("session") String session) {
 
-        String personalInformation = "false";
-        String response = "";
 
+        String response = new DTOWrapper().wrapError("Error while retrieving your personal information");
+        User person = null;
+        
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
         servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
         servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
+        
         try {
             connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
-            personalInformation = connector.returnPersonalInformation(session, Boolean.parseBoolean(name), Boolean.parseBoolean(picture));
+            String user_id = String.valueOf(NeqServer.getSessionStore().getUserId(session));
+            person = connector.returnPersonalInformation(user_id);
+            response = new DTOWrapper().wrap(person);
         } catch (Exception e) {
             e.printStackTrace();
-            personalInformation = "false";
+            response = new DTOWrapper().wrapError("Error while retrieving your personal information: "+e.toString());
         } catch (NoSessionInSessionStoreException e) {
-            response = new DTOWrapper().wrapError(e.toString());
+            response = new DTOWrapper().wrapError("Error while retrieving your personal information: "+e.toString());
         }
-        logger.info("return personal information for a specific user: " + personalInformation);
-
+        
         return response;
     }
 
@@ -157,6 +160,7 @@ public class UserHandler {
         return servlerResponse.getContentType();
 
     }
+    
 
 }
 
