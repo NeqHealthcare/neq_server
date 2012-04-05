@@ -17,6 +17,9 @@ String test, name, result, diagnosis, patient;
 	@MapToGnu("requestor.rec_name")
 	String requestor_rec_name;
 	
+	@MapToGnu("patient.rec_name")
+	String patient_rec_name;
+	
 	Object date_requested, date_analysis;
 	
 	int[] critearea;
@@ -105,5 +108,13 @@ String test, name, result, diagnosis, patient;
 
 	public void setRequestor_rec_name(String requestor_rec_name) {
 		this.requestor_rec_name = requestor_rec_name;
+	}
+
+	public String getPatient_rec_name() {
+		return patient_rec_name;
+	}
+
+	public void setPatient_rec_name(String patient_rec_name) {
+		this.patient_rec_name = patient_rec_name;
 	}
 }

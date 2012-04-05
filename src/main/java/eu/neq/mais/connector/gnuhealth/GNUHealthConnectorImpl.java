@@ -9,6 +9,7 @@ import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.domain.Diagnose;
 import eu.neq.mais.domain.LabTestRequest;
 import eu.neq.mais.domain.LabTestResult;
+import eu.neq.mais.domain.User;
 import eu.neq.mais.domain.gnuhealth.*;
 import eu.neq.mais.technicalservice.Backend;
 import eu.neq.mais.technicalservice.DTOWrapper;
@@ -51,10 +52,30 @@ public class GNUHealthConnectorImpl extends Connector {
 
             // LOGIN
             String user_session = con.login(login_name, password, "gnuhealth2");
-            List<?> r = con.returnAllLabTestResults();
-            for (Object x : r) {
-                System.out.println(new DTOWrapper().wrap(x));
-            }
+
+//            con.createLabTestRequest("656465486486", "1", "3", "9");
+            			
+//            List<?> res = con.checkForTestedLabRequests("1");
+//            for (Object r : res) System.out.println("1:"+ r);
+//            
+//            System.out.println("-----");
+//
+//            res = con.checkForTestedLabRequests("1");
+//            for (Object r : res) { 
+//            	System.out.println("1:"+ r);
+//            	DbHandler dbh = new DbHandler();
+//            	boolean ok = dbh.removeLabTestRequest(String.valueOf(r));
+//            	dbh.close();
+//            	System.out.println("worked: "+ok);
+//            }
+//
+//            System.out.println("-----");
+//            
+//            res = con.checkForTestedLabRequests("1");
+//            for (Object r : res) System.out.println("1:"+ r);
+            
+            
+            
             // System.out.println("1:returnLabTestResultsForPatient("13")));"
             // System.out.println("2: " + con.returnAllLabTestResults());
             // // Search Patients
@@ -194,7 +215,7 @@ public class GNUHealthConnectorImpl extends Connector {
                         labTestRequest.getRequest_id().replaceAll(" ", ""))
                         .equals(labTestRequestGnu.getId())) {
                     if (labTestRequestGnu.getState().equals("tested")) {
-                        dbh.removeLabTestRequest(labTestRequest.getRequest_id());
+                        //dbh.removeLabTestRequest(labTestRequest.getRequest_id()); OUTSOURCED TO OWN FUNCTION;
                         recentlyTestedRequestsIds.add(new Integer(labTestRequest
                                 .getRequest_id().replaceAll(" ", "")));
                     }

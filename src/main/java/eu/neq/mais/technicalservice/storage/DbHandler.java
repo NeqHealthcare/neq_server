@@ -65,6 +65,7 @@ public class DbHandler {
 					ISqlJetTable table = db.getTable(LabTestRequest.TABLE_NAME);
 					ISqlJetCursor cursor = table.lookup(LabTestRequest.INDEX_REQUEST_ID, request_id);
 					cursor.delete();
+
 					return true;
 				}
 			});
