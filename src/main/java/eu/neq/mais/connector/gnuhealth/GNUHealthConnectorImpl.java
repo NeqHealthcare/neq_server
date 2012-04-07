@@ -53,7 +53,7 @@ public class GNUHealthConnectorImpl extends Connector {
             // LOGIN
             String user_session = con.login(login_name, password, "gnuhealth2");
 
-//            con.createLabTestRequest("656465486486", "1", "3", "9");
+//          con.createLabTestRequest("656465486486", "1", "3", "9");
             			
 //            List<?> res = con.checkForTestedLabRequests("1");
 //            for (Object r : res) System.out.println("1:"+ r);
@@ -250,6 +250,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
         DbHandler dbh = new DbHandler();
         dbh.saveLabTestRequests(doctor_id, successId);
+    
         dbh.close();
 
         return result;
@@ -393,6 +394,29 @@ public class GNUHealthConnectorImpl extends Connector {
 
         return result;
     }
+    
+    public List<?> returnNewestLabTestResults(String doctor_id) {
+    	List<?> l = checkForTestedLabRequests(doctor_id);
+    	int[] labTestResultsIds = new int[l.size()];
+    	
+        for(int i = 0; i < labTestResultsIds.length; i++) {
+        	labTestResultsIds[i] = (Integer) l.get(i);
+        }
+        
+        
+        String labTestsResultString = execute(getLabTestReadMethod(),
+                getLabTestsParams(labTestResultsIds));
+
+        Type listType = new TypeToken<List<LabTestResultGnu>>() {
+        }.getType();
+        List<LabTestResultGnu> result = DomainParserGnu.fromJson(
+                labTestsResultString, listType, LabTestResultGnu.class);
+
+        for (LabTestResultGnu ltrg : result)
+            ltrg.prepareDateFormat();
+
+        return result;
+    }
 
     public List<?> returnLabTestResultsForPatient(String patientId) {
         List<LabTestResultGnu> allLabTests = (List<LabTestResultGnu>) returnAllLabTestResults();
@@ -460,6 +484,10 @@ public class GNUHealthConnectorImpl extends Connector {
             Integer userId = getUserId(username);
 
             NeqServer.getSessionStore().put(result, backendSid, userId);
+            
+            DbHandler dbh = new DbHandler();
+            dbh.saveLogin(String.valueOf(userId));
+            dbh.close();
         } else {
             // result = "false";
         }

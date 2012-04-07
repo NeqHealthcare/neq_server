@@ -37,9 +37,9 @@ public class LabTestRequest implements DbTable {
 	public void initialize(SqlJetDb db) {
 		try {
 			db.beginTransaction(SqlJetTransactionMode.WRITE);
-//			db.dropTable(TABLE_NAME);
-//			db.createTable("CREATE TABLE "+TABLE_NAME+" (user_id VARCHAR, request_id VARCHAR)");
-//			db.createIndex("CREATE INDEX "+INDEX_REQUEST_ID+" ON "+TABLE_NAME+"("+FIELD_REQUEST_ID+")");
+			//db.dropTable(TABLE_NAME);
+			db.createTable("CREATE TABLE "+TABLE_NAME+" (user_id VARCHAR, request_id VARCHAR)");
+			db.createIndex("CREATE INDEX "+INDEX_REQUEST_ID+" ON "+TABLE_NAME+"("+FIELD_REQUEST_ID+")");
 			db.createIndex("CREATE INDEX "+INDEX_USER_ID+" ON "+TABLE_NAME+"("+FIELD_USER_ID+")");
 			db.commit();
 		} catch (SqlJetException e) {

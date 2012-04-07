@@ -127,6 +127,42 @@ public class LabTestHandler {
         return response;
     }
 
+    
+    @GET
+    @Path("/watchlist/check/details")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String returnNewResultsInDetail(
+            @Context HttpServletResponse servlerResponse,
+            @QueryParam("session") String session,
+            @QueryParam("doctor_id") String doctor_id) {
+
+        String response = new DTOWrapper()
+                .wrapError("Error while retrieving new lattest results");
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods",
+                "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", "*");
+        servlerResponse.addHeader("Access-Control-Allow-Headers",
+                "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+        try {
+            connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
+            List<?> res = connector.returnNewestLabTestResults(doctor_id); 
+            
+            response = new DTOWrapper().wrap(res);
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        } catch (NoSessionInSessionStoreException e) {
+            e.printStackTrace();
+        }
+
+
+        return response;
+    }
+
     @OPTIONS
     @Path("/one/detail")
     public String returnLabTestDetailsOptions(@Context HttpServletResponse servlerResponse) {

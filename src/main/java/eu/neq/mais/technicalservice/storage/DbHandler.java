@@ -15,7 +15,7 @@ import org.tmatesoft.sqljet.core.table.SqlJetDb;
 public class DbHandler {
 	
 	public static String LOCATION ="./resources/";
-	public static String DB_NAME = "MAIS_INTERNAL_DB";
+	public static String DB_NAME = "MAIS_INTERNAL_DB2";
 	private SqlJetDb db;
 	
 	public DbHandler() {
@@ -28,6 +28,7 @@ public class DbHandler {
 		
 	}
 	
+
 	public void close() {
 		try {
 			this.db.close();
@@ -140,9 +141,9 @@ public class DbHandler {
 		}
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args)  {
 		DbHandler dbh = new DbHandler();
-		System.out.println(dbh.getLatestLogin("1").getDateOfLogin());
+		
 	}
 
 	public SqlJetDb getDb() {

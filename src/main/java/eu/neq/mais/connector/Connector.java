@@ -164,6 +164,13 @@ public abstract class Connector {
      * Check
      */
     public abstract List<?> checkForTestedLabRequests(String doctor_id);
+    
+    /**
+     * 
+     * @param doctor_id
+     * @return
+     */
+    public abstract List<?> returnNewestLabTestResults(String doctor_id);
 
     /**
      * Returns all lab test types
