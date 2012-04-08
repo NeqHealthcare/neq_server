@@ -24,6 +24,8 @@ import java.net.URLConnection;
 import java.text.DateFormat;
 import java.util.*;
 
+import static java.lang.Integer.*;
+
 /**
  * Connector implementation for a GNU Health Hospital Information System. All
  * methods provided by this class deal with accessing information of the
@@ -35,6 +37,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
     private static int gnid = 55;
     private static String adminSession = null;
+
 
     /**
      * Main method is for a test run of several functions of the connector and
@@ -54,7 +57,7 @@ public class GNUHealthConnectorImpl extends Connector {
             String user_session = con.login(login_name, password, "gnuhealth2");
 
 //          con.createLabTestRequest("656465486486", "1", "3", "9");
-            			
+
 //            List<?> res = con.checkForTestedLabRequests("1");
 //            for (Object r : res) System.out.println("1:"+ r);
 //            
@@ -73,9 +76,8 @@ public class GNUHealthConnectorImpl extends Connector {
 //            
 //            res = con.checkForTestedLabRequests("1");
 //            for (Object r : res) System.out.println("1:"+ r);
-            
-            
-            
+
+
             // System.out.println("1:returnLabTestResultsForPatient("13")));"
             // System.out.println("2: " + con.returnAllLabTestResults());
             // // Search Patients
@@ -143,8 +145,10 @@ public class GNUHealthConnectorImpl extends Connector {
     }
 
     public List<?> returnDocumentList(String patientID) {
-        int[] id;   //method for all ids
-        id = new int[]{Integer.parseInt(patientID)};
+        //Logger.info("test")  ;
+        int[] id = new int[1];   //method for all ids
+        id[0] = (int) Integer.parseInt(patientID);
+
         String documentListString = execute(getDocumentListMethod(),
                 getDocumentListParams(id));
 
@@ -154,23 +158,18 @@ public class GNUHealthConnectorImpl extends Connector {
         List<Integer> idList = DomainParserGnu.fromJson(
                 documentListString, idListToken, Integer.class);
 
-        int[] idListArray = new int[]{idList.size()};
+        int[] idListArray = new int[idList.size()];
         for (int e : idList) {
             idListArray[idList.indexOf(e)] = e;
         }
 
         String documentMetaDataString = execute(getDocumentReadMethod(),
-                getDocumentMetaDataParams(idListArray, true));
+                getDocumentMetaDataParams(idListArray, false));
 
         Type listType = new TypeToken<List<DocumentGnu>>() {
         }.getType();
         List<DocumentGnu> result = DomainParserGnu.fromJson(
                 documentMetaDataString, listType, DocumentGnu.class);
-
-        for (DocumentGnu d : result) {
-            logger.info(d.getData().getBase64());
-        }
-
 
         //for (DocumentGnu doc : result) doc.prepareDateFormat();
 
@@ -179,7 +178,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
     public List<DocumentGnu> returnDocumentData(String documentId) {
         int[] id;   //method for all ids
-        id = new int[]{Integer.parseInt(documentId)};
+        id = new int[]{parseInt(documentId)};
         String documentListString = execute(getDocumentReadMethod(),
                 getDocumentReadParams(id));
 
@@ -211,7 +210,7 @@ public class GNUHealthConnectorImpl extends Connector {
             for (Object uncastLabTest : labTests) {
                 LabTestRequestGnu labTestRequestGnu = (LabTestRequestGnu) uncastLabTest;
 
-                if (Integer.valueOf(
+                if (valueOf(
                         labTestRequest.getRequest_id().replaceAll(" ", ""))
                         .equals(labTestRequestGnu.getId())) {
                     if (labTestRequestGnu.getState().equals("tested")) {
@@ -250,7 +249,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
         DbHandler dbh = new DbHandler();
         dbh.saveLabTestRequests(doctor_id, successId);
-    
+
         dbh.close();
 
         return result;
@@ -275,7 +274,7 @@ public class GNUHealthConnectorImpl extends Connector {
         idList = new int[idListString.length];
 
         for (int i = 0; i < idListString.length; i++) {
-            idList[i] = Integer.parseInt(idListString[i]);
+            idList[i] = parseInt(idListString[i]);
         }
         return idList;
     }
@@ -350,7 +349,7 @@ public class GNUHealthConnectorImpl extends Connector {
         idList = new int[idListString.length];
 
         for (int i = 0; i < idListString.length; i++) {
-            idList[i] = Integer.parseInt(idListString[i]);
+            idList[i] = parseInt(idListString[i]);
         }
         return idList;
     }
@@ -358,7 +357,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
     public LabTestResult returnLabTestResultsDetails(String labTestId) {
 
-        int[] id = new int[]{Integer.parseInt(labTestId)};
+        int[] id = new int[]{parseInt(labTestId)};
         String labTestsResult = execute(getLabTestReadMethod(),
                 getLabTestsDetailParams(id));
 
@@ -394,16 +393,16 @@ public class GNUHealthConnectorImpl extends Connector {
 
         return result;
     }
-    
+
     public List<?> returnNewestLabTestResults(String doctor_id) {
-    	List<?> l = checkForTestedLabRequests(doctor_id);
-    	int[] labTestResultsIds = new int[l.size()];
-    	
-        for(int i = 0; i < labTestResultsIds.length; i++) {
-        	labTestResultsIds[i] = (Integer) l.get(i);
+        List<?> l = checkForTestedLabRequests(doctor_id);
+        int[] labTestResultsIds = new int[l.size()];
+
+        for (int i = 0; i < labTestResultsIds.length; i++) {
+            labTestResultsIds[i] = (Integer) l.get(i);
         }
-        
-        
+
+
         String labTestsResultString = execute(getLabTestReadMethod(),
                 getLabTestsParams(labTestResultsIds));
 
@@ -484,7 +483,7 @@ public class GNUHealthConnectorImpl extends Connector {
             Integer userId = getUserId(username);
 
             NeqServer.getSessionStore().put(result, backendSid, userId);
-            
+
             DbHandler dbh = new DbHandler();
             dbh.saveLogin(String.valueOf(userId));
             dbh.close();
@@ -611,7 +610,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
         ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();
         for (PatientGnu p : patientList) {
-            if (Integer.valueOf(p.getPrimary_care_doctor_id()) == party_id) {
+            if (valueOf(p.getPrimary_care_doctor_id()) == party_id) {
                 relevantList.add(p);
                 p.prepareDateFormat();
             }
@@ -655,10 +654,10 @@ public class GNUHealthConnectorImpl extends Connector {
         try {
             // If a search for an int is executed, param must be of type int and
             // therefore parseable by Integer
-            int id = Integer.parseInt(param);
+            int id = parseInt(param);
 
             for (PatientGnu p : patientList) {
-                if (Integer.valueOf(p.getId()).equals(id))
+                if (valueOf(p.getId()).equals(id))
                     relevantList.add(p);
             }
 
@@ -758,6 +757,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
     }
 
+
     @Override
     /**
      * @see eu.neq.mais.connector.Connector#returnDiagnose(java.lang.String)
@@ -778,7 +778,7 @@ public class GNUHealthConnectorImpl extends Connector {
      */
     public UserGnu returnPersonalInformation(String user_id) throws NoSessionInSessionStoreException {
         UserGnu personalInfo = new UserGnu();
-        
+
         personalInfo.setName(getUserRecName(user_id));
         personalInfo.setPhysician_id(String.valueOf(getPhysicianId(Integer.valueOf(user_id))));
         personalInfo.setId(user_id);
@@ -792,7 +792,7 @@ public class GNUHealthConnectorImpl extends Connector {
         List<VaccinationGnu> result;
         try {
             Object[] patientParam = new Object[]{1, getAdminSession(),
-                    new int[]{Integer.parseInt(patientId)},
+                    new int[]{parseInt(patientId)},
                     new String[]{"vaccinations"}, "REPLACE_CONTEXT"};
             String patientVaccinationsString = execute(getPatientReadMethod(),
                     patientParam);
@@ -831,7 +831,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
     public List returnMedicationsForPatient(String patientID) {
         Object[] patientParam = new Object[]{1, getAdminSession(),
-                new int[]{Integer.parseInt(patientID)},
+                new int[]{parseInt(patientID)},
                 new String[]{"medications"}, "REPLACE_CONTEXT"};
         String patient = execute(getPatientReadMethod(), patientParam);
         patient = patient.substring(patient.indexOf("[") + 1,
@@ -881,7 +881,7 @@ public class GNUHealthConnectorImpl extends Connector {
         idList = new int[idListString.length];
 
         for (int i = 0; i < idListString.length; i++) {
-            idList[i] = Integer.parseInt(idListString[i]);
+            idList[i] = parseInt(idListString[i]);
         }
         return idList;
     }
@@ -907,7 +907,7 @@ public class GNUHealthConnectorImpl extends Connector {
         idList = new int[idListString.length];
 
         for (int i = 0; i < idListString.length; i++) {
-            idList[i] = Integer.parseInt(idListString[i]);
+            idList[i] = parseInt(idListString[i]);
         }
 
         return idList;
@@ -944,7 +944,7 @@ public class GNUHealthConnectorImpl extends Connector {
         // SEARCH FOR ID
         for (UserGnu u : userList) {
             if (u.getLogin().equals(username))
-                return Integer.valueOf(u.getId());
+                return valueOf(u.getId());
         }
 
         return -1;
@@ -1011,7 +1011,7 @@ public class GNUHealthConnectorImpl extends Connector {
         idList = new int[idListString.length];
 
         for (int i = 0; i < idListString.length; i++) {
-            idList[i] = Integer.parseInt(idListString[i]);
+            idList[i] = parseInt(idListString[i]);
         }
         return idList;
     }
@@ -1039,7 +1039,7 @@ public class GNUHealthConnectorImpl extends Connector {
         idList = new int[idListString.length];
 
         for (int i = 0; i < idListString.length; i++) {
-            idList[i] = Integer.parseInt(idListString[i]);
+            idList[i] = parseInt(idListString[i]);
         }
         return idList;
     }
@@ -1070,8 +1070,8 @@ public class GNUHealthConnectorImpl extends Connector {
         // SEARCH FOR ID
         for (PhysicianGnu u : userList) {
             if (u.getInternal_user() != null) {
-                if (Integer.valueOf(u.getInternal_user()) == user_id)
-                    return Integer.valueOf(u.getId());
+                if (valueOf(u.getInternal_user()) == user_id)
+                    return valueOf(u.getId());
             }
         }
         return -1;
@@ -1332,7 +1332,7 @@ public class GNUHealthConnectorImpl extends Connector {
         return new Object[]{
                 1,
                 getAdminSession(),
-                new int[]{Integer.parseInt(id)},
+                new int[]{parseInt(id)},
                 new String[]{"course_completed", "discontinued", "dose",
                         "route", "duration_period", "frequency_unit",
                         "dose_unit", "frequency", "indication", "notes",
@@ -1348,7 +1348,7 @@ public class GNUHealthConnectorImpl extends Connector {
         return new Object[]{
                 1,
                 getAdminSession(),
-                new int[]{Integer.parseInt(id)},
+                new int[]{parseInt(id)},
                 new String[]{"dose", "vaccine.rec_name", "observations",
                         "vaccine_lot", "institution.rec_name", "date",
                         "next_dose_date"}, "REPLACE_CONTEXT"};
@@ -1369,7 +1369,7 @@ public class GNUHealthConnectorImpl extends Connector {
         return new Object[]{
                 1,
                 getAdminSession(),
-                new int[]{Integer.parseInt(id)},
+                new int[]{parseInt(id)},
                 new String[]{"status", "pregnancy_warning", "is_active",
                         "short_comment", "diagnosed_date", "healed_date",
                         "pathology", "disease_severity", "is_infectious",
