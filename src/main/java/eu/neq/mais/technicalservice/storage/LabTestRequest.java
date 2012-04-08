@@ -7,6 +7,8 @@ import org.tmatesoft.sqljet.core.table.SqlJetDb;
 
 public class LabTestRequest implements DbTable {
 	
+
+	
 	String request_id;
 	String user_id;
 	
@@ -35,8 +37,10 @@ public class LabTestRequest implements DbTable {
 	public void initialize(SqlJetDb db) {
 		try {
 			db.beginTransaction(SqlJetTransactionMode.WRITE);
-		//	db.createTable("CREATE TABLE "+TABLE_NAME+" (user_id VARCHAR, request_id VARCHAR)");
+			//db.dropTable(TABLE_NAME);
+			db.createTable("CREATE TABLE "+TABLE_NAME+" (user_id VARCHAR, request_id VARCHAR)");
 			db.createIndex("CREATE INDEX "+INDEX_REQUEST_ID+" ON "+TABLE_NAME+"("+FIELD_REQUEST_ID+")");
+			db.createIndex("CREATE INDEX "+INDEX_USER_ID+" ON "+TABLE_NAME+"("+FIELD_USER_ID+")");
 			db.commit();
 		} catch (SqlJetException e) {
 			e.printStackTrace();
@@ -48,6 +52,8 @@ public class LabTestRequest implements DbTable {
 		
 		LabTestRequest r = new LabTestRequest();
 		r.initialize(dbh.getDb());
+		
+		
 		
 		dbh.close();
 	}
@@ -67,5 +73,6 @@ public class LabTestRequest implements DbTable {
 	public void setUser_id(String user_id) {
 		this.user_id = user_id;
 	}
-
+	
+	
 }

@@ -9,6 +9,7 @@ import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.domain.Diagnose;
 import eu.neq.mais.domain.LabTestRequest;
 import eu.neq.mais.domain.LabTestResult;
+import eu.neq.mais.domain.User;
 import eu.neq.mais.domain.gnuhealth.*;
 import eu.neq.mais.technicalservice.Backend;
 import eu.neq.mais.technicalservice.DTOWrapper;
@@ -51,10 +52,30 @@ public class GNUHealthConnectorImpl extends Connector {
 
             // LOGIN
             String user_session = con.login(login_name, password, "gnuhealth2");
-            List<?> r = con.returnAllLabTestResults();
-            for (Object x : r) {
-                System.out.println(new DTOWrapper().wrap(x));
-            }
+
+//          con.createLabTestRequest("656465486486", "1", "3", "9");
+            			
+//            List<?> res = con.checkForTestedLabRequests("1");
+//            for (Object r : res) System.out.println("1:"+ r);
+//            
+//            System.out.println("-----");
+//
+//            res = con.checkForTestedLabRequests("1");
+//            for (Object r : res) { 
+//            	System.out.println("1:"+ r);
+//            	DbHandler dbh = new DbHandler();
+//            	boolean ok = dbh.removeLabTestRequest(String.valueOf(r));
+//            	dbh.close();
+//            	System.out.println("worked: "+ok);
+//            }
+//
+//            System.out.println("-----");
+//            
+//            res = con.checkForTestedLabRequests("1");
+//            for (Object r : res) System.out.println("1:"+ r);
+            
+            
+            
             // System.out.println("1:returnLabTestResultsForPatient("13")));"
             // System.out.println("2: " + con.returnAllLabTestResults());
             // // Search Patients
@@ -194,7 +215,7 @@ public class GNUHealthConnectorImpl extends Connector {
                         labTestRequest.getRequest_id().replaceAll(" ", ""))
                         .equals(labTestRequestGnu.getId())) {
                     if (labTestRequestGnu.getState().equals("tested")) {
-                        dbh.removeLabTestRequest(labTestRequest.getRequest_id());
+                        //dbh.removeLabTestRequest(labTestRequest.getRequest_id()); OUTSOURCED TO OWN FUNCTION;
                         recentlyTestedRequestsIds.add(new Integer(labTestRequest
                                 .getRequest_id().replaceAll(" ", "")));
                     }
@@ -229,6 +250,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
         DbHandler dbh = new DbHandler();
         dbh.saveLabTestRequests(doctor_id, successId);
+    
         dbh.close();
 
         return result;
@@ -372,6 +394,29 @@ public class GNUHealthConnectorImpl extends Connector {
 
         return result;
     }
+    
+    public List<?> returnNewestLabTestResults(String doctor_id) {
+    	List<?> l = checkForTestedLabRequests(doctor_id);
+    	int[] labTestResultsIds = new int[l.size()];
+    	
+        for(int i = 0; i < labTestResultsIds.length; i++) {
+        	labTestResultsIds[i] = (Integer) l.get(i);
+        }
+        
+        
+        String labTestsResultString = execute(getLabTestReadMethod(),
+                getLabTestsParams(labTestResultsIds));
+
+        Type listType = new TypeToken<List<LabTestResultGnu>>() {
+        }.getType();
+        List<LabTestResultGnu> result = DomainParserGnu.fromJson(
+                labTestsResultString, listType, LabTestResultGnu.class);
+
+        for (LabTestResultGnu ltrg : result)
+            ltrg.prepareDateFormat();
+
+        return result;
+    }
 
     public List<?> returnLabTestResultsForPatient(String patientId) {
         List<LabTestResultGnu> allLabTests = (List<LabTestResultGnu>) returnAllLabTestResults();
@@ -439,6 +484,10 @@ public class GNUHealthConnectorImpl extends Connector {
             Integer userId = getUserId(username);
 
             NeqServer.getSessionStore().put(result, backendSid, userId);
+            
+            DbHandler dbh = new DbHandler();
+            dbh.saveLogin(String.valueOf(userId));
+            dbh.close();
         } else {
             // result = "false";
         }
@@ -727,21 +776,15 @@ public class GNUHealthConnectorImpl extends Connector {
     /**
      * @see eu.neq.mais.connector.Connector#returnPersonalInformation(java.lang.String, boolean, boolean)
      */
-    public String returnPersonalInformation(String userSession, boolean name,
-                                            boolean picture) throws NoSessionInSessionStoreException {
-        HashMap<String, String> personalInfo = new HashMap<String, String>();
-        if (name) {
-            try {
-                personalInfo.put("name", getUserRecName(NeqServer
-                        .getSessionStore().getUserId(userSession).toString()));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (picture) {
-            personalInfo.put("picture", "http://i43.tinypic.com/29lzamh.png");
-        }
-        return new Gson().toJson(personalInfo);
+    public UserGnu returnPersonalInformation(String user_id) throws NoSessionInSessionStoreException {
+        UserGnu personalInfo = new UserGnu();
+        
+        personalInfo.setName(getUserRecName(user_id));
+        personalInfo.setPhysician_id(String.valueOf(getPhysicianId(Integer.valueOf(user_id))));
+        personalInfo.setId(user_id);
+        personalInfo.setImage_url("http://i43.tinypic.com/29lzamh.png");
+
+        return personalInfo;
     }
 
     @Override
@@ -1008,7 +1051,7 @@ public class GNUHealthConnectorImpl extends Connector {
       *
       * @return physician id
       */
-    private int getPhysicianId(int user_id) {
+    public int getPhysicianId(int user_id) {
         String session = getAdminSession();
         int[] allphys = getAllPartyIds();
 
@@ -1270,7 +1313,7 @@ public class GNUHealthConnectorImpl extends Connector {
                 ids,
                 new String[]{"date_analysis", "test", "patient", "name",
                         "test.rec_name", "patient.rec_name", "date_requested",
-                        "requestor", "results", "pathologist", "critearea",
+                        "requestor.rec_name", "results", "pathologist.rec_name", "critearea",
                         "diagnosis"}, "REPLACE_CONTEXT"};
     }
 

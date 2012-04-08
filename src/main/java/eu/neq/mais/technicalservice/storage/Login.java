@@ -22,6 +22,16 @@ public class Login implements DbTable {
 		this.read(cursor);
 	}
 	
+	public static void main(String[] args) {
+		DbHandler dbh = new DbHandler();
+		
+		Login tmp = new Login();
+		
+		tmp.initialize(dbh.getDb());
+		
+		dbh.close();
+	}
+	
 	public void initialize(SqlJetDb db) {
 		try {
 			db.beginTransaction(SqlJetTransactionMode.WRITE);

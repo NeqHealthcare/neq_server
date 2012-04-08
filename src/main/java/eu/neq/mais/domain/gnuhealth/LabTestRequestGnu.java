@@ -17,6 +17,7 @@ public class LabTestRequestGnu extends LabTestRequest {
 	
 	@MapToGnu("doctor_id.rec_name")
 	String doctor_rec_name;
+
 	
 	Object date;	
 	
@@ -49,6 +50,7 @@ public class LabTestRequestGnu extends LabTestRequest {
 	public void setId(Integer id) {
 		this.id = id;
 	}
+
 
 
 	

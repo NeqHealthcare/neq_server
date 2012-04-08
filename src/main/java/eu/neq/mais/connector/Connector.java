@@ -3,6 +3,7 @@ package eu.neq.mais.connector;
 import eu.neq.mais.connector.gnuhealth.GNUHealthConnectorImpl;
 import eu.neq.mais.domain.Diagnose;
 import eu.neq.mais.domain.LabTestResult;
+import eu.neq.mais.domain.User;
 import eu.neq.mais.domain.gnuhealth.DocumentGnu;
 import eu.neq.mais.technicalservice.Backend;
 import eu.neq.mais.technicalservice.FileHandler;
@@ -111,8 +112,7 @@ public abstract class Connector {
      * @throws NoSessionInSessionStoreException
      *
      */
-    public abstract String returnPersonalInformation(String userSession,
-                                                     boolean name, boolean picture)
+    public abstract User returnPersonalInformation(String user_id)
             throws NoSessionInSessionStoreException;
 
     /**
@@ -161,9 +161,16 @@ public abstract class Connector {
 
 
     /**
-     * Checl
+     * Check
      */
     public abstract List<?> checkForTestedLabRequests(String doctor_id);
+    
+    /**
+     * 
+     * @param doctor_id
+     * @return
+     */
+    public abstract List<?> returnNewestLabTestResults(String doctor_id);
 
     /**
      * Returns all lab test types
@@ -171,6 +178,8 @@ public abstract class Connector {
      * @return
      */
     public abstract List<?> returnLabTestTypes();
+    
+
 
     /**
      * Creates a new lab test request
