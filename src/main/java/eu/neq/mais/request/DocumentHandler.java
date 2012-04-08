@@ -80,7 +80,7 @@ public class DocumentHandler {
     }
 
     @OPTIONS
-    @Path("/image/thumbnaul")
+    @Path("/image/thumbnail")
     public String returnDocumentThnumbnailOptions(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
@@ -111,7 +111,7 @@ public class DocumentHandler {
         try {
             connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
             List<DocumentGnu> document = connector.returnDocumentData(id);
-            response = document.get(0).getImage();
+            response = document.get(0).getThumbNail();
             logger.info(response.toString());
 
         } catch (Exception e) {
@@ -166,7 +166,7 @@ public class DocumentHandler {
             response = new DTOWrapper().wrapError(es.toString());
         }
         logger.info("return diagnose method returned json object: " + response);
-
+        logger.info(id);
 
         return response;
 
