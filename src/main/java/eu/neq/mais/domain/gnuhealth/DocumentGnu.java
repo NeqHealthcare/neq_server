@@ -3,6 +3,13 @@ package eu.neq.mais.domain.gnuhealth;
 import eu.neq.mais.domain.Document;
 import sun.misc.BASE64Decoder;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
@@ -79,5 +86,34 @@ public class DocumentGnu implements Document {
 
         return img;
     }
+
+    public byte[] getThumbNail() {
+        byte[] img = this.getImage();
+        byte[] out = null;
+        ByteArrayOutputStream byteArrayOut = new ByteArrayOutputStream();
+
+
+        try {
+            BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(img));
+            int w = bufferedImage.getWidth() / 10;
+            int h = bufferedImage.getHeight() / 10;
+            BufferedImage after = new BufferedImage(w, h, bufferedImage.getType());
+            AffineTransform at = new AffineTransform();
+            at.scale(0.1, 0.1);
+            AffineTransformOp scaleOp =
+                    new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+            after = scaleOp.filter(bufferedImage, after);
+            ImageIO.write(after, "jpg", byteArrayOut);
+            out = byteArrayOut.toByteArray();
+
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+
+        return out;
+
+    }
+
 
 }
