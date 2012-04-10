@@ -55,8 +55,16 @@ public class GNUHealthConnectorImpl extends Connector {
 
             // LOGIN
             String user_session = con.login(login_name, password, "gnuhealth2");
+            List<?> res = con.checkForTestedLabRequests("1");
+            for (Object r : res) System.out.println("1:"+ r);
+            
+            System.out.println("-----");
+     
+            res = con.returnNewestLabTestResults("1");
+            for (Object r : res) System.out.println("1:"+ ((LabTestResultGnu) r).getId());
+            
 
-//          con.createLabTestRequest("656465486486", "1", "3", "9");
+      //   con.createLabTestRequest("656465486486", "1", "3", "9");
 
 //            List<?> res = con.checkForTestedLabRequests("1");
 //            for (Object r : res) System.out.println("1:"+ r);
@@ -381,7 +389,7 @@ public class GNUHealthConnectorImpl extends Connector {
         int[] labTestResultsIds = getAllLabTestIds();
 
         String labTestsResultString = execute(getLabTestReadMethod(),
-                getLabTestsParams(labTestResultsIds));
+                getLabTestsResultsParams(labTestResultsIds));
 
         Type listType = new TypeToken<List<LabTestResultGnu>>() {
         }.getType();
@@ -395,24 +403,23 @@ public class GNUHealthConnectorImpl extends Connector {
     }
 
     public List<?> returnNewestLabTestResults(String doctor_id) {
-        List<?> l = checkForTestedLabRequests(doctor_id);
-        int[] labTestResultsIds = new int[l.size()];
-
-        for (int i = 0; i < labTestResultsIds.length; i++) {
-            labTestResultsIds[i] = (Integer) l.get(i);
-        }
-
+    	List<LabTestResultGnu> result = new ArrayList<LabTestResultGnu>();
 
         String labTestsResultString = execute(getLabTestReadMethod(),
-                getLabTestsParams(labTestResultsIds));
-
+                getLabTestsResultsParams(getAllLabTestIds()));
+      
         Type listType = new TypeToken<List<LabTestResultGnu>>() {
         }.getType();
-        List<LabTestResultGnu> result = DomainParserGnu.fromJson(
+        
+        List<LabTestResultGnu> allLabTestResults = DomainParserGnu.fromJson(
                 labTestsResultString, listType, LabTestResultGnu.class);
-
-        for (LabTestResultGnu ltrg : result)
-            ltrg.prepareDateFormat();
+     
+        List<?> l = checkForTestedLabRequests(doctor_id);
+        for (int i = 0; i < l.size(); i++) {
+        	result.add(allLabTestResults.get(allLabTestResults.size()-(i+1)));
+        }
+        
+        
 
         return result;
     }
@@ -1276,12 +1283,12 @@ public class GNUHealthConnectorImpl extends Connector {
                 new String[]{"id", "code", "name"}, "REPLACE_CONTEXT"};
     }
 
-    private Object[] getLabTestsParams(int[] ids) {
+    private Object[] getLabTestsResultsParams(int[] ids) {
         return new Object[]{
                 1,
                 getAdminSession(),
                 ids,
-                new String[]{"date_analysis", "test", "patient", "name",
+                new String[]{"id", "date_analysis", "test", "patient", "name",
                         "test.rec_name", "patient.rec_name"},
                 "REPLACE_CONTEXT"};
     }
