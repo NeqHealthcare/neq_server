@@ -309,7 +309,7 @@ public class GNUHealthConnectorImpl extends Connector {
         String labTestRequestsResultString = execute(
                 getLabTestRequestReadMethod(),
                 getLabTestRequestParams(labTestRequestIds));
-
+        
         Type listType = new TypeToken<List<LabTestRequestGnu>>() {
         }.getType();
         List<LabTestRequestGnu> result = DomainParserGnu.fromJson(
@@ -414,11 +414,25 @@ public class GNUHealthConnectorImpl extends Connector {
         List<LabTestResultGnu> allLabTestResults = DomainParserGnu.fromJson(
                 labTestsResultString, listType, LabTestResultGnu.class);
      
-        List<?> l = checkForTestedLabRequests(doctor_id);
-        for (int i = 0; i < l.size(); i++) {
-        	result.add(allLabTestResults.get(allLabTestResults.size()-(i+1)));
-        }
         
+        /*
+         * Filtering a doctors specific lab tests
+         */
+        List<?> l = checkForTestedLabRequests(doctor_id);
+        List<LabTestResultGnu> doctorsLabTestResults = new ArrayList<LabTestResultGnu>();
+        for (LabTestResultGnu lbrg : allLabTestResults) {
+        	if (lbrg.getRequestor().equals(doctor_id)) doctorsLabTestResults.add(lbrg);
+        }
+       
+        
+        /*
+         * Searching the newest ones and matching to LabTestRequests
+         */
+        for (int i = 0; i < l.size(); i++) {
+        	LabTestResultGnu tmp = doctorsLabTestResults.get(doctorsLabTestResults.size()-(i+1));
+        	tmp.setRequest_id(String.valueOf(l.get(l.size()-(i+1))));
+        	result.add(tmp);
+        }       
         
 
         return result;
@@ -1289,7 +1303,7 @@ public class GNUHealthConnectorImpl extends Connector {
                 getAdminSession(),
                 ids,
                 new String[]{"id", "date_analysis", "test", "patient", "name",
-                        "test.rec_name", "patient.rec_name"},
+                        "test.rec_name", "patient.rec_name", "requestor"},
                 "REPLACE_CONTEXT"};
     }
 
@@ -1299,7 +1313,7 @@ public class GNUHealthConnectorImpl extends Connector {
                 getAdminSession(),
                 ids,
                 new String[]{"date", "patient_id", "state",
-                        "doctor_id.rec_name", "name.rec_name"},
+                        "doctor_id.rec_name", "name.rec_name", },
                 "REPLACE_CONTEXT"};
     }
 

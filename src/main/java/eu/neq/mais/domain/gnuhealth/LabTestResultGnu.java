@@ -6,7 +6,7 @@ import eu.neq.mais.domain.LabTestResult;
 import eu.neq.mais.domain.gnuhealth.annotations.MapToGnu;
 
 public class LabTestResultGnu extends LabTestResult {
-String id, test, name, result, diagnosis, patient;
+String id, test, name, result, diagnosis, patient, request_id;
 	
 	@MapToGnu("test.rec_name")
 	String test_rec_name;
@@ -16,6 +16,8 @@ String id, test, name, result, diagnosis, patient;
 	
 	@MapToGnu("requestor.rec_name")
 	String requestor_rec_name;
+	
+	String requestor;
 	
 	@MapToGnu("patient.rec_name")
 	String patient_rec_name;
@@ -124,5 +126,21 @@ String id, test, name, result, diagnosis, patient;
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getRequest_id() {
+		return request_id;
+	}
+
+	public void setRequest_id(String request_id) {
+		this.request_id = request_id;
+	}
+
+	public String getRequestor() {
+		return requestor;
+	}
+
+	public void setRequestor(String requestor) {
+		this.requestor = requestor;
 	}
 }
