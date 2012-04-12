@@ -159,7 +159,7 @@ public abstract class Connector {
      */
     public abstract List<?> returnLabTestRequests(String patientId);
 
-
+    
     /**
      * Check
      */

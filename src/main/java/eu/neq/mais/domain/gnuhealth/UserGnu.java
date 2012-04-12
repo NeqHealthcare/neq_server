@@ -15,6 +15,8 @@ public class UserGnu implements User {
 	String rec_name;
 	String physician_id;
 	String image_url;
+	String number_of_patients;
+	String internal_user;
 	
 	
 	public String getName() {
@@ -53,4 +55,18 @@ public class UserGnu implements User {
 	public void setImage_url(String image_url) {
 		this.image_url = image_url;
 	}
+	
+	public String getNumber_of_patients() {
+		return number_of_patients;
+	}
+	public void setNumber_of_patients(String number_of_patients) {
+		this.number_of_patients = number_of_patients;
+	}
+	public String getInternal_user() {
+		return internal_user;
+	}
+	public void setInternal_user(String internal_id) {
+		this.internal_user = internal_id;
+	}
+
 }

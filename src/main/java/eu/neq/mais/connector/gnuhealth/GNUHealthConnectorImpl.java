@@ -55,13 +55,39 @@ public class GNUHealthConnectorImpl extends Connector {
 
             // LOGIN
             String user_session = con.login(login_name, password, "gnuhealth2");
-            List<?> res = con.checkForTestedLabRequests("1");
-            for (Object r : res) System.out.println("1:"+ r);
+            try {
+				con.returnPersonalPatientsForUIList(user_session);
+			} catch (NoSessionInSessionStoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             
-            System.out.println("-----");
-     
-            res = con.returnNewestLabTestResults("1");
-            for (Object r : res) System.out.println("1:"+ ((LabTestResultGnu) r).getId());
+
+
+            
+            /*
+             * GETTING THE PHYSICIAN ID
+             */
+//            GNUHealthConnectorImpl impl = (GNUHealthConnectorImpl) con;
+//            try {
+//				int user_id = NeqServer.getSessionStore().getUserId(user_session);
+//				int physician_id = impl.getPhysicianId(user_id);
+//				System.out.println(user_id+":"+physician_id);
+//			} catch (NoSessionInSessionStoreException e) {
+//				e.printStackTrace();
+//			}
+            
+            
+            /*
+             * CHECKING FOR NEW LABTESTRESULTS
+             */
+//            List<?> res = con.checkForTestedLabRequests("1");
+//            for (Object r : res) System.out.println("1:"+ r);
+//            
+//            System.out.println("-----");
+//     
+//            res = con.returnNewestLabTestResults("1");
+//            for (Object r : res) System.out.println("1:"+ ((LabTestResultGnu) r).getId());
             
 
       //   con.createLabTestRequest("656465486486", "1", "3", "9");
@@ -85,6 +111,9 @@ public class GNUHealthConnectorImpl extends Connector {
 //            res = con.checkForTestedLabRequests("1");
 //            for (Object r : res) System.out.println("1:"+ r);
 
+            /*
+             * SEARCHING FOR LABTEST RESULTS
+             */
 
             // System.out.println("1:returnLabTestResultsForPatient("13")));"
             // System.out.println("2: " + con.returnAllLabTestResults());
@@ -591,7 +620,7 @@ public class GNUHealthConnectorImpl extends Connector {
      * @see eu.neq.mais.connector.Connector#returnAllPatientsForUIList()
      */
     @Override
-    public List returnAllPatientsForUIList() {
+    public List<?> returnAllPatientsForUIList() {
         String patientListString = "false";
         patientListString = execute(getPatientReadMethod(),
                 getReturnPatientsParams());
@@ -613,10 +642,10 @@ public class GNUHealthConnectorImpl extends Connector {
      *
      */
     @Override
-    public List returnPersonalPatientsForUIList(String session)
+    public List<?> returnPersonalPatientsForUIList(String session)
             throws NoSessionInSessionStoreException {
         String patientListString = "false";
-
+        
         patientListString = execute(getPatientReadMethod(),
                 getReturnPatientsParams());
 
@@ -626,16 +655,17 @@ public class GNUHealthConnectorImpl extends Connector {
                 patientListString, listType, PatientGnu.class);
         patientList = addLatestDiagnoseToPatient(patientList);
 
-        int party_id = getPhysicianId(NeqServer.getSessionStore().getUserId(
+        int party_id = getPartyId(NeqServer.getSessionStore().getUserId(
                 session));
-
+        
         ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();
         for (PatientGnu p : patientList) {
-            if (valueOf(p.getPrimary_care_doctor_id()) == party_id) {
+            if (Integer.valueOf(p.getPrimary_care_doctor_id()) == party_id) {
                 relevantList.add(p);
                 p.prepareDateFormat();
             }
         }
+
         return relevantList;
     }
 
@@ -643,7 +673,7 @@ public class GNUHealthConnectorImpl extends Connector {
      * @see eu.neq.mais.connector.Connector#searchForAPatient(java.lang.String)
      */
     @Override
-    public List searchForAPatient(String param) {
+    public List<?> searchForAPatient(String param) {
         return generatePatientListObjectById(param);
     }
 
@@ -1009,6 +1039,29 @@ public class GNUHealthConnectorImpl extends Connector {
 
     }
 
+    
+    private int[] getAllPhysicianIds() {
+        String session = getAdminSession();
+
+        int[] idList;
+
+        // Search Patients
+        Object[] params = new Object[]{1, session, new String[]{}, 0, 1000,
+                null, "REPLACE_CONTEXT"};
+
+        String result = execute("model.gnuhealth.physician.search", params);
+        result = result.substring(result.indexOf("[") + 1,
+                result.lastIndexOf("]"));
+
+        String[] idListString = result.split(", ");
+        idList = new int[idListString.length];
+
+        for (int i = 0; i < idListString.length; i++) {
+            idList[i] = parseInt(idListString[i]);
+        }
+        return idList;
+    }
+    
     /*
       * Helping method returning the ID's of all parties of the GNUHealth
       * back-end.
@@ -1064,6 +1117,33 @@ public class GNUHealthConnectorImpl extends Connector {
         }
         return idList;
     }
+    
+    
+    public int getPartyId(int user_id) {
+        String session = getAdminSession();
+        int[] allphys = getAllPartyIds();
+
+        Object[] params = new Object[]{1, session, allphys,
+                new String[]{"id", "internal_user"}, "REPLACE_CONTEXT"};
+
+        // Execute search
+        String res = execute("model.party.party.read", params);
+        // convert to list
+        Type listType = new TypeToken<List<UserGnu>>() {
+        }.getType();
+        List<UserGnu> userList = DomainParserGnu.fromJson(res, listType,
+        		UserGnu.class);
+
+
+        // SEARCH FOR ID
+        for (UserGnu u : userList) {
+            if (u.getInternal_user() != null) {
+                if (Integer.valueOf(u.getInternal_user()) == user_id)
+                    return valueOf(u.getId());
+            }
+        }
+        return -1;
+    }
 
     /*
       * Helping method returning the corresponding physician ID of a user.
@@ -1074,13 +1154,13 @@ public class GNUHealthConnectorImpl extends Connector {
       */
     public int getPhysicianId(int user_id) {
         String session = getAdminSession();
-        int[] allphys = getAllPartyIds();
+        int[] allphys = getAllPhysicianIds();
 
         Object[] params = new Object[]{1, session, allphys,
-                new String[]{"id", "internal_user"}, "REPLACE_CONTEXT"};
+                new String[]{"id", "name", "rec_name", "name.internal_user"}, "REPLACE_CONTEXT"};
 
         // Execute search
-        String res = execute("model.party.party.read", params);
+        String res = execute("model.gnuhealth.physician.read", params);
 
         // convert to list
         Type listType = new TypeToken<List<PhysicianGnu>>() {
@@ -1091,7 +1171,7 @@ public class GNUHealthConnectorImpl extends Connector {
         // SEARCH FOR ID
         for (PhysicianGnu u : userList) {
             if (u.getInternal_user() != null) {
-                if (valueOf(u.getInternal_user()) == user_id)
+                if (Integer.valueOf(u.getInternal_user()) == user_id)
                     return valueOf(u.getId());
             }
         }
@@ -1419,5 +1499,8 @@ public class GNUHealthConnectorImpl extends Connector {
             this.medications = medications;
         }
     }
+
+
+
 
 }

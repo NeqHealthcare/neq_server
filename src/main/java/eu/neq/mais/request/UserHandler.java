@@ -18,6 +18,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.File;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -69,7 +70,11 @@ public class UserHandler {
         try {
             connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
             String user_id = String.valueOf(NeqServer.getSessionStore().getUserId(session));
-            person = connector.returnPersonalInformation(user_id);
+            person = connector.returnPersonalInformation(user_id); 
+            
+            List<?> nrOfpatients = connector.returnPersonalPatientsForUIList(session);
+            person.setNumber_of_patients(String.valueOf(nrOfpatients.size()));
+            
             response = new DTOWrapper().wrap(person);
         } catch (Exception e) {
             e.printStackTrace();

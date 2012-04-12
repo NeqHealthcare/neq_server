@@ -6,5 +6,12 @@ package eu.neq.mais.domain;
  *
  */
 public interface User {
+	
+
+	
+ public void setNumber_of_patients(String number);
+
+	
+
 
 }

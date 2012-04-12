@@ -78,7 +78,8 @@ public class DiagnoseGnu extends Diagnose {
 
 	public DiagnoseGnu returnLatest(DiagnoseGnu dg) {
 
-		if (String.class.isInstance(this.getDiagnosed_date())) {
+		
+		try {
 			DateGnu date = new Gson().fromJson(
 					String.valueOf(this.getDiagnosed_date()), DateGnu.class);
 			DateGnu dgDate = new Gson().fromJson(
@@ -89,7 +90,7 @@ public class DiagnoseGnu extends Diagnose {
 			} else {
 				return dg;
 			}
-		} else {
+		} catch (Exception e) {
 			Date date = new Date(Long.parseLong(String.valueOf(this
 					.getDiagnosed_date())));
 			Date dgDate = new Date(Long.parseLong(String.valueOf(dg
@@ -100,7 +101,7 @@ public class DiagnoseGnu extends Diagnose {
 			} else {
 				return dg;
 			}
-		}
+		} 
 	}
 
 	/**

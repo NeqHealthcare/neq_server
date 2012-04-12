@@ -27,7 +27,7 @@ public class PatientHandler {
 
 
     @OPTIONS
-    @Path("/bla")
+    @Path("/")
     public String optionsBla(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
@@ -42,7 +42,7 @@ public class PatientHandler {
     }
 
     @GET
-    @Path("/bla")
+    @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     public String returnPatient(@Context HttpServletResponse servletResponse, @QueryParam("session") String session,
                                 @QueryParam("query") String query,
