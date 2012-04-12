@@ -66,10 +66,12 @@ public class GNUHealthConnectorImpl extends Connector {
               
               // medication creation methods         
               res = con.returnDiseases();
-              for (Object r : res) System.out.println(":"+((DiseaseGnu) r).toString());
+              String response = new DTOWrapper().wrap(res);
+              System.out.println("r: "+response);
               System.out.println("-----");
               res = con.returnProcedures();
-              for (Object r : res) System.out.println(":"+ ((ProcedureGnu) r).toString());  
+              response = new DTOWrapper().wrap(res);
+              System.out.println("r: "+response);
               
           	Map<Object,Object> params = new HashMap<Object, Object>();
               
