@@ -11,6 +11,7 @@ import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreExceptio
 import eu.neq.mais.technicalservice.Settings;
 
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -179,7 +180,23 @@ public abstract class Connector {
      */
     public abstract List<?> returnLabTestTypes();
     
+    /**
+     * returns all disease types that were inserted into the backend 
+     */
+    public abstract List<?> returnDiseases();
+    
+    /**
+     * Creates a diagnose
+     * 
+     */
+    public abstract List<?> createDiagnose(Map<Object,Object> params);
 
+    /**
+     * return procedures that are used to treat patients with a specific disease
+     * 
+     * @return
+     */
+    public abstract List<?> returnProcedures();
 
     /**
      * Creates a new lab test request

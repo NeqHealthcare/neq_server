@@ -46,140 +46,164 @@ public class GNUHealthConnectorImpl extends Connector {
      * @param args - no influence
      */
     public static void main(String[] args) {
+    	  try {
+              Connector con = ConnectorFactory.getConnector("gnuhealth2");
 
-        try {
-            Connector con = ConnectorFactory.getConnector("gnuhealth2");
+              String login_name = "jgansen";
+              String password = "iswi223<<";
 
-            String login_name = "jgansen";
-            String password = "iswi223<<";
+              // LOGIN
+              String user_session = con.login(login_name, password, "gnuhealth2");
+              List<?> res = con.checkForTestedLabRequests("1");
+              for (Object r : res) System.out.println("1:"+ r);
+              
+              System.out.println("-----");
+       
+//              res = con.returnNewestLabTestResults("1");
+//              for (Object r : res) System.out.println("1:"+ ((LabTestResultGnu) r).getId());
+//              
 
-            // LOGIN
-            String user_session = con.login(login_name, password, "gnuhealth2");
-            try {
-				con.returnPersonalPatientsForUIList(user_session);
-			} catch (NoSessionInSessionStoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-            
+              
+              // medication creation methods         
+              res = con.returnDiseases();
+              for (Object r : res) System.out.println(":"+((DiseaseGnu) r).toString());
+              System.out.println("-----");
+              res = con.returnProcedures();
+              for (Object r : res) System.out.println(":"+ ((ProcedureGnu) r).toString());  
+              
+          	Map<Object,Object> params = new HashMap<Object, Object>();
+              
+//          	params.put("status","c"); //e.g. c
+//          	params.put("is_allergy",true); //e.g. true
+//          	params.put("doctor","1"); //e.g. 1
+//          	params.put("pregnancy_warning",true); //e.g. true
+//          	params.put("age","15"); //e.g. 15
+//          	params.put("weeks_of_pregnancy","10"); //e.g. 10
+//          	params.put("date_start_treatment","489534758"); //e.g. 489534758098
+//          	params.put("short_comment","text"); //e.g. text
+//          	params.put("is_on_treatment",true); //e.g. true
+//          	params.put("is_active",true); //e.g. true
+//          	params.put("diagnosed_date","489534758"); //e.g. 489534758098
+//          	params.put("treatment_description","text text"); //e.g. text
+//          	params.put("healed_date","489534758"); //e.g. 489534758098
+//          	params.put("date_stop_treatment","489534758"); //e.g. 489534758098
+//          	params.put("pcs_code","5"); //e.g. 5
+//          	params.put("pathology","11"); //e.g. 11
+//          	params.put("allergy_type","fa"); //e.g. fa
+//          	params.put("disease_severity","3_sv"); //e.g. 3_sv
+//          	params.put("is_infectious",true); // e.g. true
+//          	params.put("extra_info","extra_info"); // e.g. extra info text
+//              
+//          	 res = con.createDiagnose(params);
+//               for (Object r : res) System.out.println(":"+ ((DiagnoseCreationMessageGnu) r).toString());  
+              
+        //   con.createLabTestRequest("656465486486", "1", "3", "9");
+
+//              List<?> res = con.checkForTestedLabRequests("1");
+//              for (Object r : res) System.out.println("1:"+ r);
+//              
+//              System.out.println("-----");
+  //
+//              res = con.checkForTestedLabRequests("1");
+//              for (Object r : res) { 
+//              	System.out.println("1:"+ r);
+//              	DbHandler dbh = new DbHandler();
+//              	boolean ok = dbh.removeLabTestRequest(String.valueOf(r));
+//              	dbh.close();
+//              	System.out.println("worked: "+ok);
+//              }
+  //
+//              System.out.println("-----");
+//              
+//              res = con.checkForTestedLabRequests("1");
+//              for (Object r : res) System.out.println("1:"+ r);
 
 
-            
-            /*
-             * GETTING THE PHYSICIAN ID
-             */
-//            GNUHealthConnectorImpl impl = (GNUHealthConnectorImpl) con;
-//            try {
-//				int user_id = NeqServer.getSessionStore().getUserId(user_session);
-//				int physician_id = impl.getPhysicianId(user_id);
-//				System.out.println(user_id+":"+physician_id);
-//			} catch (NoSessionInSessionStoreException e) {
-//				e.printStackTrace();
-//			}
-            
-            
-            /*
-             * CHECKING FOR NEW LABTESTRESULTS
-             */
-//            List<?> res = con.checkForTestedLabRequests("1");
-//            for (Object r : res) System.out.println("1:"+ r);
-//            
-//            System.out.println("-----");
-//     
-//            res = con.returnNewestLabTestResults("1");
-//            for (Object r : res) System.out.println("1:"+ ((LabTestResultGnu) r).getId());
-            
+              // System.out.println("1:returnLabTestResultsForPatient("13")));"
+              // System.out.println("2: " + con.returnAllLabTestResults());
+              // // Search Patients
+              // Object[] params = new Object[]{1, session, new String[]{}, 0,
+              // 1000, null, "REPLACE_CONTEXT"};
+              // String res = con.execute(session, con.getPatientSearchMethod(),
+              // params);
+              // logger.info("res: "+res);
+              //
+              // // Read Patients
+              // Object[] params2 = con.getReturnAllPatientsParams(session);
+              // String res2 = con.execute(session, con.getPatientReadMethod(),
+              // params2);
+              // logger.info("res2: "+res2);
+              //
+              //
+              // // Read Patients
+              // String res3 = con.execute(session, con.getPatientReadMethod(),
+              // params3);
+              // logger.info("res3: "+res3);
 
-      //   con.createLabTestRequest("656465486486", "1", "3", "9");
+              // // Find personal Patient List for UI
+              // con.returnPersonalPatientsForUIList(user_session);
+              // System.out.println(con.returnDashBoardData(user_session, "9"));
 
-//            List<?> res = con.checkForTestedLabRequests("1");
-//            for (Object r : res) System.out.println("1:"+ r);
-//            
-//            System.out.println("-----");
-//
-//            res = con.checkForTestedLabRequests("1");
-//            for (Object r : res) { 
-//            	System.out.println("1:"+ r);
-//            	DbHandler dbh = new DbHandler();
-//            	boolean ok = dbh.removeLabTestRequest(String.valueOf(r));
-//            	dbh.close();
-//            	System.out.println("worked: "+ok);
-//            }
-//
-//            System.out.println("-----");
-//            
-//            res = con.checkForTestedLabRequests("1");
-//            for (Object r : res) System.out.println("1:"+ r);
+              // FIND MEDIACTIONS
+              // System.out.println("--------- medications ----------");
+              // String r = con.returnMedicationsForPatient("9");
+              // System.out.println(r);
 
-            /*
-             * SEARCHING FOR LABTEST RESULTS
-             */
+              // FIND VACCINATIONS
+              // System.out.println("--------- vaccinations ----------");
+              // String vacc = con.returnVaccinationsForPatient("7");
+              // System.out.println(vacc);
 
-            // System.out.println("1:returnLabTestResultsForPatient("13")));"
-            // System.out.println("2: " + con.returnAllLabTestResults());
-            // // Search Patients
-            // Object[] params = new Object[]{1, session, new String[]{}, 0,
-            // 1000, null, "REPLACE_CONTEXT"};
-            // String res = con.execute(session, con.getPatientSearchMethod(),
-            // params);
-            // logger.info("res: "+res);
-            //
-            // // Read Patients
-            // Object[] params2 = con.getReturnAllPatientsParams(session);
-            // String res2 = con.execute(session, con.getPatientReadMethod(),
-            // params2);
-            // logger.info("res2: "+res2);
-            //
-            //
-            // // Read Patients
-            // String res3 = con.execute(session, con.getPatientReadMethod(),
-            // params3);
-            // logger.info("res3: "+res3);
+              // return all ids
+              // int idfound = SessionStore.getUserId(user_session);
+              // int pid = ((GNUHealthConnectorImpl)con).getPhysicianId(idfound);
+              // System.out.println("\n\n");
+              // System.out.println("SEARCH FOR USER_ID AND PARTY_ID");
+              // System.out.println("----------------------------------------------------");
+              // System.out.println("[" + login_name +"] User.id:" + idfound +
+              // ", Parties.id (getPhysicianId): "
+              // + pid + " (system intern record id = equal to physician id)");
+              // System.out.println("\n\n");
+              // System.out.println("PERSONAL PATIENTS FOR "+login_name+" ("+user_session+")");
+              // System.out.println("----------------------------------------------------");
+              // System.out.println(con.returnPersonalPatientsForUIList(user_session));
+              // System.out.println("\n\n");
 
-            // // Find personal Patient List for UI
-            // con.returnPersonalPatientsForUIList(user_session);
-            // System.out.println(con.returnDashBoardData(user_session, "9"));
+              // return personal information of user:
+              // System.out.println("--------PERSONAL INFORMATION OF USER: "+((GNUHealthConnectorImpl)con).returnPersonalInformation(user_session,true,true));
 
-            // FIND MEDIACTIONS
-            // System.out.println("--------- medications ----------");
-            // String r = con.returnMedicationsForPatient("9");
-            // System.out.println(r);
+              // searching for a patient
+              // String param = "9";
+              // System.out.println(con.searchForAPatient(param));
 
-            // FIND VACCINATIONS
-            // System.out.println("--------- vaccinations ----------");
-            // String vacc = con.returnVaccinationsForPatient("7");
-            // System.out.println(vacc);
+              // Logout
+              String res4 = con.logout(login_name, user_session);
 
-            // return all ids
-            // int idfound = SessionStore.getUserId(user_session);
-            // int pid = ((GNUHealthConnectorImpl)con).getPhysicianId(idfound);
-            // System.out.println("\n\n");
-            // System.out.println("SEARCH FOR USER_ID AND PARTY_ID");
-            // System.out.println("----------------------------------------------------");
-            // System.out.println("[" + login_name +"] User.id:" + idfound +
-            // ", Parties.id (getPhysicianId): "
-            // + pid + " (system intern record id = equal to physician id)");
-            // System.out.println("\n\n");
-            // System.out.println("PERSONAL PATIENTS FOR "+login_name+" ("+user_session+")");
-            // System.out.println("----------------------------------------------------");
-            // System.out.println(con.returnPersonalPatientsForUIList(user_session));
-            // System.out.println("\n\n");
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
 
-            // return personal information of user:
-            // System.out.println("--------PERSONAL INFORMATION OF USER: "+((GNUHealthConnectorImpl)con).returnPersonalInformation(user_session,true,true));
+      }
 
-            // searching for a patient
-            // String param = "9";
-            // System.out.println(con.searchForAPatient(param));
+    
+	@Override
+	public List<?> createDiagnose(Map<Object, Object> params) {
 
-            // Logout
-            String res4 = con.logout(login_name, user_session);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String diagnoseCreationMessage = execute(
+        		getPatientWriteMethod(),
+        		getDiagnoseCreationParams(params));
 
-    }
+        List<DiagnoseCreationMessageGnu> result = new ArrayList<DiagnoseCreationMessageGnu>();
+        String successId = diagnoseCreationMessage.substring(
+        		diagnoseCreationMessage.lastIndexOf(":") + 1,
+        		diagnoseCreationMessage.lastIndexOf("}"));
+        result.add(new DiagnoseCreationMessageGnu(successId));
+
+		
+		return result;
+	}
+
 
     public List<?> returnDocumentList(String patientID) {
         //Logger.info("test")  ;
@@ -1219,29 +1243,82 @@ public class GNUHealthConnectorImpl extends Connector {
         adminSession = null;
     }
 
-    // "69y 5m 4d" ---> "2003-01-07"
-    // does not work
-    private static String calculateDateOfBirth(String gnuHealthAge) {
-        DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+    
+    private int[] getAllProcedureIds() {
+        String session = getAdminSession();
 
-        Integer year = new Integer(gnuHealthAge.substring(0,
-                gnuHealthAge.indexOf("y")));
-        Integer month = new Integer(gnuHealthAge.substring(
-                gnuHealthAge.indexOf(" ") + 1, gnuHealthAge.indexOf("m")));
-        Integer day = new Integer(gnuHealthAge.substring(
-                gnuHealthAge.lastIndexOf(" ") + 1, gnuHealthAge.indexOf("d")));
+        int[] idList;
 
-        GregorianCalendar age = new GregorianCalendar(year, month - 1, day);
-        System.out.println("age: " + df.format(age.getTime()));
-        GregorianCalendar dateToday = new GregorianCalendar();
-        System.out.println("today: " + df.format(dateToday.getTime()));
+        Object[] params = new Object[]{1, session, new String[]{}, 0, 1000,
+                null, "REPLACE_CONTEXT"};
 
-        GregorianCalendar birthday = new GregorianCalendar();
-        birthday.setTimeInMillis(dateToday.getTimeInMillis()
-                - age.getTimeInMillis());
+        String result = execute(getProcedureSearchMethod(), params);
+        result = result.substring(result.indexOf("[") + 1,
+                result.lastIndexOf("]"));
 
-        return df.format(birthday.getTime());
+        String[] idListString = result.split(", ");
+        idList = new int[idListString.length];
+
+        for (int i = 0; i < idListString.length; i++) {
+            idList[i] = parseInt(idListString[i]);
+        }
+        return idList;
     }
+
+    @Override
+    public List<?> returnProcedures() {
+        int[] procedureIDs = getAllProcedureIds();
+
+        String resultString = execute(getProcedureReadMethod(),
+                getProcedureParams(procedureIDs));
+
+        Type listType = new TypeToken<List<ProcedureGnu>>() {
+        }.getType();
+        List<ProcedureGnu> result = DomainParserGnu.fromJson(
+        		resultString, listType, ProcedureGnu.class);
+
+        return result;
+    }
+
+    
+    private int[] getAllDiseaseIds() {
+        String session = getAdminSession();
+
+        int[] idList;
+
+        Object[] params = new Object[]{1, session, new String[]{}, 0, 1000,
+                null, "REPLACE_CONTEXT"};
+
+        String result = execute(getPathologySearchMethod(), params);
+        result = result.substring(result.indexOf("[") + 1,
+                result.lastIndexOf("]"));
+
+        String[] idListString = result.split(", ");
+        idList = new int[idListString.length];
+
+        for (int i = 0; i < idListString.length; i++) {
+            idList[i] = parseInt(idListString[i]);
+        }
+        return idList;
+    }
+
+    @Override
+    public List<?> returnDiseases() {
+        int[] diseaseIDs = getAllDiseaseIds();
+
+        String resultString = execute(getPathologyReadMethod(),
+                getPathologyParams(diseaseIDs));
+
+        Type listType = new TypeToken<List<DiseaseGnu>>() {
+        }.getType();
+        List<DiseaseGnu> result = DomainParserGnu.fromJson(
+        		resultString, listType, DiseaseGnu.class);
+
+        return result;
+    }
+
+  
+    
 
     /*-----  BACKEND METHODS  ----*/
     /* ............................ */
@@ -1271,6 +1348,10 @@ public class GNUHealthConnectorImpl extends Connector {
         return "model.gnuhealth.patient.read";
     }
 
+    private String getPatientWriteMethod(){
+    	return "model.gnuhealth.patient.write";
+    }
+    
     private String getVaccinationReadMethod() {
         return "model.gnuhealth.vaccination.read";
     }
@@ -1335,8 +1416,44 @@ public class GNUHealthConnectorImpl extends Connector {
         return "model.gnuhealth.patient.lab.test.create";
     }
 
+
+    private String getProcedureReadMethod(){
+    	return "model.gnuhealth.procedure.read";
+    }
+    
+    private String getProcedureSearchMethod(){
+    	return "model.gnuhealth.procedure.search";
+    }
+
+    private String getPathologyReadMethod(){
+    	return "model.gnuhealth.pathology.read";
+    }
+    
+    private String getPathologySearchMethod(){
+    	return "model.gnuhealth.pathology.search";
+    }
     /*-----  BACKEND METHOD PARAMS  ----*/
 
+    private Object[] getPathologyParams(int[] ids) {
+        return new Object[]{
+                1,
+                getAdminSession(),
+                ids,
+                new String[]{"code", "name", "category.rec_name"
+                        },
+                "REPLACE_CONTEXT"};
+    }
+
+    private Object[] getProcedureParams(int[] ids) {
+        return new Object[]{
+                1,
+                getAdminSession(),
+                ids,
+                new String[]{"description", "name"
+                        },
+                "REPLACE_CONTEXT"};
+    }
+    
 
     private Object[] getDocumentMetaDataParams(int[] ids, boolean data) {
         String[] params;
@@ -1395,6 +1512,14 @@ public class GNUHealthConnectorImpl extends Connector {
                 new String[]{"date", "patient_id", "state",
                         "doctor_id.rec_name", "name.rec_name", },
                 "REPLACE_CONTEXT"};
+    }
+    
+    private Object[] getDiagnoseCreationParams(Map<Object,Object> paramMap){
+    	paramMap.put("date_start_treatment",new TimeGnuShort(Long.parseLong((String) paramMap.get("date_start_treatment")))); 
+    	paramMap.put("diagnosed_date",new TimeGnuShort(Long.parseLong((String) paramMap.get("diagnosed_date")))); 
+    	paramMap.put("healed_date",new TimeGnuShort(Long.parseLong((String) paramMap.get("healed_date")))); 
+    	paramMap.put("date_stop_treatment",new TimeGnuShort(Long.parseLong((String) paramMap.get("date_stop_treatment")))); 
+    	return new Object[]{1, getAdminSession(), paramMap, "REPLACE_CONTEXT"};
     }
 
     private Object[] getLabTestRequestCreationParams(String date,

@@ -12,7 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -25,8 +28,7 @@ public class DiagnoseHandler {
 
     private Connector connector;
 
-    // Example request:
-    // http://localhost:8080/diagnosis?id=1&session=SESSION
+    
 
     @OPTIONS
     @Path("/one")
@@ -117,6 +119,198 @@ public class DiagnoseHandler {
 
         return response;
 
+
+    }
+    
+    
+    @OPTIONS
+    @Path("/procedures")
+    public String proceduresOptions(@Context HttpServletResponse servlerResponse) {
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+
+        return servlerResponse.getContentType();
+
+    }
+
+    @GET
+    @Path("/procedures")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String returnProcedures(@Context HttpServletResponse servlerResponse, @QueryParam("session") String session) {
+
+        String response = new DTOWrapper().wrapError("Error while retrieving procedures");
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+        try {
+            connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
+            List<?> resultList = connector.returnProcedures();
+            response = new DTOWrapper().wrap(resultList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } catch (NoSessionInSessionStoreException es) {
+            response = new DTOWrapper().wrapError(es.toString());
+        }
+        logger.info("return procedures method returned json object: " + response);
+
+
+        return response;
+
+
+    }
+    
+    
+    @OPTIONS
+    @Path("/diseases")
+    public String diseasesOptions(@Context HttpServletResponse servlerResponse) {
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+
+        return servlerResponse.getContentType();
+
+    }
+
+    @GET
+    @Path("/diseases")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String returnDiseases(@Context HttpServletResponse servlerResponse, @QueryParam("session") String session) {
+
+        String response = new DTOWrapper().wrapError("Error while retrieving procedures");
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+        try {
+            connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
+            List<?> resultList = connector.returnDiseases();
+            response = new DTOWrapper().wrap(resultList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } catch (NoSessionInSessionStoreException es) {
+            response = new DTOWrapper().wrapError(es.toString());
+        }
+        logger.info("return diseases method returned json object: " + response);
+
+
+        return response;
+
+
+    }
+    
+    @OPTIONS
+    @Path("/create")
+    public String createDiagnoseOptions(@Context HttpServletResponse servlerResponse) {
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+
+        return servlerResponse.getContentType();
+
+    }
+    
+    
+ // http://localhost:8080/diagnose/create?session=SESSION&status=STATUS&is_allergy...
+   
+    @POST
+    @Path("/create")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String createDiagnose(
+            @Context HttpServletResponse servlerResponse,
+            @QueryParam("session") String session,
+            @QueryParam("status") String status,
+            @QueryParam("is_allergy") String is_allergy,
+            @QueryParam("doctor") String doctor,
+            @QueryParam("pregnancy_warning") String pregnancy_warning,
+            @QueryParam("age") String age,
+            @QueryParam("weeks_of_pregnancy") String weeks_of_pregnancy,
+            @QueryParam("date_start_treatment") String date_start_treatment,
+            @QueryParam("short_comment") String short_comment,
+            @QueryParam("is_on_treatment") String is_on_treatment,
+            @QueryParam("is_active") String is_active,
+            @QueryParam("diagnosed_date") String diagnosed_date,
+            @QueryParam("treatment_description") String treatment_description,
+            @QueryParam("healed_date") String healed_date,
+            @QueryParam("date_stop_treatment") String date_stop_treatment,
+            @QueryParam("pcs_code") String pcs_code,
+            @QueryParam("pathology") String pathology,
+            @QueryParam("allergy_type") String allergy_type,
+            @QueryParam("disease_severity") String disease_severity,
+            @QueryParam("is_infectious") String is_infectious,
+            @QueryParam("extra_info") String extra_info){
+
+        String response = new DTOWrapper()
+                .wrapError("Error while creating lab test requests");
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods",
+                "POST,GET,PUT,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", "*");
+        servlerResponse.addHeader("Access-Control-Allow-Headers",
+                "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+        try {
+
+            connector = ConnectorFactory.getConnector(NeqServer
+                    .getSessionStore().getBackendSid(session));
+            
+            Map<Object,Object> params = new HashMap<Object, Object>();
+            
+        	params.put("status",status); //e.g. c
+        	params.put("is_allergy",is_allergy); //e.g. true
+        	params.put("doctor",doctor); //e.g. 1
+        	params.put("pregnancy_warning",pregnancy_warning); //e.g. true
+        	params.put("age",age); //e.g. 15
+        	params.put("weeks_of_pregnancy",weeks_of_pregnancy); //e.g. 10
+        	params.put("date_start_treatment",date_start_treatment); //e.g. 489534758098
+        	params.put("short_comment",short_comment); //e.g. text
+        	params.put("is_on_treatment",is_on_treatment); //e.g. true
+        	params.put("is_active",is_active); //e.g. true
+        	params.put("diagnosed_date",diagnosed_date); //e.g. 489534758098
+        	params.put("treatment_description",treatment_description); //e.g. text
+        	params.put("healed_date",healed_date); //e.g. 489534758098
+        	params.put("date_stop_treatment",date_stop_treatment); //e.g. 489534758098
+        	params.put("pcs_code",pcs_code); //e.g. 5
+        	params.put("pathology",pathology); //e.g. 11
+        	params.put("allergy_type",allergy_type); //e.g. fa
+        	params.put("disease_severity",disease_severity); //e.g. 3_sv
+        	params.put("is_infectious",is_infectious); // e.g. true
+        	params.put("extra_info",extra_info); // e.g. extra info text
+            
+
+            List<?> labTestCreationSuccessMessage = connector
+                    .createDiagnose(params);
+
+            response = new DTOWrapper().wrap(labTestCreationSuccessMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } catch (NoSessionInSessionStoreException e) {
+            response = new DTOWrapper().wrapError(e.toString());
+        }
+        logger.info("return message of create medication method: " + response);
+        return response;
 
     }
 
