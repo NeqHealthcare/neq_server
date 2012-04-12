@@ -72,8 +72,19 @@ public class UserHandler {
             String user_id = String.valueOf(NeqServer.getSessionStore().getUserId(session));
             person = connector.returnPersonalInformation(user_id); 
             
+            /*
+             * Number of patients
+             */
             List<?> nrOfpatients = connector.returnPersonalPatientsForUIList(session);
             person.setNumber_of_patients(String.valueOf(nrOfpatients.size()));
+            
+            /*
+             * last login
+             */
+            DbHandler dbH = new DbHandler();
+            Login l = dbH.getLatestLogin(user_id);
+            dbH.close();
+            person.setLastLogin(l.getDateOfLogin());
             
             response = new DTOWrapper().wrap(person);
         } catch (Exception e) {
@@ -137,6 +148,20 @@ public class UserHandler {
 //		servlerResponse.setContentType(session);
 //		return servlerResponse.getContentType();
     }
+    
+    @OPTIONS
+    @Path("/lastLogin")
+    public String returnLastLoginOptions(@Context HttpServletResponse servlerResponse) {
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+        return servlerResponse.getContentType();
+
+    }
 
     @GET
     @Path("/lastLogin")
@@ -151,15 +176,9 @@ public class UserHandler {
         servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
         try {
-            String userId = String.valueOf(NeqServer.getSessionStore().getUserId(session));
-            DbHandler dbH = new DbHandler();
-            Login l = dbH.getLatestLogin(userId);
-            dbH.close();
-            response = new DTOWrapper().wrap(l.getDateOfLogin());
+            response = new DTOWrapper().wrapError("Please use the user/personalInformation webservice to access this information");
         } catch (Exception e) {
             e.printStackTrace();
-        } catch (NoSessionInSessionStoreException e) {
-            response = new DTOWrapper().wrapError(e.toString());
         }
         servlerResponse.setContentType(response);
         return servlerResponse.getContentType();

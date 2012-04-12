@@ -25,35 +25,65 @@ public class LabTestHandler {
     private Connector connector;
     private int c = 0;
     
-//    @OPTIONS
-//    @Path("/watchlist")
-//    public String returnLabTestWatchlistOptions(@Context HttpServletResponse servlerResponse) {
-//
-//        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
-//        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
-//        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
-//        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
-//        servlerResponse.addHeader("Access-Control-Max-Age", "60");
-//
-//
-//        return servlerResponse.getContentType();
-//
-//    }
-//    
-//    @OPTIONS
-//    @Path("/watchlist/remove")
-//    public String returnLabTestWatchListRemoveOptions(@Context HttpServletResponse servlerResponse) {
-//
-//        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
-//        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
-//        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
-//        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
-//        servlerResponse.addHeader("Access-Control-Max-Age", "60");
-//
-//
-//        return servlerResponse.getContentType();
-//
-//    }
+    @OPTIONS
+    @Path("/watchlist")
+    public String returnLabTestWatchlistOptions(@Context HttpServletResponse servlerResponse) {
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+
+        return servlerResponse.getContentType();
+
+    }
+    
+    @OPTIONS
+    @Path("/watchlist/check")
+    public String returnLabTestWatchlistCheckOptions(@Context HttpServletResponse servlerResponse) {
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+
+        return servlerResponse.getContentType();
+
+    }
+    
+    @OPTIONS
+    @Path("/watchlist/check/details")
+    public String returnLabTestWatchlistCheckDetailsOptions(@Context HttpServletResponse servlerResponse) {
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+
+        return servlerResponse.getContentType();
+
+    }
+    
+    @OPTIONS
+    @Path("/watchlist/remove")
+    public String returnLabTestWatchListRemoveOptions(@Context HttpServletResponse servlerResponse) {
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+
+        return servlerResponse.getContentType();
+
+    }
 
     @GET
     @Path("/watchlist/remove")
@@ -267,6 +297,21 @@ public class LabTestHandler {
                 + " were returned: " + response);
 
         return response;
+    }
+    
+    @OPTIONS
+    @Path("/lastfive")
+    public String returnLastFiveLabTestResultsOptions(@Context HttpServletResponse servlerResponse) {
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+
+        return servlerResponse.getContentType();
+
     }
 
     @GET

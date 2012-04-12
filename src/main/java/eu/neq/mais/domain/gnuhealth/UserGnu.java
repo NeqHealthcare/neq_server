@@ -17,6 +17,7 @@ public class UserGnu implements User {
 	String image_url;
 	String number_of_patients;
 	String internal_user;
+	String last_login;
 	
 	
 	public String getName() {
@@ -67,6 +68,10 @@ public class UserGnu implements User {
 	}
 	public void setInternal_user(String internal_id) {
 		this.internal_user = internal_id;
+	}
+	
+	public void setLastLogin(long last) {
+		this.last_login = String.valueOf(last);
 	}
 
 }
