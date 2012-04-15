@@ -211,6 +211,15 @@ public abstract class Connector {
                                                  String name, String patient_id);
 
     /**
+     * Returns the latest appointments for a specific user. The count parameter specifies the maximum number of appointments returned
+     * 
+     * @param count
+     * @param userId
+     * @return
+     */
+	public abstract List<?> returnAppointments(Integer count, Integer userId);
+    
+    /**
      * Sets a Connector's back-end. This is where the target for the Connector's
      * interaction is defined. A back-end can be e.g. a running GNU Health
      * instance or similar systems and must be defined in the back-end config.
@@ -248,6 +257,8 @@ public abstract class Connector {
     public abstract List<?> returnDocumentList(String id);
 
     public abstract List<DocumentGnu> returnDocumentData(String documentID);
+
+
 
 
 }

@@ -62,18 +62,27 @@ public class GNUHealthConnectorImpl extends Connector {
 //              res = con.returnNewestLabTestResults("1");
 //              for (Object r : res) System.out.println("1:"+ ((LabTestResultGnu) r).getId());
 //              
-
+              // return appointments 
               
-              // medication creation methods         
-              res = con.returnDiseases();
-              String response = new DTOWrapper().wrap(res);
-              System.out.println("r: "+response);
-              System.out.println("-----");
-              res = con.returnProcedures();
-              response = new DTOWrapper().wrap(res);
-              System.out.println("r: "+response);
-              
-          	Map<Object,Object> params = new HashMap<Object, Object>();
+             try {
+				res = con.returnAppointments(2, NeqServer.getSessionStore().getUserId(user_session));
+			} catch (NoSessionInSessionStoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+             for (Object r : res) System.out.println("1:"+ ((AppointmentGnu) r).toString());
+             System.out.println(new DTOWrapper().wrap(res)); 
+             
+              // diagnose creation methods         
+//              res = con.returnDiseases();
+//              String response = new DTOWrapper().wrap(res);
+//              System.out.println("r: "+response);
+//              System.out.println("-----");
+//              res = con.returnProcedures();
+//              response = new DTOWrapper().wrap(res);
+//              System.out.println("r: "+response);
+//              
+//          	  Map<Object,Object> params = new HashMap<Object, Object>();
               
 //          	params.put("status","c"); //e.g. c
 //          	params.put("is_allergy",true); //e.g. true
@@ -172,7 +181,7 @@ public class GNUHealthConnectorImpl extends Connector {
               // System.out.println("\n\n");
 
               // return personal information of user:
-              // System.out.println("--------PERSONAL INFORMATION OF USER: "+((GNUHealthConnectorImpl)con).returnPersonalInformation(user_session,true,true));
+//               System.out.println("--------PERSONAL INFORMATION OF USER: "+((GNUHealthConnectorImpl)con).returnPersonalInformation(USER_ID));
 
               // searching for a patient
               // String param = "9";
@@ -187,6 +196,70 @@ public class GNUHealthConnectorImpl extends Connector {
 
       }
 
+    
+    private int[] getAllAppointmentIds() {
+        String session = getAdminSession();
+
+        int[] idList;
+
+        Object[] params = new Object[]{1, session, new String[]{}, 0, 1000,
+                null, "REPLACE_CONTEXT"};
+
+        String result = execute(getAppointmentSearchMethod(), params);
+        result = result.substring(result.indexOf("[") + 1,
+                result.lastIndexOf("]"));
+
+        String[] idListString = result.split(", ");
+        idList = new int[idListString.length];
+
+        for (int i = 0; i < idListString.length; i++) {
+            idList[i] = parseInt(idListString[i]);
+        }
+        return idList;
+    }
+   
+    
+	@Override
+	public List<?> returnAppointments(Integer count, Integer userId) {
+
+		Integer doctorId = getPhysicianId(Integer.valueOf(userId));
+		
+        int[] appointmentIds = getAllAppointmentIds();
+
+        String appointmentsString = execute(getAppointmentReadMethod(),
+                getAppointmentParams(appointmentIds));
+
+        Type listType = new TypeToken<List<AppointmentGnu>>() {
+        }.getType();
+        List<AppointmentGnu> result = DomainParserGnu.fromJson(
+        		appointmentsString, listType, AppointmentGnu.class);
+               
+        List<AppointmentGnu> doctorAppointments = new ArrayList<AppointmentGnu>();
+          
+        for(AppointmentGnu a : result){
+        	if(a.getDoctorId().equals(doctorId)){
+        		a.prepareDateFormat();
+//        		System.out.println("appointment date: "+new Date((Long)a.getDate()));
+//        		System.out.println("now date: "+new Date());
+        		
+        		
+        		if((((Long)a.getDate())+3600000) >= new Date().getTime()){
+            		doctorAppointments.add(a);
+        		}
+
+        	}
+        }
+        Collections.sort(doctorAppointments);
+        List<AppointmentGnu> finalResult = doctorAppointments;
+        try{
+        	finalResult = doctorAppointments.subList(0, count);
+        } catch(Exception e){
+        }
+        
+        return finalResult;
+		
+	}
+    
     
 	@Override
 	public List<?> createDiagnose(Map<Object, Object> params) {
@@ -1434,8 +1507,29 @@ public class GNUHealthConnectorImpl extends Connector {
     private String getPathologySearchMethod(){
     	return "model.gnuhealth.pathology.search";
     }
+    
+    private String getAppointmentReadMethod(){
+    	return "model.gnuhealth.appointment.read";
+    }
+    
+    private String getAppointmentSearchMethod(){
+    	return "model.gnuhealth.appointment.search";
+    }
+        
+    
+    
     /*-----  BACKEND METHOD PARAMS  ----*/
 
+    private Object[] getAppointmentParams(int[] ids) {
+        return new Object[]{
+                1,
+                getAdminSession(),
+                ids,
+                new String[]{"appointment_date", "doctor", "appointment_type","urgency","comments", "speciality.rec_name", "patient.rec_name","patient","consultations.description"
+                        },
+                "REPLACE_CONTEXT"};
+    }
+    
     private Object[] getPathologyParams(int[] ids) {
         return new Object[]{
                 1,
@@ -1626,7 +1720,6 @@ public class GNUHealthConnectorImpl extends Connector {
             this.medications = medications;
         }
     }
-
 
 
 
