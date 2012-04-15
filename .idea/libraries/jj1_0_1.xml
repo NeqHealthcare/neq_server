@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="jj1.0.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/jj1.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jsonrpc2-base-1.21.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jsonrpc2-client-1.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/stringtree-json-2.0.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
