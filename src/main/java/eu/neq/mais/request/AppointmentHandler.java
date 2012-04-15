@@ -69,7 +69,7 @@ public class AppointmentHandler {
         } catch (NoSessionInSessionStoreException e) {
             response = new DTOWrapper().wrapError(e.toString());
         }
-        logger.info("return medication method returned json object: " + response);
+        logger.info("return appointment method returned json object: " + response);
 
 
         return response;
