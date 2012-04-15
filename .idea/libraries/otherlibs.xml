@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="jj1.0.1">
+  <library name="otherlibs">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/lib/jj1.0.1.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jsonrpc2-base-1.21.jar!/" />

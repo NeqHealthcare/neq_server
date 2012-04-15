@@ -9,7 +9,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="jj1.0.1" level="project" />
+    <orderEntry type="library" name="otherlibs" level="project" />
     <orderEntry type="library" name="Maven: org.cometd.java:bayeux-api:2.4.0.RC2" level="project" />
     <orderEntry type="library" name="Maven: org.cometd.java:cometd-java-server:2.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.cometd.java:cometd-java-common:2.4.0" level="project" />
