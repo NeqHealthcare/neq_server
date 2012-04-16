@@ -1,0 +1,22 @@
+[
+ {
+     "topic" : "Latest Medical News",
+     "url" : "http://www.medpagetoday.com/rss/Headlines.xml",
+ },
+ {
+     "topic" : "Allergy & Immunology",
+     "url" : "http://www.medpagetoday.com/rss/AllergyImmunology.xml",
+ },
+ {
+     "topic" : "Infectious Disease",
+     "url" : "http://www.medpagetoday.com/rss/InfectiousDisease.xml",
+ },
+ {
+     "topic" : "Surgery",
+     "url" : "http://www.medpagetoday.com/rss/Surgery.xml",
+ },
+ {
+     "topic" : "Medical News Blogs",
+     "url" : "http://www.medpagetoday.com/rss/Blogs.xml",
+ }
+]

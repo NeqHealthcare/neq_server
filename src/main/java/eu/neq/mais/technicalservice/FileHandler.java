@@ -18,6 +18,8 @@ public abstract class FileHandler {
 
 	private static Map<String,Backend> backendMap;
 	
+	private static List<NewsFeed> newsFeeds;
+	
 	public static Map<String,Backend> getBackendMap () throws IOException{
 		
 		if(backendMap == null){
@@ -26,6 +28,21 @@ public abstract class FileHandler {
 		return backendMap;
 	}
 	
+	public static List<NewsFeed> getNewsFeeds() throws IOException{
+		if(newsFeeds == null){
+			reloadNewsFeeds();
+		}
+		return newsFeeds;
+	}
+	
+	private static void reloadNewsFeeds() throws IOException {
+		
+		Type listType = new TypeToken<List<Backend>>(){}.getType();
+		BufferedReader br = new BufferedReader(new FileReader(Settings.NEWS_FEEDS_FILE));	
+		newsFeeds = new Gson().fromJson(br, listType);
+		br.close();
+	}
+
 	public static void reloadBackendMap() throws IOException{
 		backendMap = new HashMap<String,Backend>();
 		
