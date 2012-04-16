@@ -73,14 +73,13 @@ public class GNUHealthConnectorImpl extends Connector {
 //              
               // return appointments 
               
-             try {
-				res = con.returnAppointments(2, NeqServer.getSessionStore().getUserId(user_session));
-			} catch (NoSessionInSessionStoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-             for (Object r : res) System.out.println("1:"+ ((AppointmentGnu) r).toString());
-             System.out.println(new DTOWrapper().wrap(res)); 
+//             try {
+//				res = con.returnAppointments(2, NeqServer.getSessionStore().getUserId(user_session));
+//			} catch (NoSessionInSessionStoreException e) {
+//				e.printStackTrace();
+//			}
+//             for (Object r : res) System.out.println("1:"+ ((AppointmentGnu) r).toString());
+//             System.out.println(new DTOWrapper().wrap(res)); 
              
              
              // return news topics
@@ -102,31 +101,33 @@ public class GNUHealthConnectorImpl extends Connector {
 //              response = new DTOWrapper().wrap(res);
 //              System.out.println("r: "+response);
 //              
-//          	  Map<Object,Object> params = new HashMap<Object, Object>();
+          	  Map<Object,Object> params = new HashMap<Object, Object>();
               
-//          	params.put("status","c"); //e.g. c
-//          	params.put("is_allergy",true); //e.g. true
-//          	params.put("doctor","1"); //e.g. 1
-//          	params.put("pregnancy_warning",true); //e.g. true
-//          	params.put("age","15"); //e.g. 15
-//          	params.put("weeks_of_pregnancy","10"); //e.g. 10
-//          	params.put("date_start_treatment","489534758"); //e.g. 489534758098
-//          	params.put("short_comment","text"); //e.g. text
-//          	params.put("is_on_treatment",true); //e.g. true
-//          	params.put("is_active",true); //e.g. true
-//          	params.put("diagnosed_date","489534758"); //e.g. 489534758098
-//          	params.put("treatment_description","text text"); //e.g. text
-//          	params.put("healed_date","489534758"); //e.g. 489534758098
-//          	params.put("date_stop_treatment","489534758"); //e.g. 489534758098
-//          	params.put("pcs_code","5"); //e.g. 5
-//          	params.put("pathology","11"); //e.g. 11
-//          	params.put("allergy_type","fa"); //e.g. fa
-//          	params.put("disease_severity","3_sv"); //e.g. 3_sv
-//          	params.put("is_infectious",true); // e.g. true
-//          	params.put("extra_info","extra_info"); // e.g. extra info text
-//              
-//          	 res = con.createDiagnose(params);
-//               for (Object r : res) System.out.println(":"+ ((DiagnoseCreationMessageGnu) r).toString());  
+          	params.put("status","c"); //e.g. c
+          	params.put("is_allergy",true); //e.g. true
+          	params.put("doctor",1); //e.g. 1
+          	params.put("pregnancy_warning",true); //e.g. true
+          	params.put("age",15); //e.g. 15
+          	params.put("weeks_of_pregnancy",10); //e.g. 10
+          	params.put("date_start_treatment","489534758"); //e.g. 489534758098
+          	params.put("short_comment","text"); //e.g. text
+          	params.put("is_on_treatment",true); //e.g. true
+          	params.put("is_active",true); //e.g. true
+          	params.put("diagnosed_date","489534758"); //e.g. 489534758098
+          	params.put("treatment_description","text text"); //e.g. text
+          	params.put("healed_date","489534758"); //e.g. 489534758098
+          	params.put("date_stop_treatment","489534758"); //e.g. 489534758098
+          	params.put("pcs_code",5); //e.g. 5
+          	params.put("pathology",11); //e.g. 11
+          	params.put("allergy_type","fa"); //e.g. fa
+          	params.put("disease_severity","3_sv"); //e.g. 3_sv
+          	params.put("is_infectious",true); // e.g. true
+          	params.put("extra_info","extra_info"); // e.g. extra info text
+            params.put("patient_id", 14); // wird noch nicht vom frontend zurückgegeben!  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          	params.put("disease_id", 23); // wird noch nicht vom frontend zurückgegeben! XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            
+          	res = con.createDiagnose(params);
+            for (Object r : res) System.out.println(":"+ ((DiagnoseCreationMessageGnu) r).toString());  
               
         //   con.createLabTestRequest("656465486486", "1", "3", "9");
 
@@ -750,6 +751,7 @@ public class GNUHealthConnectorImpl extends Connector {
             connection.setDoOutput(true);
 
             String jsonfile = dom.getJson();
+            System.out.println("jsonfile: "+jsonfile);
 
             OutputStream out = connection.getOutputStream();
             out.write(jsonfile.getBytes());
@@ -1685,7 +1687,20 @@ public class GNUHealthConnectorImpl extends Connector {
     	paramMap.put("diagnosed_date",new TimeGnuShort(Long.parseLong((String) paramMap.get("diagnosed_date")))); 
     	paramMap.put("healed_date",new TimeGnuShort(Long.parseLong((String) paramMap.get("healed_date")))); 
     	paramMap.put("date_stop_treatment",new TimeGnuShort(Long.parseLong((String) paramMap.get("date_stop_treatment")))); 
-    	return new Object[]{1, getAdminSession(), paramMap, "REPLACE_CONTEXT"};
+    	Object patientId = paramMap.get("patient_id");
+    	Object disease_id = paramMap.get("disease_id");
+    	
+    	paramMap.remove("patient_id");
+    	paramMap.remove("disease_id");
+    	
+        Object[] createContainer = new Object[2];
+        createContainer[0] = "create";
+        createContainer[1] = paramMap;
+       
+        Map<Object, Object> addMap = new HashMap<Object, Object>();
+        addMap.put("diseases",new Object[]{new Object[]{"add",new Object[]{disease_id}},createContainer});
+        return new Object[]{1, getAdminSession(),new Object[]{patientId}, addMap, "REPLACE_CONTEXT"};
+    	
     }
 
     private Object[] getLabTestRequestCreationParams(String date,
