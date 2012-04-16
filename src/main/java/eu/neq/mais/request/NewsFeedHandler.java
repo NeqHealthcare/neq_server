@@ -81,7 +81,7 @@ public class NewsFeedHandler {
     
     
     @OPTIONS
-    @Path("/newsfeed")
+    @Path("/feed")
     public String returnNewsFeed(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
@@ -96,7 +96,7 @@ public class NewsFeedHandler {
     }
 
     @GET
-    @Path("/newsfeed")
+    @Path("/feed")
     @Produces(MediaType.APPLICATION_JSON)
     public String returnNewsFeed(@Context HttpServletResponse servlerResponse,
                                    @QueryParam("session") String session,  @QueryParam("id") Integer id, @QueryParam("count") Integer count)
