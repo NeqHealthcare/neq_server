@@ -232,7 +232,7 @@ public abstract class Connector {
 	 * @param id
 	 * @return news feed
 	 */
-	public abstract List<?> returnNewsFeed(Integer id);
+	public abstract List<?> returnNewsFeed(Integer id, Integer count);
 	
 	
 	

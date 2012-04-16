@@ -1,8 +1,5 @@
 package eu.neq.mais.domain;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.Reader;
 import java.util.Date;
 
 import com.sun.syndication.feed.synd.*;
@@ -19,9 +16,17 @@ import java.util.Iterator;
 public class ArticleMedpage extends Article {
 
 	
-	private String title,guid,link,description;
+	private String title,link,description,content;
+	
+	private long pubDate;
 
-	private Date pubDate;
+
+	public ArticleMedpage(String title,String link, String description,Date date){
+		this.title = title;
+		this.link = link;
+		this.description = description;
+		this.pubDate = date.getTime();
+	}
 
 
 	public String getTitle() {
@@ -44,16 +49,6 @@ public class ArticleMedpage extends Article {
 	}
 
 
-	public String getGuid() {
-		return guid;
-	}
-
-
-	public void setGuid(String guid) {
-		this.guid = guid;
-	}
-
-
 	public String getLink() {
 		return link;
 	}
@@ -64,19 +59,18 @@ public class ArticleMedpage extends Article {
 	}
 
 
-	public Date getPubDate() {
+	public long getPubDate() {
 		return pubDate;
 	}
 
 
-	public void setPubDate(Date pubDate) {
+	public void setPubDate(long pubDate) {
 		this.pubDate = pubDate;
 	}
 	
 	 public static void main(String args[]) throws Exception {
-		    String feed = "http://www.medpagetoday.com/rss/Cardiology.xml";
 
-		    URL feedUrl = new URL(feed);
+		    URL feedUrl = new URL("http://www.medpagetoday.com/rss/Cardiology.xml");
 
 		    SyndFeedInput input = new SyndFeedInput();
 		    SyndFeed sf = input.build(new XmlReader(feedUrl));
@@ -87,12 +81,23 @@ public class ArticleMedpage extends Article {
 		      SyndEntry entry = (SyndEntry)it.next();
 		      System.out.println(entry.getTitle());
 		      System.out.println(entry.getLink());
+		      System.out.println(entry.getPublishedDate());
 		      SyndContent description = entry.getDescription();
 		      System.out.println(description.getValue());
 		      System.out.println();
 		    }
 		    
 	 }
+
+
+	public String getContent() {
+		return content;
+	}
+
+
+	public void setContent(String content) {
+		this.content = content;
+	}
 
 	
 }

@@ -99,7 +99,7 @@ public class NewsFeedHandler {
     @Path("/newsfeed")
     @Produces(MediaType.APPLICATION_JSON)
     public String returnNewsFeed(@Context HttpServletResponse servlerResponse,
-                                   @QueryParam("session") String session,  @QueryParam("id") Integer id)
+                                   @QueryParam("session") String session,  @QueryParam("id") Integer id, @QueryParam("count") Integer count)
                                   {
 
         String response = new DTOWrapper().wrapError("Error while retrieving news feed");
@@ -112,7 +112,7 @@ public class NewsFeedHandler {
 
         try {
             connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
-            List<?> newsFeed = connector.returnNewsFeed(id);
+            List<?> newsFeed = connector.returnNewsFeed(id,count);
             response = new DTOWrapper().wrap(newsFeed);
 
         } catch (Exception e) {

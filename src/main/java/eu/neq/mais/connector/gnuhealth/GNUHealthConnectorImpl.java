@@ -3,9 +3,17 @@ package eu.neq.mais.connector.gnuhealth;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.googlecode.jj1.ServiceProxy;
+import com.sun.syndication.feed.synd.SyndContent;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.XmlReader;
+
 import eu.neq.mais.NeqServer;
 import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
+import eu.neq.mais.domain.Article;
+import eu.neq.mais.domain.ArticleMedpage;
 import eu.neq.mais.domain.Diagnose;
 import eu.neq.mais.domain.LabTestRequest;
 import eu.neq.mais.domain.LabTestResult;
@@ -219,9 +227,27 @@ public class GNUHealthConnectorImpl extends Connector {
 
 
 	@Override
-	public List<?> returnNewsFeed(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<?> returnNewsFeed(Integer id, Integer count) {
+	
+		try {
+			List<ArticleMedpage> articles = new ArrayList<ArticleMedpage>();
+			URL feedURL = new URL(FileHandler.getNewsFeeds().get(id).getUrl());
+			
+		    SyndFeedInput input = new SyndFeedInput();
+		    SyndFeed sf = input.build(new XmlReader(feedURL));
+
+		    List entries = sf.getEntries();
+		    Iterator it = entries.iterator();
+		    while (it.hasNext()) {
+			    SyndEntry entry = (SyndEntry)it.next();
+			    ArticleMedpage tempA = new ArticleMedpage(entry.getTitle(),entry.getLink(),entry.getDescription().getValue(),entry.getPublishedDate());
+		    	articles.add(tempA);
+		    }
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ArrayList<Article>();
 	}
 
     
