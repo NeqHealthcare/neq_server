@@ -13,7 +13,6 @@ import eu.neq.mais.NeqServer;
 import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.domain.Article;
-import eu.neq.mais.domain.ArticleMedpage;
 import eu.neq.mais.domain.Diagnose;
 import eu.neq.mais.domain.LabTestRequest;
 import eu.neq.mais.domain.LabTestResult;
@@ -85,8 +84,14 @@ public class GNUHealthConnectorImpl extends Connector {
              
              
              // return news topics
-             res = con.returnNewsTopics();
-             System.out.println(new DTOWrapper().wrap(res)); 
+//             res = con.returnNewsTopics();
+//             System.out.println(new DTOWrapper().wrap(res)); 
+//             
+             // return news feed
+             
+             res = con.returnNewsFeed(1, 5);
+             for (Object r : res) System.out.println("title: "+((Article)r).getTitle()+" date: "+new Date(((Article)r).getPubDate()));
+             System.out.println(new DTOWrapper().wrap(res));
              
               // diagnose creation methods         
 //              res = con.returnDiseases();
@@ -230,7 +235,7 @@ public class GNUHealthConnectorImpl extends Connector {
 	public List<?> returnNewsFeed(Integer id, Integer count) {
 	
 		try {
-			List<ArticleMedpage> articles = new ArrayList<ArticleMedpage>();
+			List<Article> articles = new ArrayList<Article>();
 			URL feedURL = new URL(FileHandler.getNewsFeeds().get(id).getUrl());
 			
 		    SyndFeedInput input = new SyndFeedInput();
@@ -240,10 +245,19 @@ public class GNUHealthConnectorImpl extends Connector {
 		    Iterator it = entries.iterator();
 		    while (it.hasNext()) {
 			    SyndEntry entry = (SyndEntry)it.next();
-			    ArticleMedpage tempA = new ArticleMedpage(entry.getTitle(),entry.getLink(),entry.getDescription().getValue(),entry.getPublishedDate());
+			    Article tempA = new Article(entry.getTitle(),entry.getLink(),entry.getDescription().getValue(),entry.getPublishedDate());
 		    	articles.add(tempA);
 		    }
-			
+		    
+		    Collections.sort(articles);
+		    Collections.reverse(articles);
+	        List<Article> finalResult = articles;
+	        try{
+	        	finalResult = articles.subList(0, count);
+	        } catch(Exception e){
+	        }        
+	        return finalResult;
+	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
