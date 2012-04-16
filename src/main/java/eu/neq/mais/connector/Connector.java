@@ -220,6 +220,27 @@ public abstract class Connector {
 	public abstract List<?> returnAppointments(Integer count, Integer userId);
     
     /**
+     * return all news feed topics that are contained in the /resources/newsFeeds.json with id,topic and url
+     * @return
+     */
+	public abstract List<?> returnNewsTopics();
+	
+	
+	/**
+	 * returns the news feed that matches the specified id
+	 * 
+	 * @param id
+	 * @return news feed
+	 */
+	public abstract List<?> returnNewsFeed(Integer id);
+	
+	
+	
+	
+	
+	
+	
+    /**
      * Sets a Connector's back-end. This is where the target for the Connector's
      * interaction is defined. A back-end can be e.g. a running GNU Health
      * instance or similar systems and must be defined in the back-end config.

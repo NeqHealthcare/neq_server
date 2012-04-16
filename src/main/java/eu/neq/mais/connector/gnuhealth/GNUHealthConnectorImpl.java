@@ -13,6 +13,8 @@ import eu.neq.mais.domain.User;
 import eu.neq.mais.domain.gnuhealth.*;
 import eu.neq.mais.technicalservice.Backend;
 import eu.neq.mais.technicalservice.DTOWrapper;
+import eu.neq.mais.technicalservice.FileHandler;
+import eu.neq.mais.technicalservice.NewsFeed;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
 import eu.neq.mais.technicalservice.storage.DbHandler;
 
@@ -64,13 +66,18 @@ public class GNUHealthConnectorImpl extends Connector {
 //              
               // return appointments 
               
-             try {
-				res = con.returnAppointments(2, NeqServer.getSessionStore().getUserId(user_session));
-			} catch (NoSessionInSessionStoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-             for (Object r : res) System.out.println("1:"+ ((AppointmentGnu) r).toString());
+//             try {
+//				res = con.returnAppointments(2, NeqServer.getSessionStore().getUserId(user_session));
+//			} catch (NoSessionInSessionStoreException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//             for (Object r : res) System.out.println("1:"+ ((AppointmentGnu) r).toString());
+//             System.out.println(new DTOWrapper().wrap(res)); 
+             
+             
+             // return news topics
+             res = con.returnNewsTopics();
              System.out.println(new DTOWrapper().wrap(res)); 
              
               // diagnose creation methods         
@@ -195,6 +202,29 @@ public class GNUHealthConnectorImpl extends Connector {
           }
 
       }
+    
+    
+	@Override
+	public List<?> returnNewsTopics() {
+		Map<Integer,NewsFeed> newsMap;
+		try {
+			newsMap = FileHandler.getNewsFeeds();
+			return new ArrayList<>(newsMap.values());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+			
+		return new ArrayList<NewsFeed>();
+	}
+
+
+	@Override
+	public List<?> returnNewsFeed(Integer id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+    
 
     
     private int[] getAllAppointmentIds() {
@@ -1720,7 +1750,6 @@ public class GNUHealthConnectorImpl extends Connector {
             this.medications = medications;
         }
     }
-
 
 
 }
