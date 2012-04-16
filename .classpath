@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="lib/jsonrpc2-base-1.21.jar"/>
 	<classpathentry kind="lib" path="lib/jj1.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/stringtree-json-2.0.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/seba/.m2/repository/org/eclipse/jetty/jetty-util/8.1.0.RC4/jetty-util-8.1.0.RC4.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
