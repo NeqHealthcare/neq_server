@@ -15,7 +15,7 @@ public class AppointmentGnu extends Appointment {
 	@MapToGnu("patient.rec_name")
 	String patient_rec_name;
 	
-	@MapToGnu("consultations.description")
+	@MapToGnu("consultations.rec_name")
 	String consultations_description;
 		
 	Object appointment_date;

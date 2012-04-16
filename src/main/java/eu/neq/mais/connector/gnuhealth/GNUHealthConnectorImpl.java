@@ -73,25 +73,25 @@ public class GNUHealthConnectorImpl extends Connector {
 //              
               // return appointments 
               
-//             try {
-//				res = con.returnAppointments(2, NeqServer.getSessionStore().getUserId(user_session));
-//			} catch (NoSessionInSessionStoreException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//             for (Object r : res) System.out.println("1:"+ ((AppointmentGnu) r).toString());
-//             System.out.println(new DTOWrapper().wrap(res)); 
+             try {
+				res = con.returnAppointments(2, NeqServer.getSessionStore().getUserId(user_session));
+			} catch (NoSessionInSessionStoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+             for (Object r : res) System.out.println("1:"+ ((AppointmentGnu) r).toString());
+             System.out.println(new DTOWrapper().wrap(res)); 
              
              
              // return news topics
 //             res = con.returnNewsTopics();
 //             System.out.println(new DTOWrapper().wrap(res)); 
 //             
-             // return news feed
-             
-             res = con.returnNewsFeed(1, 5);
-             for (Object r : res) System.out.println("title: "+((Article)r).getTitle()+" date: "+new Date(((Article)r).getPubDate()));
-             System.out.println(new DTOWrapper().wrap(res));
+//             // return news feed
+//             
+//             res = con.returnNewsFeed(1, 5);
+//             for (Object r : res) System.out.println("title: "+((Article)r).getTitle()+" date: "+new Date(((Article)r).getPubDate()));
+//             System.out.println(new DTOWrapper().wrap(res));
              
               // diagnose creation methods         
 //              res = con.returnDiseases();
@@ -1595,7 +1595,7 @@ public class GNUHealthConnectorImpl extends Connector {
                 1,
                 getAdminSession(),
                 ids,
-                new String[]{"appointment_date", "doctor", "appointment_type","urgency","comments", "speciality.rec_name", "patient.rec_name","patient","consultations.description"
+                new String[]{"appointment_date", "doctor", "appointment_type","urgency","comments", "speciality.rec_name", "patient.rec_name","patient","consultations.rec_name"
                         },
                 "REPLACE_CONTEXT"};
     }
