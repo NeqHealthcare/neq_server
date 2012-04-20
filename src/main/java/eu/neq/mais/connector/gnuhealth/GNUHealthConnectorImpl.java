@@ -103,12 +103,12 @@ public class GNUHealthConnectorImpl extends Connector {
 //              
           	  Map<Object,Object> params = new HashMap<Object, Object>();
               
-          	params.put("status","c"); //e.g. c
+          	params.put("status","h"); //e.g. c
           	params.put("is_allergy",true); //e.g. true
           	params.put("doctor",1); //e.g. 1
           	params.put("pregnancy_warning",true); //e.g. true
-          	params.put("age",15); //e.g. 15
-          	params.put("weeks_of_pregnancy",10); //e.g. 10
+          	params.put("age",20); //e.g. 15
+          	params.put("weeks_of_pregnancy",0); //e.g. 10
           	params.put("date_start_treatment","489534758"); //e.g. 489534758098
           	params.put("short_comment","text"); //e.g. text
           	params.put("is_on_treatment",true); //e.g. true
@@ -118,13 +118,36 @@ public class GNUHealthConnectorImpl extends Connector {
           	params.put("healed_date","489534758"); //e.g. 489534758098
           	params.put("date_stop_treatment","489534758"); //e.g. 489534758098
           	params.put("pcs_code",5); //e.g. 5
-          	params.put("pathology",11); //e.g. 11
-          	params.put("allergy_type","fa"); //e.g. fa
+          	params.put("pathology",37); //e.g. 11
+          	params.put("allergy_type","ma"); //e.g. fa
           	params.put("disease_severity","3_sv"); //e.g. 3_sv
           	params.put("is_infectious",true); // e.g. true
           	params.put("extra_info","extra_info"); // e.g. extra info text
-            params.put("patient_id", 14); // wird noch nicht vom frontend zurückgegeben!  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-          	params.put("disease_id", 23); // wird noch nicht vom frontend zurückgegeben! XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            params.put("patient_id", 14); // 
+          	params.put("disease_id", 23); //
+          	  
+//            	params.put("status",false); //e.g. c
+//              	params.put("is_allergy",true); //e.g. true
+//              	params.put("doctor",1); //e.g. 1
+//              	params.put("pregnancy_warning",false); //e.g. true
+//              	params.put("age",0); //e.g. 15
+//              	params.put("weeks_of_pregnancy",0); //e.g. 10
+//              	params.put("date_start_treatment",false); //e.g. 489534758098
+//              	params.put("short_comment",false); //e.g. text
+//              	params.put("is_on_treatment",false); //e.g. true
+//              	params.put("is_active",true); //e.g. true
+//              	params.put("diagnosed_date",false); //e.g. 489534758098
+//              	params.put("treatment_description",false); //e.g. text
+//              	params.put("healed_date",false); //e.g. 489534758098
+//              	params.put("date_stop_treatment",false); //e.g. 489534758098
+//              	params.put("pcs_code",false); //e.g. 5
+//              	params.put("pathology",43); //e.g. 11
+//              	params.put("allergy_type",false); //e.g. fa
+//              	params.put("disease_severity",false); //e.g. 3_sv
+//              	params.put("is_infectious",false); // e.g. true
+//              	params.put("extra_info",false); // e.g. extra info text
+//                params.put("patient_id", 20); // 
+//              	params.put("disease_id", false); //
             
           	res = con.createDiagnose(params);
             for (Object r : res) System.out.println(":"+ ((DiagnoseCreationMessageGnu) r).toString());  
@@ -751,7 +774,7 @@ public class GNUHealthConnectorImpl extends Connector {
             connection.setDoOutput(true);
 
             String jsonfile = dom.getJson();
-//            System.out.println("jsonfile: "+jsonfile);
+            System.out.println("jsonfile: "+jsonfile);
 
             OutputStream out = connection.getOutputStream();
             out.write(jsonfile.getBytes());
@@ -1683,10 +1706,20 @@ public class GNUHealthConnectorImpl extends Connector {
     }
     
     private Object[] getDiagnoseCreationParams(Map<Object,Object> paramMap){
-    	paramMap.put("date_start_treatment",new TimeGnuShort(Long.parseLong((String) paramMap.get("date_start_treatment")))); 
-    	paramMap.put("diagnosed_date",new TimeGnuShort(Long.parseLong((String) paramMap.get("diagnosed_date")))); 
-    	paramMap.put("healed_date",new TimeGnuShort(Long.parseLong((String) paramMap.get("healed_date")))); 
-    	paramMap.put("date_stop_treatment",new TimeGnuShort(Long.parseLong((String) paramMap.get("date_stop_treatment")))); 
+    	
+    	if(!((paramMap.get("date_start_treatment")).equals(false))){
+    		paramMap.put("date_start_treatment",new TimeGnuShort(Long.parseLong((String) paramMap.get("date_start_treatment")))); 
+    	}
+    	if(!((paramMap.get("healed_date")).equals(false))){
+    		paramMap.put("healed_date",new TimeGnuShort(Long.parseLong((String) paramMap.get("healed_date")))); 
+    	}
+      	if(!((paramMap.get("date_stop_treatment")).equals(false))){
+    		paramMap.put("date_stop_treatment",new TimeGnuShort(Long.parseLong((String) paramMap.get("date_stop_treatment")))); 
+    	}
+      	if(!((paramMap.get("diagnosed_date")).equals(false))){
+    		paramMap.put("diagnosed_date",new TimeGnuShort(Long.parseLong((String) paramMap.get("diagnosed_date")))); 
+    	}
+    	
     	Object patientId = paramMap.get("patient_id");
     	Object disease_id = paramMap.get("disease_id");
     	
@@ -1698,7 +1731,12 @@ public class GNUHealthConnectorImpl extends Connector {
         createContainer[1] = paramMap;
        
         Map<Object, Object> addMap = new HashMap<Object, Object>();
-        addMap.put("diseases",new Object[]{new Object[]{"add",new Object[]{disease_id}},createContainer});
+        
+      	if(!((disease_id).equals(false))){
+      		addMap.put("diseases",new Object[]{new Object[]{"add",new Object[]{disease_id}},createContainer});
+    	}else{
+    	    addMap.put("diseases",new Object[]{new Object[]{"add",new Object[]{}},createContainer});
+    	}
         return new Object[]{1, getAdminSession(),new Object[]{patientId}, addMap, "REPLACE_CONTEXT"};
     	
     }

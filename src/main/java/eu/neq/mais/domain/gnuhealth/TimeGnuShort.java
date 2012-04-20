@@ -7,7 +7,7 @@ public class TimeGnuShort {
 
 	private int month, year, day;
 	
-	private String __class__ = "datetime";
+	private String __class__ = "date";
 	
 	public TimeGnuShort(long time){
 		GregorianCalendar cal = new GregorianCalendar();
