@@ -774,7 +774,7 @@ public class GNUHealthConnectorImpl extends Connector {
             connection.setDoOutput(true);
 
             String jsonfile = dom.getJson();
-            System.out.println("jsonfile: "+jsonfile);
+//            System.out.println("jsonfile: "+jsonfile);
 
             OutputStream out = connection.getOutputStream();
             out.write(jsonfile.getBytes());
