@@ -246,7 +246,7 @@ public class GNUHealthConnectorImpl extends Connector {
 		Map<Integer,NewsFeed> newsMap;
 		try {
 			newsMap = FileHandler.getNewsFeeds();
-			return new ArrayList<>(newsMap.values());
+			return new ArrayList<NewsFeed>(newsMap.values());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

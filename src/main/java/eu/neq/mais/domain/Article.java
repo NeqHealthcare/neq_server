@@ -62,7 +62,6 @@ public class Article implements Comparable<Article> {
 	}
 	
 
-	@Override
 	public int compareTo(Article o) {
 		Article g = (Article) o;
 	    return (this.getPubDate()).compareTo(g.getPubDate());
