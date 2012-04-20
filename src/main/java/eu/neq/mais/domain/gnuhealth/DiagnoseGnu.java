@@ -77,19 +77,26 @@ public class DiagnoseGnu extends Diagnose {
 	}
 
 	public DiagnoseGnu returnLatest(DiagnoseGnu dg) {
-
-		if (String.class.isInstance(this.getDiagnosed_date())) {
+		
+		if(this.getDiagnosed_date() == null){
+			return dg;
+		}
+		if(dg.getDiagnosed_date() == null){
+			return this;
+		}
+		
+		try {
 			DateGnu date = new Gson().fromJson(
 					String.valueOf(this.getDiagnosed_date()), DateGnu.class);
 			DateGnu dgDate = new Gson().fromJson(
 					String.valueOf(dg.getDiagnosed_date()), DateGnu.class);
-
+			
 			if (date.latest(dgDate)) {
 				return this;
 			} else {
 				return dg;
 			}
-		} else {
+		} catch (Exception e) {
 			Date date = new Date(Long.parseLong(String.valueOf(this
 					.getDiagnosed_date())));
 			Date dgDate = new Date(Long.parseLong(String.valueOf(dg

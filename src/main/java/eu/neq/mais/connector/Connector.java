@@ -11,6 +11,7 @@ import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreExceptio
 import eu.neq.mais.technicalservice.Settings;
 
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -159,7 +160,7 @@ public abstract class Connector {
      */
     public abstract List<?> returnLabTestRequests(String patientId);
 
-
+    
     /**
      * Check
      */
@@ -179,7 +180,23 @@ public abstract class Connector {
      */
     public abstract List<?> returnLabTestTypes();
     
+    /**
+     * returns all disease types that were inserted into the backend 
+     */
+    public abstract List<?> returnDiseases();
+    
+    /**
+     * Creates a diagnose
+     * 
+     */
+    public abstract List<?> createDiagnose(Map<Object,Object> params);
 
+    /**
+     * return procedures that are used to treat patients with a specific disease
+     * 
+     * @return
+     */
+    public abstract List<?> returnProcedures();
 
     /**
      * Creates a new lab test request
@@ -193,6 +210,36 @@ public abstract class Connector {
     public abstract List<?> createLabTestRequest(String date, String doctor_id,
                                                  String name, String patient_id);
 
+    /**
+     * Returns the latest appointments for a specific user. The count parameter specifies the maximum number of appointments returned
+     * 
+     * @param count
+     * @param userId
+     * @return
+     */
+	public abstract List<?> returnAppointments(Integer count, Integer userId);
+    
+    /**
+     * return all news feed topics that are contained in the /resources/newsFeeds.json with id,topic and url
+     * @return
+     */
+	public abstract List<?> returnNewsTopics();
+	
+	
+	/**
+	 * returns the news feed that matches the specified id
+	 * 
+	 * @param id
+	 * @return news feed
+	 */
+	public abstract List<?> returnNewsFeed(Integer id, Integer count);
+	
+	
+	
+	
+	
+	
+	
     /**
      * Sets a Connector's back-end. This is where the target for the Connector's
      * interaction is defined. A back-end can be e.g. a running GNU Health
@@ -231,6 +278,8 @@ public abstract class Connector {
     public abstract List<?> returnDocumentList(String id);
 
     public abstract List<DocumentGnu> returnDocumentData(String documentID);
+
+
 
 
 }

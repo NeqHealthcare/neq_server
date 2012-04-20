@@ -8,6 +8,7 @@ public class DateGnu {
 	private Integer day;
 	private Integer year;
 	
+	private Object __class__;
 	
 	public Integer getMonth() {
 		return month;

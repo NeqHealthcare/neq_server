@@ -9,10 +9,12 @@ public class TimeGnu {
 
 	private int hour, month, second, year, day, minute;
 	
+	private GregorianCalendar cal;
+	
 	private String __class__ = "datetime";
 	
 	public TimeGnu(long time){
-		GregorianCalendar cal = new GregorianCalendar();
+		cal = new GregorianCalendar();
 		cal.setTimeInMillis(time);
 		this.hour = cal.get(Calendar.HOUR_OF_DAY);
 		this.month = cal.get(Calendar.MONTH);
@@ -22,4 +24,15 @@ public class TimeGnu {
 		this.minute = cal.get(Calendar.MINUTE);
 	}
 
+	
+	public long getTimeInMillis(){
+		if(cal == null){
+			cal = new GregorianCalendar();
+			cal.set(year, month-1, day, hour, minute, second);
+		}
+		
+		return cal.getTimeInMillis();
+	}
+	
+	
 }

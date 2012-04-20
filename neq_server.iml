@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
-  <component name="EclipseModuleManager">
-    <libelement value="jar://$MODULE_DIR$/lib/jsonrpc2-client-1.6.jar!/" />
-    <libelement value="jar://$MODULE_DIR$/lib/jsonrpc2-base-1.21.jar!/" />
-    <libelement value="jar://$MODULE_DIR$/lib/jj1.0.1.jar!/" />
-    <libelement value="jar://$MODULE_DIR$/lib/stringtree-json-2.0.5.jar!/" />
-    <conelement value="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER" />
-    <src_description expected_position="0">
-      <src_folder value="file://$MODULE_DIR$/src/main/java" expected_position="0" />
-    </src_description>
-  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
@@ -17,59 +7,33 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
-    <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
-    <orderEntry type="library" name="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER" level="application" />
-    <orderEntry type="module-library">
-      <library name="jsonrpc2-client-1.6.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/jsonrpc2-client-1.6.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="jsonrpc2-base-1.21.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/jsonrpc2-base-1.21.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="jj1.0.1.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/jj1.0.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="stringtree-json-2.0.5.jar">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/stringtree-json-2.0.5.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:8.0.4.v20111024" level="project" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="otherlibs" level="project" />
+    <orderEntry type="library" name="Maven: org.cometd.java:bayeux-api:2.4.0.RC2" level="project" />
+    <orderEntry type="library" name="Maven: org.cometd.java:cometd-java-server:2.4.0" level="project" />
+    <orderEntry type="library" name="Maven: org.cometd.java:cometd-java-common:2.4.0" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-util:7.6.0.v20120127" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.6.4" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-continuation:7.6.0.v20120127" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-jmx:7.6.0.v20120127" level="project" />
+    <orderEntry type="library" name="Maven: org.antlr:antlr-runtime:3.4" level="project" />
+    <orderEntry type="library" name="Maven: org.antlr:stringtemplate:3.2.1" level="project" />
+    <orderEntry type="library" name="Maven: antlr:antlr:2.7.7" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:8.1.0.RC4" level="project" />
     <orderEntry type="library" name="Maven: org.mortbay.jetty:servlet-api:3.0.20100224" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-continuation:8.0.4.v20111024" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:8.0.4.v20111024" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-io:8.0.4.v20111024" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-util:8.0.4.v20111024" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-servlet:8.0.4.v20111024" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-security:8.0.4.v20111024" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:8.1.0.RC4" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-io:8.1.0.RC4" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-servlet:8.1.0.RC4" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-security:8.1.0.RC4" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-websocket:8.1.0.RC4" level="project" />
     <orderEntry type="library" name="Maven: com.sun.jersey:jersey-servlet:1.10" level="project" />
     <orderEntry type="library" name="Maven: com.sun.jersey:jersey-server:1.10" level="project" />
     <orderEntry type="library" name="Maven: asm:asm:3.1" level="project" />
     <orderEntry type="library" name="Maven: com.sun.jersey:jersey-core:1.10" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.8.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.1" level="project" />
+    <orderEntry type="library" name="Maven: org.tmatesoft.sqljet:sqljet:1.0.7" level="project" />
   </component>
 </module>
 
