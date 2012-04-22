@@ -6,6 +6,7 @@ import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.DTOWrapper;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
 import eu.neq.mais.technicalservice.Settings;
+import org.eclipse.jetty.server.Response;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
@@ -77,7 +78,7 @@ public class ConnectionHandler {
 
     @OPTIONS
     @Path("/logout")
-    public String options(@Context HttpServletResponse servlerResponse) {
+    public Response options(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -86,7 +87,7 @@ public class ConnectionHandler {
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
 
-        return servlerResponse.getContentType();
+        return null;
 
     }
 

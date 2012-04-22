@@ -1,23 +1,19 @@
 package eu.neq.mais.request;
 
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-
 import eu.neq.mais.NeqServer;
 import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.DTOWrapper;
-import eu.neq.mais.technicalservice.Settings;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
+import eu.neq.mais.technicalservice.Settings;
+import org.eclipse.jetty.server.Response;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * @author Jan Gansen
@@ -25,13 +21,13 @@ import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreExceptio
 @Path("/news/")
 public class NewsFeedHandler {
 
-	 protected static Logger logger = Logger.getLogger("eu.neq.mais.request");
+    protected static Logger logger = Logger.getLogger("eu.neq.mais.request");
 
     private Connector connector;
-	    
+
     @OPTIONS
     @Path("/topics")
-    public String returnNewsTopcis(@Context HttpServletResponse servlerResponse) {
+    public Response returnNewsTopcis(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -40,7 +36,7 @@ public class NewsFeedHandler {
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
 
-        return servlerResponse.getContentType();
+        return null;
 
     }
 
@@ -48,8 +44,7 @@ public class NewsFeedHandler {
     @Path("/topics")
     @Produces(MediaType.APPLICATION_JSON)
     public String returnNewsTopics(@Context HttpServletResponse servlerResponse,
-                                   @QueryParam("session") String session)
-                                  {
+                                   @QueryParam("session") String session) {
 
         String response = new DTOWrapper().wrapError("Error while retrieving news topics");
 
@@ -75,14 +70,11 @@ public class NewsFeedHandler {
         return response;
 
     }
-    
-    
-    
-    
-    
+
+
     @OPTIONS
     @Path("/feed")
-    public String returnNewsFeed(@Context HttpServletResponse servlerResponse) {
+    public Response returnNewsFeed(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -91,7 +83,7 @@ public class NewsFeedHandler {
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
 
-        return servlerResponse.getContentType();
+        return null;
 
     }
 
@@ -99,8 +91,7 @@ public class NewsFeedHandler {
     @Path("/feed")
     @Produces(MediaType.APPLICATION_JSON)
     public String returnNewsFeed(@Context HttpServletResponse servlerResponse,
-                                   @QueryParam("session") String session,  @QueryParam("id") Integer id, @QueryParam("count") Integer count)
-                                  {
+                                 @QueryParam("session") String session, @QueryParam("id") Integer id, @QueryParam("count") Integer count) {
 
         String response = new DTOWrapper().wrapError("Error while retrieving news feed");
 
@@ -112,7 +103,7 @@ public class NewsFeedHandler {
 
         try {
             connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
-            List<?> newsFeed = connector.returnNewsFeed(id,count);
+            List<?> newsFeed = connector.returnNewsFeed(id, count);
             response = new DTOWrapper().wrap(newsFeed);
 
         } catch (Exception e) {
@@ -126,6 +117,6 @@ public class NewsFeedHandler {
         return response;
 
     }
-    
-    
+
+
 }

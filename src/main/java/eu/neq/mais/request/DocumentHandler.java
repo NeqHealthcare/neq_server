@@ -7,6 +7,7 @@ import eu.neq.mais.domain.gnuhealth.DocumentGnu;
 import eu.neq.mais.technicalservice.DTOWrapper;
 import eu.neq.mais.technicalservice.SessionStore;
 import eu.neq.mais.technicalservice.Settings;
+import org.eclipse.jetty.server.Response;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
@@ -32,7 +33,7 @@ public class DocumentHandler {
 
     @OPTIONS
     @Path("/image")
-    public String returnDocumentImageOptions(@Context HttpServletResponse servlerResponse) {
+    public Response returnDocumentImageOptions(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -41,7 +42,7 @@ public class DocumentHandler {
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
 
-        return servlerResponse.getContentType();
+        return null;
 
     }
 
@@ -81,7 +82,7 @@ public class DocumentHandler {
 
     @OPTIONS
     @Path("/image/thumbnail")
-    public String returnDocumentThnumbnailOptions(@Context HttpServletResponse servlerResponse) {
+    public Response returnDocumentThnumbnailOptions(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -90,7 +91,7 @@ public class DocumentHandler {
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
 
-        return servlerResponse.getContentType();
+        return null;
 
     }
 
@@ -129,7 +130,7 @@ public class DocumentHandler {
 
     @OPTIONS
     @Path("/list")
-    public String returnDocumentOptions(@Context HttpServletResponse servlerResponse) {
+    public Response returnDocumentOptions(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -138,7 +139,7 @@ public class DocumentHandler {
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
 
-        return servlerResponse.getContentType();
+        return null;
 
     }
 
