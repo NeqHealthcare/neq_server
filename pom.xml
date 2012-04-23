@@ -26,7 +26,7 @@
 			<id>tmate</id>
 			<url>http://maven.tmatesoft.com/content/repositories/releases</url>
 		</repository>
-	
+
 
 	</repositories>
 
@@ -44,11 +44,22 @@
 			<artifactId>cometd-java-server</artifactId>
 			<version>2.4.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.cometd.java</groupId>
+			<artifactId>cometd-java-annotations</artifactId>
+			<version>2.4.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr-runtime</artifactId>
 			<version>3.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.cometd.java</groupId>
+			<artifactId>cometd-websocket-jetty</artifactId>
+			<version>2.4.0</version>
 		</dependency>
 
 
@@ -129,14 +140,14 @@
 		<!-- <artifactId>derbytools</artifactId> -->
 		<!-- <version>10.8.1.2</version> -->
 		<!-- </dependency> -->
-		
-		<dependency>    
-      <groupId>rome</groupId>   
-      <artifactId>rome</artifactId>
 
-      <version>1.0</version>
-    </dependency>
-    
+		<dependency>
+			<groupId>rome</groupId>
+			<artifactId>rome</artifactId>
+
+			<version>1.0</version>
+		</dependency>
+
 	</dependencies>
 
 

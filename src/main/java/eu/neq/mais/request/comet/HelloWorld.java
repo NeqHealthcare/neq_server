@@ -1,6 +1,8 @@
 package eu.neq.mais.request.comet;
 
 import org.cometd.bayeux.Bayeux;
+import org.cometd.bayeux.server.BayeuxServer;
+import org.cometd.java.annotation.AnnotationCometdServlet;
 import org.cometd.server.CometdServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -28,8 +30,12 @@ public class HelloWorld {
 
 		ServletContextHandler context = new ServletContextHandler(contexts,
 				"/", ServletContextHandler.SESSIONS);
+		context.setInitParameter("async-enabled", "true");
+		context.setAttribute("async-enabled", "true");
 
-		ServletHolder cometd_holder = new ServletHolder(CometdServlet.class);
+		CometdServlet cometdServlet = new AnnotationCometdServlet();
+		ServletHolder cometd_holder = new ServletHolder(cometdServlet);
+		cometd_holder.setAsyncSupported(true);
 		cometd_holder.setInitParameter("timeout", "200000");
 		cometd_holder.setInitParameter("interval", "100");
 		cometd_holder.setInitParameter("maxInterval", "100000");
@@ -37,13 +43,18 @@ public class HelloWorld {
 		cometd_holder.setInitParameter("directDeliver", "true");
 		cometd_holder.setInitParameter("logLevel", "0");
 		cometd_holder.setInitOrder(1);
+		cometd_holder.setInitParameter("services","eu.neq.mais.request.comet.EchoService");
+		cometd_holder.setInitParameter("transports","org.cometd.websocket.server.WebSocketTransport");
 		context.addServlet(cometd_holder, "/cometd/*");
+			
 		
-		context.addEventListener(new BayeuxInitializer());
+//		ServletHolder config = new ServletHolder(ConfigurationServlet.class);
+//		config.setInitOrder(2);
+//		context.addServlet(config, "");
 		
 		server.start();
-	
 		
+
 	}
 
 	public HelloWorld() throws Exception {
