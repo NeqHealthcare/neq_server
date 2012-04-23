@@ -55,7 +55,7 @@ public class DateGnu {
     	Date d = new Date();
     	d.setDate(getDay());
     	d.setYear(getYear()-1900);
-    	d.setMonth(getMonth());
+    	d.setMonth(getMonth()-1);
 
     	return d.getTime();	
     }
