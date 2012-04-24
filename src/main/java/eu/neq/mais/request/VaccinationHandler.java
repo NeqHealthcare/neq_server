@@ -6,6 +6,7 @@ import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.DTOWrapper;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
 import eu.neq.mais.technicalservice.Settings;
+import org.eclipse.jetty.server.Response;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
@@ -27,7 +28,7 @@ public class VaccinationHandler {
 
     @OPTIONS
     @Path("/all")
-    public String returnDiagnoseOptions(@Context HttpServletResponse servlerResponse) {
+    public Response returnDiagnoseOptions(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -36,8 +37,7 @@ public class VaccinationHandler {
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
 
-        return servlerResponse.getContentType();
-
+        return null;
     }
 
 

@@ -1,6 +1,8 @@
 package eu.neq.mais.domain.gnuhealth;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -41,13 +43,21 @@ public class PatientGnu extends Patient {
 		if (!age.getClass().isAssignableFrom(Long.class)) {
 			try {
 				String[] age_tmp = String.valueOf(age).split(" ");
-				Date today = new Date(System.currentTimeMillis());
-				int y = today.getYear()
+				Calendar cal = new GregorianCalendar();
+				int y =  cal.get(Calendar.YEAR)
 						- Integer.parseInt(age_tmp[0].replace("y", ""));
-				int m = Integer.parseInt(age_tmp[1].replace("m", "")) + 1;
-				int d = Integer.parseInt(age_tmp[2].replace("d", "")) + 1;
-				Date tmp = new Date(y, m, d);
-				age = tmp.getTime();
+				int m = (cal.get(Calendar.MONTH)+1)-Integer.parseInt(age_tmp[1].replace("m", ""));
+				if(m <= 0){
+					y = y-1;
+					m = 12+m;
+				}
+				int d = (cal.get(Calendar.DAY_OF_MONTH)+1)-Integer.parseInt(age_tmp[2].replace("d", "")) -1;
+//				System.out.println("dof:     day: "+d+" month: "+m+" year: "+y);
+				cal = new GregorianCalendar();
+				cal.set(Calendar.DAY_OF_MONTH, d);
+				cal.set(Calendar.MONTH,m-1);
+				cal.set(Calendar.YEAR, y);
+		    	age = cal.getTimeInMillis();	
 
 			} catch (NumberFormatException e) {
 				logger.info("PatientGnu: NumberFormatException: " + age);

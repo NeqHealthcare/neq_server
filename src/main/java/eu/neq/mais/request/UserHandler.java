@@ -4,7 +4,6 @@ import eu.neq.mais.NeqServer;
 import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.domain.User;
-import eu.neq.mais.domain.gnuhealth.UserGnu;
 import eu.neq.mais.technicalservice.DTOWrapper;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
 import eu.neq.mais.technicalservice.Settings;
@@ -39,7 +38,7 @@ public class UserHandler {
 
     @OPTIONS
     @Path("/personalInformation")
-    public String returnPersnoalDataOptions(@Context HttpServletResponse servlerResponse) {
+    public Response returnPersnoalDataOptions(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -48,7 +47,7 @@ public class UserHandler {
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
 
-        return servlerResponse.getContentType();
+        return null;
 
     }
 
@@ -60,47 +59,47 @@ public class UserHandler {
 
         String response = new DTOWrapper().wrapError("Error while retrieving your personal information");
         User person = null;
-        
+
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
         servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
         servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
-        
+
         try {
             connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
             String user_id = String.valueOf(NeqServer.getSessionStore().getUserId(session));
-            person = connector.returnPersonalInformation(user_id); 
-            
+            person = connector.returnPersonalInformation(user_id);
+
             /*
-             * Number of patients
-             */
+            * Number of patients
+            */
             List<?> nrOfpatients = connector.returnPersonalPatientsForUIList(session);
             person.setNumber_of_patients(String.valueOf(nrOfpatients.size()));
-            
+
             /*
-             * last login
-             */
+            * last login
+            */
             DbHandler dbH = new DbHandler();
             Login l = dbH.getLatestLogin(user_id);
             dbH.close();
             person.setLastLogin(l.getDateOfLogin());
-            
+
             response = new DTOWrapper().wrap(person);
         } catch (Exception e) {
             e.printStackTrace();
-            response = new DTOWrapper().wrapError("Error while retrieving your personal information: "+e.toString());
+            response = new DTOWrapper().wrapError("Error while retrieving your personal information: " + e.toString());
         } catch (NoSessionInSessionStoreException e) {
-            response = new DTOWrapper().wrapError("Error while retrieving your personal information: "+e.toString());
+            response = new DTOWrapper().wrapError("Error while retrieving your personal information: " + e.toString());
         }
-        
+
         return response;
     }
 
 
     @OPTIONS
     @Path("//image/")
-    public String returnImageOptions(@Context HttpServletResponse servlerResponse) {
+    public Response returnImageOptions(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -109,7 +108,7 @@ public class UserHandler {
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
 
-        return servlerResponse.getContentType();
+        return null;
 
     }
 
@@ -148,10 +147,10 @@ public class UserHandler {
 //		servlerResponse.setContentType(session);
 //		return servlerResponse.getContentType();
     }
-    
+
     @OPTIONS
     @Path("/lastLogin")
-    public String returnLastLoginOptions(@Context HttpServletResponse servlerResponse) {
+    public Response returnLastLoginOptions(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -159,8 +158,7 @@ public class UserHandler {
         servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
-        return servlerResponse.getContentType();
-
+        return null;
     }
 
     @GET
@@ -184,7 +182,7 @@ public class UserHandler {
         return servlerResponse.getContentType();
 
     }
-    
+
 
 }
 

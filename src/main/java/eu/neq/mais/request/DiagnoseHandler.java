@@ -7,12 +7,12 @@ import eu.neq.mais.domain.Diagnose;
 import eu.neq.mais.technicalservice.DTOWrapper;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
 import eu.neq.mais.technicalservice.Settings;
+import org.eclipse.jetty.server.Response;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +28,10 @@ public class DiagnoseHandler {
 
     private Connector connector;
 
-    
 
     @OPTIONS
     @Path("/one")
-    public String optionsOne(@Context HttpServletResponse servlerResponse) {
+    public Response optionsOne(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -41,7 +40,7 @@ public class DiagnoseHandler {
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
 
-        return servlerResponse.getContentType();
+        return null;
 
     }
 
@@ -78,7 +77,7 @@ public class DiagnoseHandler {
 
     @OPTIONS
     @Path("/all")
-    public String optionsAll(@Context HttpServletResponse servlerResponse) {
+    public Response optionsAll(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -87,7 +86,7 @@ public class DiagnoseHandler {
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
 
-        return servlerResponse.getContentType();
+        return null;
 
     }
 
@@ -121,11 +120,11 @@ public class DiagnoseHandler {
 
 
     }
-    
-    
+
+
     @OPTIONS
     @Path("/procedures")
-    public String proceduresOptions(@Context HttpServletResponse servlerResponse) {
+    public Response proceduresOptions(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -134,7 +133,7 @@ public class DiagnoseHandler {
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
 
-        return servlerResponse.getContentType();
+        return null;
 
     }
 
@@ -167,11 +166,11 @@ public class DiagnoseHandler {
 
 
     }
-    
-    
+
+
     @OPTIONS
     @Path("/diseases")
-    public String diseasesOptions(@Context HttpServletResponse servlerResponse) {
+    public Response diseasesOptions(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -180,7 +179,7 @@ public class DiagnoseHandler {
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
 
-        return servlerResponse.getContentType();
+        return null;
 
     }
 
@@ -213,10 +212,10 @@ public class DiagnoseHandler {
 
 
     }
-    
+
     @OPTIONS
     @Path("/create")
-    public String createDiagnoseOptions(@Context HttpServletResponse servlerResponse) {
+    public Response createDiagnoseOptions(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -225,13 +224,12 @@ public class DiagnoseHandler {
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
 
-        return servlerResponse.getContentType();
-
+        return null;
     }
-    
-    
- // http://localhost:8080/diagnose/create?session=SESSION&status=STATUS&is_allergy...
-   
+
+
+    // http://localhost:8080/diagnose/create?session=SESSION&status=STATUS&is_allergy...
+
     @POST
     @Path("/create")
     @Produces(MediaType.APPLICATION_JSON)
@@ -259,7 +257,7 @@ public class DiagnoseHandler {
             @QueryParam("is_infectious") boolean is_infectious,
             @QueryParam("extra_info") String extra_info,
             @QueryParam("patient_id") Integer patient_id,
-            @QueryParam("disease_id") Integer disease_id){
+            @QueryParam("disease_id") Integer disease_id) {
 
         String response = new DTOWrapper()
                 .wrapError("Error while creating lab test requests");
@@ -276,30 +274,30 @@ public class DiagnoseHandler {
 
             connector = ConnectorFactory.getConnector(NeqServer
                     .getSessionStore().getBackendSid(session));
-            
-            Map<Object,Object> params = new HashMap<Object, Object>();
-            
-        	params.put("status",status); //e.g. c
-        	params.put("is_allergy",is_allergy); //e.g. true
-        	params.put("doctor",doctor); //e.g. 1
-        	params.put("pregnancy_warning",pregnancy_warning); //e.g. true
-        	params.put("age",age); //e.g. 15
-        	params.put("weeks_of_pregnancy",weeks_of_pregnancy); //e.g. 10
-        	params.put("date_start_treatment",date_start_treatment); //e.g. 489534758098
-        	params.put("short_comment",short_comment); //e.g. text
-        	params.put("is_on_treatment",is_on_treatment); //e.g. true
-        	params.put("is_active",is_active); //e.g. true
-        	params.put("diagnosed_date",diagnosed_date); //e.g. 489534758098
-        	params.put("treatment_description",treatment_description); //e.g. text
-        	params.put("healed_date",healed_date); //e.g. 489534758098
-        	params.put("date_stop_treatment",date_stop_treatment); //e.g. 489534758098
-        	params.put("pcs_code",pcs_code); //e.g. 5
-        	params.put("pathology",pathology); //e.g. 11
-        	params.put("allergy_type",allergy_type); //e.g. fa
-        	params.put("disease_severity",disease_severity); //e.g. 3_sv
-        	params.put("is_infectious",is_infectious); // e.g. true
-        	params.put("extra_info",extra_info); // e.g. extra info text
-            
+
+            Map<Object, Object> params = new HashMap<Object, Object>();
+
+            params.put("status", status); //e.g. c
+            params.put("is_allergy", is_allergy); //e.g. true
+            params.put("doctor", doctor); //e.g. 1
+            params.put("pregnancy_warning", pregnancy_warning); //e.g. true
+            params.put("age", age); //e.g. 15
+            params.put("weeks_of_pregnancy", weeks_of_pregnancy); //e.g. 10
+            params.put("date_start_treatment", date_start_treatment); //e.g. 489534758098
+            params.put("short_comment", short_comment); //e.g. text
+            params.put("is_on_treatment", is_on_treatment); //e.g. true
+            params.put("is_active", is_active); //e.g. true
+            params.put("diagnosed_date", diagnosed_date); //e.g. 489534758098
+            params.put("treatment_description", treatment_description); //e.g. text
+            params.put("healed_date", healed_date); //e.g. 489534758098
+            params.put("date_stop_treatment", date_stop_treatment); //e.g. 489534758098
+            params.put("pcs_code", pcs_code); //e.g. 5
+            params.put("pathology", pathology); //e.g. 11
+            params.put("allergy_type", allergy_type); //e.g. fa
+            params.put("disease_severity", disease_severity); //e.g. 3_sv
+            params.put("is_infectious", is_infectious); // e.g. true
+            params.put("extra_info", extra_info); // e.g. extra info text
+
 
             List<?> labTestCreationSuccessMessage = connector
                     .createDiagnose(params);
