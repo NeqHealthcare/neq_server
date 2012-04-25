@@ -21,6 +21,10 @@ import org.cometd.java.annotation.Session;
 import org.cometd.server.AbstractService;
 import org.cometd.server.authorizer.GrantAuthorizer;
 
+import com.google.gson.Gson;
+
+import eu.neq.mais.domain.ChartCoordinate;
+
 @Service("echoService")
 public final class EchoService {
 
@@ -104,15 +108,17 @@ public final class EchoService {
 		} else {
 			System.out.println("pulse request on channel:" + message.getChannel()+" | receivers: "+request.size() + " - STARTED");
 			final Thread t = new Thread() {
-
+				
 				public void run() {
-					double i = 0;
-					while (i < 300) {
-						double val = Math.sin(i);
-						System.out.println("sending: sin(" + i + ") = " + val);
+					int packet_id = 0;
+					double x = 0;
+					while (x < 300) {
+						double y = Math.sin(x);
+						String json = new Gson().toJson(new ChartCoordinate(x, y));
+						System.out.println("sending: sin(" + x + ") = " + y);
 						remote.deliver(serverSession, message.getChannel(),
-								val, null);
-						i += 0.1;
+								json, String.valueOf(packet_id++));
+						x += 0.1;
 						try {
 							sleep(1000);
 						} catch (InterruptedException e) {
