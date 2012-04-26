@@ -57,4 +57,16 @@ public class CometdServer {
 
 	}
 
+	public static void start() {
+		Server cometdServer = new Server();
+		add(cometdServer);
+		try {
+			cometdServer.start();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
 }

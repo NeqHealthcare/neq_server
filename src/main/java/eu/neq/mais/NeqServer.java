@@ -114,6 +114,7 @@ public class NeqServer implements Runnable {
 	
 		// ADDING COMETD
 		//CometdServer.add(server);
+		CometdServer.start();
 	
 		
 		logger.info("starting server");
