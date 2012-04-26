@@ -1,14 +1,9 @@
 package eu.neq.mais.domain.gnuhealth;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.logging.Logger;
 
 import com.google.gson.Gson;
 
-import eu.neq.mais.NeqServer;
 import eu.neq.mais.domain.Patient;
 import eu.neq.mais.domain.gnuhealth.annotations.MapToGnu;
 
@@ -25,7 +20,7 @@ public class PatientGnu extends Patient {
 	private List<String> diseases;
 	private String latestDiagnoseRecName;
 	// private List<DiagnoseGnu> diagnoseList;
-	private Object age;
+	private Object dob;
 
 	private String sex;
 	private String id;
@@ -38,34 +33,15 @@ public class PatientGnu extends Patient {
 
 	public void prepareDateFormat() {
 
-		Logger logger = Logger.getLogger("eu.neq.mais.domain.gnuhealth");
-		
-		if (!age.getClass().isAssignableFrom(Long.class)) {
-			try {
-				String[] age_tmp = String.valueOf(age).split(" ");
-				Calendar cal = new GregorianCalendar();
-				int y =  cal.get(Calendar.YEAR)
-						- Integer.parseInt(age_tmp[0].replace("y", ""));
-				int m = (cal.get(Calendar.MONTH)+1)-Integer.parseInt(age_tmp[1].replace("m", ""));
-				if(m <= 0){
-					y = y-1;
-					m = 12+m;
-				}
-				int d = (cal.get(Calendar.DAY_OF_MONTH)+1)-Integer.parseInt(age_tmp[2].replace("d", "")) -1;
-//				System.out.println("dof:     day: "+d+" month: "+m+" year: "+y);
-				cal = new GregorianCalendar();
-				cal.set(Calendar.DAY_OF_MONTH, d);
-				cal.set(Calendar.MONTH,m-1);
-				cal.set(Calendar.YEAR, y);
-		    	age = cal.getTimeInMillis();	
-
-			} catch (NumberFormatException e) {
-				logger.info("PatientGnu: NumberFormatException: " + age);
-				age = new Integer(0);
-			} catch (IllegalStateException e) {
-				logger.info("PatientGnu: IllegalStateException: " + age);
-				age = new Integer(0);
+		if (!long.class.isInstance(dob)) {
+			DateGnu temp = new Gson().fromJson(
+					String.valueOf(dob), DateGnu.class);
+			dob = temp.getTimeInMillis();
+			
+			if (dob == null) {
+				dob = 0;
 			}
+			
 		}
 	}
 
@@ -85,13 +61,6 @@ public class PatientGnu extends Patient {
 		this.diseases = diagnoseIds;
 	}
 
-	public Object getAge() {
-		return age;
-	}
-
-	public void setAge(String age) {
-		this.age = age;
-	}
 
 	public String getSex() {
 		return sex;
@@ -150,7 +119,7 @@ public class PatientGnu extends Patient {
 		return "rec_name: " + rec_name + ", diseases: "
 				+ ((diseases == null) ? "none" : diseases.size())
 				+ ", latestDiagnoseRecName: " + latestDiagnoseRecName
-				+ ", age: " + age + ", sex: " + sex + ", id: " + id
+				+ ", dob: " + dob + ", sex: " + sex + ", id: " + id
 				+ ", pcdrecname: " + primary_care_doctor_rec_name;
 	}
 

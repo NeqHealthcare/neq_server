@@ -202,7 +202,7 @@ public abstract class GnuHealthParams {
                 1,
                 adminSession,
                 allPatientIds,
-                new String[]{"rec_name", "age", "diseases", "sex",
+                new String[]{"rec_name", "dob", "diseases", "sex",
                         "primary_care_doctor.name",
                         "primary_care_doctor.rec_name"}, "REPLACE_CONTEXT"};
     }
