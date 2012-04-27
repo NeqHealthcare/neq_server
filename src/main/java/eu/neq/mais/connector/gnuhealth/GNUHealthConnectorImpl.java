@@ -95,24 +95,17 @@ public class GNUHealthConnectorImpl extends Connector {
               System.out.println("-----");
               
              
-              
-              Object[] fk = ((GNUHealthConnectorImpl)con).getCreateDiagnoseTimestamps(user_session, "21");
-              /**
-               * 
-               * @param session
-               * @param patientId
-               * @return Object[] that contains 0: Object patientTime -> id ; 1:  Map<Object,Object> diagnoseTimeMap -> id,timestamp ; 2: Map<Object,Object> medicationTimeMap -> id,timestamp
-               * @throws NoSessionInSessionStoreException
-               */
-              
-              Object patientTime = fk[0];
-              Map<Object,Object> diagnoseTimeMap = (Map<Object,Object>) fk[1];
-              Map<Object,Object> medicationTimeMap = (Map<Object,Object>)fk[2];
-              
-              
-              System.out.println(new DTOWrapper().wrap(patientTime));
-              System.out.println(new DTOWrapper().wrap(diagnoseTimeMap));
-              System.out.println(new DTOWrapper().wrap(medicationTimeMap));
+//              
+//              Object[] fk = ((GNUHealthConnectorImpl)con).getCreateDiagnoseTimestamps(user_session, "21");
+// 
+//              Object patientTime = fk[0];
+//              Map<Object,Object> diagnoseTimeMap = (Map<Object,Object>) fk[1];
+//              Map<Object,Object> medicationTimeMap = (Map<Object,Object>)fk[2];
+//              
+//              
+//              System.out.println(new DTOWrapper().wrap(patientTime));
+//              System.out.println(new DTOWrapper().wrap(diagnoseTimeMap));
+//              System.out.println(new DTOWrapper().wrap(medicationTimeMap));
        
 //              res = con.returnNewestLabTestResults("1");
 //              for (Object r : res) System.out.println("1:"+ ((LabTestResultGnu) r).getId());
@@ -160,7 +153,7 @@ public class GNUHealthConnectorImpl extends Connector {
           	params.put("is_on_treatment",true); //e.g. true
           	params.put("is_active",true); //e.g. true
           	params.put("diagnosed_date","489534758"); //e.g. 489534758098
-          	params.put("treatment_description","text text"); //e.g. text
+          	params.put("treatment_description","teext"); //e.g. text
           	params.put("healed_date","489534758"); //e.g. 489534758098
           	params.put("date_stop_treatment","489534758"); //e.g. 489534758098
           	params.put("pcs_code",5); //e.g. 5
@@ -172,7 +165,7 @@ public class GNUHealthConnectorImpl extends Connector {
             params.put("patient_id", 21); // 
           	params.put("disease_id", 23); //
           	  
-//          	res = con.createDiagnose(params);
+         	res = con.createDiagnose(params);
           	
 //            for (Object r : res) System.out.println(":"+ ((DiagnoseCreationMessageGnu) r).toString());  
               
@@ -383,24 +376,40 @@ public class GNUHealthConnectorImpl extends Connector {
 	@Override
 	public List<?> createDiagnose(Map<Object, Object> params) {
 
-		//---- retrieve time stamp information ---//		
-		Map<Object,Object> timeStampMap = new HashMap<Object,Object>();
+		//---- retrieve time stamp information ---//					
+		Object[] timestampObject = null;
+		try {
+			timestampObject = getCreateDiagnoseTimestamps(this.getAdminSession(), String.valueOf((params.get("patient_id"))));
+		} catch (NoSessionInSessionStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		
-
-		//---- create diagnose ---//
-        String diagnoseCreationMessage = execute(
-        		GnuHealthMethods.getPatientWriteMethod(),
-        		GnuHealthParams.getDiagnoseCreationParams(params,timeStampMap,this.getAdminSession()));
-
-        List<DiagnoseCreationMessageGnu> result = new ArrayList<DiagnoseCreationMessageGnu>();
-        String successId = diagnoseCreationMessage.substring(
-        		diagnoseCreationMessage.lastIndexOf(":") + 1,
-        		diagnoseCreationMessage.lastIndexOf("}"));
-        result.add(new DiagnoseCreationMessageGnu(successId));
-
-		
-		return result;
+		if(timestampObject != null){
+		 
+	        Object patientTime = timestampObject[0];
+	        Map<Object,Object> diagnoseTimeMap = (Map<Object,Object>) timestampObject[1];
+	        Map<Object,Object> medicationTimeMap = (Map<Object,Object>)timestampObject[2];
+	        Map<Object,Object> vaccinationTimeMap = (Map<Object,Object>)timestampObject[2];
+			
+			
+	
+			//---- create diagnose ---//
+	        String diagnoseCreationMessage = execute(
+	        		GnuHealthMethods.getPatientWriteMethod(),
+	        		GnuHealthParams.getDiagnoseCreationParams(params,patientTime,diagnoseTimeMap,medicationTimeMap,vaccinationTimeMap,this.getAdminSession()));
+	
+	        List<DiagnoseCreationMessageGnu> result = new ArrayList<DiagnoseCreationMessageGnu>();
+	        String successId = diagnoseCreationMessage.substring(
+	        		diagnoseCreationMessage.lastIndexOf(":") + 1,
+	        		diagnoseCreationMessage.lastIndexOf("}"));
+	        result.add(new DiagnoseCreationMessageGnu(successId));
+	
+			
+			return result;
+		}else {
+			return new ArrayList<Object>();
+		}
 	}
 
 
@@ -866,7 +875,7 @@ public class GNUHealthConnectorImpl extends Connector {
      * 
      * @param session
      * @param patientId
-     * @return Object[] that contains 0: Object patientTime -> id ; 1:  Map<Object,Object> diagnoseTimeMap -> id,timestamp ; 2: Map<Object,Object> medicationTimeMap -> id,timestamp
+     * @return Object[] that contains 0: Object patientTime -> id ; 1:  Map<Object,Object> diagnoseTimeMap -> id,timestamp ; 2: Map<Object,Object> medicationTimeMap -> id,timestamp ; 3: Map<Object,Object> vaccinationTimeMap -> id,timestamp
      * @throws NoSessionInSessionStoreException
      */
     public Object[] getCreateDiagnoseTimestamps(String session,String patientId)
@@ -884,6 +893,12 @@ public class GNUHealthConnectorImpl extends Connector {
         int[] medicationIntIds = new int[medicationIdList.size()];
         for(int i=0; i<medicationIdList.size(); i++){
         	medicationIntIds[i] = Integer.parseInt(medicationIdList.get(i));
+        }
+        
+        String[] vaccinationIdList = this.getVaccinationIdsForPatient(patientId);
+        int[] vaccinationIntIds = new int[medicationIdList.size()];
+        for(int i=0; i<vaccinationIdList.length; i++){
+        	vaccinationIntIds[i] = Integer.parseInt(vaccinationIdList[i]);
         }
     	
     	//get patient timestamp
@@ -943,8 +958,28 @@ public class GNUHealthConnectorImpl extends Connector {
         	//no medication found
         }
         
+      //get vaccination stimestamps
+        Map<Object,Object> vaccinationTimeMap = new HashMap<Object,Object>();
+        
+        String vaccinationTimeString = "false";
+        vaccinationTimeString = execute(GnuHealthMethods.getVaccinationReadMethod(),
+        		GnuHealthParams.getVaccinationsParams(this.getAdminSession(),vaccinationIntIds,1));
+
+//        System.out.println("medicationTimeString   "+medicationTimeString);
+        
+        try{
+	        List<TimestampGnu> medicationList = DomainParserGnu.fromJson(
+	        		vaccinationTimeString, type, TimestampGnu.class);
+	        for (int i=0;i<medicationList.size();i++){
+	            TimestampGnu tT = medicationList.get(i);
+	            tT.prepareDateFormat();
+	            vaccinationTimeMap.put(medicationIntIds[i],tT.getTime());
+	        }
+        }catch(Exception e){
+        	//no medication found
+        }
               
-        return new Object[]{patientTime,diagnoseTimeMap,medicationTimeMap};  
+        return new Object[]{patientTime,diagnoseTimeMap,medicationTimeMap,vaccinationTimeMap};  
     }
     
     
@@ -1168,17 +1203,7 @@ public class GNUHealthConnectorImpl extends Connector {
     public List returnVaccinationsForPatient(String patientId) {
         List<VaccinationGnu> result;
         try {
-            Object[] patientParam = new Object[]{1, getAdminSession(),
-                    new int[]{parseInt(patientId)},
-                    new String[]{"vaccinations"}, "REPLACE_CONTEXT"};
-            String patientVaccinationsString = execute(GnuHealthMethods.getPatientReadMethod(),
-                    patientParam);
-
-            String[] patientVaccinations;
-
-            patientVaccinations = (patientVaccinationsString.substring(
-                    patientVaccinationsString.lastIndexOf("[") + 1,
-                    patientVaccinationsString.lastIndexOf("]}]}"))).split(", ");
+            String[] patientVaccinations = getVaccinationIdsForPatient(patientId);
 
             result = new ArrayList<VaccinationGnu>();
             for (String vaccId : patientVaccinations) {
@@ -1197,6 +1222,26 @@ public class GNUHealthConnectorImpl extends Connector {
         }
 
         return result;
+    }
+    
+    private String[] getVaccinationIdsForPatient(String patientId){
+    	  Object[] patientParam = new Object[]{1, getAdminSession(),
+                  new int[]{parseInt(patientId)},
+                  new String[]{"vaccinations"}, "REPLACE_CONTEXT"};
+          String patientVaccinationsString = execute(GnuHealthMethods.getPatientReadMethod(),
+                  patientParam);
+
+          String[] patientVaccinations = null;
+
+          try{
+	          patientVaccinations = (patientVaccinationsString.substring(
+	                  patientVaccinationsString.lastIndexOf("[") + 1,
+	                  patientVaccinationsString.lastIndexOf("]}]}"))).split(", ");
+          }catch(Exception e){
+        	  patientVaccinations = new String[0];
+          }
+          
+          return patientVaccinations;
     }
 
     private String returnVaccination(String vaccId) {

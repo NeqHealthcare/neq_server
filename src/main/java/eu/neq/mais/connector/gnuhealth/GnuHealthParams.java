@@ -102,7 +102,7 @@ public abstract class GnuHealthParams {
                 "REPLACE_CONTEXT"};
     }
     
-    public static Object[] getDiagnoseCreationParams(Map<Object,Object> paramMap,Map<Object,Object> timeStampMap,String adminSession){
+    public static Object[] getDiagnoseCreationParams(Map<Object,Object> paramMap,Object patientTime, Map<Object,Object> diagnoseTimeMap,Map<Object, Object> medicationTimeMap,Map<Object, Object> vaccinationTimeMap, String adminSession){
     	
     	if(!((paramMap.get("date_start_treatment")).equals(false))){
     		paramMap.put("date_start_treatment",new TimeGnuShort(Long.parseLong((String) paramMap.get("date_start_treatment")))); 
@@ -134,7 +134,39 @@ public abstract class GnuHealthParams {
     	}else{
     	    addMap.put("diseases",new Object[]{new Object[]{"add",new Object[]{}},createContainer});
     	}
-        return new Object[]{1, adminSession,new Object[]{patientId}, addMap, "REPLACE_CONTEXT"};
+      	      	
+      	String timestamp = "\"_timestamp\": {";
+      	
+     	
+      	//add medication
+      	if(!medicationTimeMap.isEmpty()){
+      		for (Map.Entry<Object,Object> entry : medicationTimeMap.entrySet()) { 
+      			timestamp +="\"gnuhealth.patient.medication,"+entry.getKey()+"\": \""+entry.getValue()+"\",";
+  			}
+      	}else{
+      		timestamp +="\"gnuhealth.patient.medication,-2\": null,";
+      	}
+      	
+      	//add diagnose
+      	if(!diagnoseTimeMap.isEmpty()){
+      		for (Map.Entry<Object,Object> entry : diagnoseTimeMap.entrySet()) { 
+      			timestamp +="\"gnuhealth.patient.disease,"+entry.getKey()+"\": \""+entry.getValue()+"\",";
+  			}
+      	}
+      	timestamp +="\"gnuhealth.patient.disease,-1\": null,";
+      	
+      	//vaccination 
+      	if(!vaccinationTimeMap.isEmpty()){
+      		for (Map.Entry<Object,Object> entry : vaccinationTimeMap.entrySet()) { 
+      			timestamp +="\"gnuhealth.vaccination,"+entry.getKey()+"\": \""+entry.getValue()+"\",";
+  			}
+      	}
+      	//patient
+      	timestamp +="\"gnuhealth.patient,"+patientId+"\": \""+patientTime+"\"";
+      	timestamp +="}";
+      	String context = "{"+timestamp+", \"groups\": [], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}";
+		System.out.println("context after CREATION: "+context);   	
+        return new Object[]{1, adminSession,new Object[]{patientId}, addMap, context};
     	
     }
 
@@ -230,6 +262,32 @@ public abstract class GnuHealthParams {
                         "vaccine_lot", "institution.rec_name", "date",
                         "next_dose_date"}, "REPLACE_CONTEXT"};
     }
+    
+	public static Object[] getVaccinationsParams(String adminSession,
+			int[] vaccinationIntIds, int typeOfParams) {
+
+		if(typeOfParams == 0){
+			   return new Object[]{
+		                1,
+		                adminSession,
+		                vaccinationIntIds,
+		                new String[]{"dose", "vaccine.rec_name", "observations",
+		                        "vaccine_lot", "institution.rec_name", "date",
+		                        "next_dose_date"}, "REPLACE_CONTEXT"};
+		   	}else if(typeOfParams == 1){
+		   		return new Object[]{
+		             1,
+		             adminSession,
+		             vaccinationIntIds,
+		             new String[]{"create_date"}, "REPLACE_CONTEXT"};
+		   	}else {
+		   		return new Object[]{
+		                1,
+		                adminSession,
+		                vaccinationIntIds,
+		                new String[]{""}, "REPLACE_CONTEXT"};
+		   	}
+	}
 
     public static Object[] getReturnPatientsParams(String adminSession, int[] allPatientIds, int typeOfParams) {
     	
@@ -307,5 +365,6 @@ public abstract class GnuHealthParams {
     	}
     	
     }
+
 
 }

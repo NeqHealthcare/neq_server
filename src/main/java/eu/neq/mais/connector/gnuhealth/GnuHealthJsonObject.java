@@ -52,7 +52,9 @@ public class GnuHealthJsonObject{
 		Gson gson = new Gson();
 		String almost = gson.toJson(this);
 		
-		String context = "{\"timestamp\": {}, \"groups\": [], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}";
+//		System.out.println("almost without context: "+almost);
+				
+		String context = "{\"_timestamp\": {}, \"groups\": [], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1,\"employee\": 1, \"language_direction\": \"ltr\"}";
 		
 //		String context ="{\"_timestamp\": {\"gnuhealth.patient.medication,12\": \"1331200985.01991\", \"gnuhealth.patient.disease,-2\": null, \"gnuhealth.patient.medication,11\": \"1331200984.99994\", \"gnuhealth.vaccination,8\": \"1331205934.87094\", \"gnuhealth.patient,14\": \"1331205934.86282\", \"gnuhealth.patient.disease,23\": \"1331041078.36183\"}, \"language\": \"en_US\", \"groups\": [1], \"employee\": 1, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}";
 //		String context ="{\"timestamp\": {\"gnuhealth.patient.disease,-2\": null, \"gnuhealth.patient,20\": \"1334702429.57009\"}, \"language\": \"en_US\", \"groups\": [1], \"employee\": 1, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}";	
@@ -62,9 +64,23 @@ public class GnuHealthJsonObject{
 		
 		
 		almost = almost.replace("\"REPLACE_CONTEXT\"", context);
+//		System.out.println("almost with replaced context: "+almost);
 		almost = almost.replace("//", "/");
 		almost = almost.replace("\\\\", "\\");
-//		System.out.println("result from gnuhealthjsonobject getJson method: "+almost);
+//		System.out.println("almost after removal of \\ and \\\\: "+almost);
+		
+		if(almost.contains("\"{")){
+//			System.out.println("it worked: ");
+			String almost_1 = almost.substring(0, almost.indexOf("\"{"));
+			String almost_2 = almost.substring(almost.indexOf("\"{"));
+			almost_2 = almost_2.replace("\"{","{");
+			almost_2 = almost_2.replace("\"]", "]");
+			almost_2 = almost_2.replace("\\\"","\"");
+			almost = almost_1 + almost_2;		
+		}
+
+//		System.out.println("almost end: "+almost);
+//		System.out.println("----");
 		return almost;
 	}
 
