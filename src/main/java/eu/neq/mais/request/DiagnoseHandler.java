@@ -94,7 +94,7 @@ public class DiagnoseHandler {
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public String returnDashboardData(@Context HttpServletResponse servlerResponse, @QueryParam("session") String session,
-                                      @QueryParam("id") String id) {
+                                      @QueryParam("id") Integer patientId) {
 
         String response = new DTOWrapper().wrapError("Error while retrieving DashboardData");
 
@@ -106,7 +106,7 @@ public class DiagnoseHandler {
 
         try {
             connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
-            List<?> dashboard = connector.returnDashBoardData(session, id);
+            List<?> dashboard = connector.returnDiagnosesForPatient(session, patientId);
             response = new DTOWrapper().wrap(dashboard);
         } catch (Exception e) {
             e.printStackTrace();

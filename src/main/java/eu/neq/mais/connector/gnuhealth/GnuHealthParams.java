@@ -102,7 +102,7 @@ public abstract class GnuHealthParams {
                 "REPLACE_CONTEXT"};
     }
     
-    public static Object[] getDiagnoseCreationParams(Map<Object,Object> paramMap,String adminSession){
+    public static Object[] getDiagnoseCreationParams(Map<Object,Object> paramMap,Map<Object,Object> timeStampMap,String adminSession){
     	
     	if(!((paramMap.get("date_start_treatment")).equals(false))){
     		paramMap.put("date_start_treatment",new TimeGnuShort(Long.parseLong((String) paramMap.get("date_start_treatment")))); 
@@ -185,6 +185,41 @@ public abstract class GnuHealthParams {
                         "common_dosage.rec_name", "medicament.rec_name",
                         "start_treatment", "end_treatment"}, "REPLACE_CONTEXT"};
     }
+    
+    public static Object[] getMedicationsParams(String adminSession, int[] medicationIds, int typeOfParams) {
+    	
+    	if(typeOfParams == 0){
+    		 return new Object[]{
+    	                1,
+    	                adminSession,
+    	                medicationIds,
+    	                new String[]{"course_completed", "discontinued", "dose",
+    	                        "route", "duration_period", "frequency_unit",
+    	                        "dose_unit", "frequency", "indication", "notes",
+    	                        "is_active", "admin_times", "common_dosage",
+    	                        "discontinued_reason", "duration", "form.rec_name",
+    	                        "doctor.rec_name", "route.rec_name",
+    	                        "dose_unit.rec_name", "indication.rec_name",
+    	                        "common_dosage.rec_name", "medicament.rec_name",
+    	                        "start_treatment", "end_treatment"}, "REPLACE_CONTEXT"};   		
+    	}else if(typeOfParams == 1){
+    		 return new Object[]{
+ 	                1,
+ 	                adminSession,
+ 	                medicationIds,
+ 	                new String[]{"create_date"}, "REPLACE_CONTEXT"};   		
+    	}else {
+			 return new Object[]{
+	 	                1,
+	 	                adminSession,
+	 	                medicationIds,
+	 	                new String[]{""}, "REPLACE_CONTEXT"};   		
+    	}
+
+       
+    }
+    
+    
 
     public static Object[] getVaccinationParams(String id,String adminSession) {
         return new Object[]{
@@ -196,15 +231,30 @@ public abstract class GnuHealthParams {
                         "next_dose_date"}, "REPLACE_CONTEXT"};
     }
 
-    public static Object[] getReturnPatientsParams(String adminSession, int[] allPatientIds) {
-
-        return new Object[]{
-                1,
-                adminSession,
-                allPatientIds,
-                new String[]{"rec_name", "dob", "diseases", "sex",
-                        "primary_care_doctor.name",
-                        "primary_care_doctor.rec_name"}, "REPLACE_CONTEXT"};
+    public static Object[] getReturnPatientsParams(String adminSession, int[] allPatientIds, int typeOfParams) {
+    	
+    	if(typeOfParams == 0){
+            return new Object[]{
+                    1,
+                    adminSession,
+                    allPatientIds,
+                    new String[]{"rec_name", "dob", "diseases", "sex",
+                            "primary_care_doctor.name",
+                            "primary_care_doctor.rec_name"}, "REPLACE_CONTEXT"};    		
+    	}else if(typeOfParams == 1){
+    		return new Object[]{
+                    1,
+                    adminSession,
+                    allPatientIds,
+                    new String[]{"create_date"}, "REPLACE_CONTEXT"};	
+    	}else{
+    		return new Object[]{
+                    1,
+                    adminSession,
+                    allPatientIds,
+                    new String[]{""}, "REPLACE_CONTEXT"};
+    	}
+    	
     }
 
     public static Object[] getReturnDiagnoseParams(String id, String adminSession) {
@@ -222,6 +272,40 @@ public abstract class GnuHealthParams {
                         "date_stop_treatment", "pcs_code", "allergy_type",
                         "doctor.rec_name", "pcs_code.rec_name"},
                 "REPLACE_CONTEXT"};
+    }
+    
+    public static Object[] getReturnDiagnosesParams(String adminSession, int[] diagnoseIds, int typeOfParams) {
+    	
+    	if(typeOfParams == 0){
+    		 return new Object[]{
+    	                1,
+    	                adminSession,
+    	                diagnoseIds,
+    	                new String[]{"status", "pregnancy_warning", "is_active",
+    	                        "short_comment", "diagnosed_date", "healed_date",
+    	                        "pathology", "disease_severity", "is_infectious",
+    	                        "is_allergy", "pathology.rec_name",
+    	                        "date_start_treatment", "doctor", "age",
+    	                        "weeks_of_pregnancy", "is_on_treatment",
+    	                        "treatment_description", "extra_info",
+    	                        "date_stop_treatment", "pcs_code", "allergy_type",
+    	                        "doctor.rec_name", "pcs_code.rec_name"},
+    	                "REPLACE_CONTEXT"}; 		
+    	}else if(typeOfParams == 1){
+	   		 return new Object[]{
+		                1,
+		                adminSession,
+		                diagnoseIds,
+		                new String[]{"create_date"},
+		                "REPLACE_CONTEXT"}; 	
+    	}else{
+    		return new Object[]{
+                    1,
+                    adminSession,
+                    diagnoseIds,
+                    new String[]{""}, "REPLACE_CONTEXT"};
+    	}
+    	
     }
 
 }
