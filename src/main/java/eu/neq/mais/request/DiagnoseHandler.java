@@ -94,7 +94,7 @@ public class DiagnoseHandler {
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public String returnDashboardData(@Context HttpServletResponse servlerResponse, @QueryParam("session") String session,
-                                      @QueryParam("id") Integer patientId) {
+                                      @QueryParam("id") String patientId) {
 
         String response = new DTOWrapper().wrapError("Error while retrieving DashboardData");
 

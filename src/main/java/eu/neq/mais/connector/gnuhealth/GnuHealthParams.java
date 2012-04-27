@@ -257,11 +257,11 @@ public abstract class GnuHealthParams {
     	
     }
 
-    public static Object[] getReturnDiagnoseParams(String id, String adminSession) {
+    public static Object[] getReturnDiagnoseParams(Object id, String adminSession) {
         return new Object[]{
                 1,
                 adminSession,
-                new int[]{parseInt(id)},
+                new Object[]{id},
                 new String[]{"status", "pregnancy_warning", "is_active",
                         "short_comment", "diagnosed_date", "healed_date",
                         "pathology", "disease_severity", "is_infectious",

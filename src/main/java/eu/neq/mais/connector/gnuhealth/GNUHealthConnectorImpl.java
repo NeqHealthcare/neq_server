@@ -94,12 +94,25 @@ public class GNUHealthConnectorImpl extends Connector {
               
               System.out.println("-----");
               
-//              int[] medicationIds = ((GNUHealthConnectorImpl)con).GetAll;
-//              int[] diagnoseIds = ;
-//              res = ((GNUHealthConnectorImpl)con).getCreateDiagnoseTimestamps(user_session, 21, medicationIds, diagnoseIds);
-//              String bla = new DTOWrapper().wrap(res);
-//              System.out.println("bla: "+bla);
-            
+             
+              
+              Object[] fk = ((GNUHealthConnectorImpl)con).getCreateDiagnoseTimestamps(user_session, "21");
+              /**
+               * 
+               * @param session
+               * @param patientId
+               * @return Object[] that contains 0: Object patientTime -> id ; 1:  Map<Object,Object> diagnoseTimeMap -> id,timestamp ; 2: Map<Object,Object> medicationTimeMap -> id,timestamp
+               * @throws NoSessionInSessionStoreException
+               */
+              
+              Object patientTime = fk[0];
+              Map<Object,Object> diagnoseTimeMap = (Map<Object,Object>) fk[1];
+              Map<Object,Object> medicationTimeMap = (Map<Object,Object>)fk[2];
+              
+              
+              System.out.println(new DTOWrapper().wrap(patientTime));
+              System.out.println(new DTOWrapper().wrap(diagnoseTimeMap));
+              System.out.println(new DTOWrapper().wrap(medicationTimeMap));
        
 //              res = con.returnNewestLabTestResults("1");
 //              for (Object r : res) System.out.println("1:"+ ((LabTestResultGnu) r).getId());
@@ -849,15 +862,36 @@ public class GNUHealthConnectorImpl extends Connector {
     }
 
 
-    public Object[] getCreateDiagnoseTimestamps(String session,int patientId, int[] medicationIds, int[] diagnoseIds)
+    /**
+     * 
+     * @param session
+     * @param patientId
+     * @return Object[] that contains 0: Object patientTime -> id ; 1:  Map<Object,Object> diagnoseTimeMap -> id,timestamp ; 2: Map<Object,Object> medicationTimeMap -> id,timestamp
+     * @throws NoSessionInSessionStoreException
+     */
+    public Object[] getCreateDiagnoseTimestamps(String session,String patientId)
             throws NoSessionInSessionStoreException {
+    	
+    	PatientGnu pati = this.getPatientById(patientId);
+        
+    	List<String> diagnoseIdList = pati.getDiagnoseIds();
+        int[] diagnoseIntIds = new int[diagnoseIdList.size()];
+        for(int i=0; i<diagnoseIdList.size(); i++){
+        	diagnoseIntIds[i] = Integer.parseInt(diagnoseIdList.get(i));
+        }
+        
+        List<String> medicationIdList = getMedicationIdsForPatient(patientId);
+        int[] medicationIntIds = new int[medicationIdList.size()];
+        for(int i=0; i<medicationIdList.size(); i++){
+        	medicationIntIds[i] = Integer.parseInt(medicationIdList.get(i));
+        }
     	
     	//get patient timestamp
     	Object patientTime = null;
     	
         String patientTimeString = "false";
         patientTimeString = execute(GnuHealthMethods.getPatientReadMethod(),
-        		GnuHealthParams.getReturnPatientsParams(this.getAdminSession(),new int[]{patientId},1));
+        		GnuHealthParams.getReturnPatientsParams(this.getAdminSession(),new int[]{Integer.parseInt(patientId)},1));
         Type type = new TypeToken<List<TimestampGnu>>() {
         }.getType();
         List<TimestampGnu> patientList = DomainParserGnu.fromJson(
@@ -868,33 +902,45 @@ public class GNUHealthConnectorImpl extends Connector {
         }
         
         //get diagnose stimestamps
-        Map<Integer,Object> diagnoseTimeMap = new HashMap<Integer,Object>();
+        Map<Object,Object> diagnoseTimeMap = new HashMap<Object,Object>();
         
         String diagnoseTimeString = "false";
         diagnoseTimeString = execute(GnuHealthMethods.getDiagnoseReadMethod(),
-        		GnuHealthParams.getReturnDiagnosesParams(this.getAdminSession(),diagnoseIds,1));
-
-        List<TimestampGnu> diagnoseList = DomainParserGnu.fromJson(
-        		diagnoseTimeString, type, TimestampGnu.class);
-        for (int i=0;i<diagnoseList.size();i++){
-            TimestampGnu tT = diagnoseList.get(i);
-            tT.prepareDateFormat();
-            diagnoseTimeMap.put(diagnoseIds[i],tT.getTime());
+        		GnuHealthParams.getReturnDiagnosesParams(this.getAdminSession(),diagnoseIntIds,1));
+        
+//        System.out.println("diagnoseTimeString   "+diagnoseTimeString);
+        
+        try{
+	        List<TimestampGnu> diagnoseList = DomainParserGnu.fromJson(
+	        		diagnoseTimeString, type, TimestampGnu.class);
+	        for (int i=0;i<diagnoseList.size();i++){
+	            TimestampGnu tT = diagnoseList.get(i);
+	            tT.prepareDateFormat();
+	            diagnoseTimeMap.put(diagnoseIntIds[i],tT.getTime());
+	        }
+        }catch (Exception e){
+        	//no diagnoses found
         }
         
         //get medication stimestamps
-        Map<Integer,Object> medicationTimeMap = new HashMap<Integer,Object>();
+        Map<Object,Object> medicationTimeMap = new HashMap<Object,Object>();
         
         String medicationTimeString = "false";
-        diagnoseTimeString = execute(GnuHealthMethods.getMedicationReadMethod(),
-        		GnuHealthParams.getMedicationsParams(this.getAdminSession(),medicationIds,1));
+        medicationTimeString = execute(GnuHealthMethods.getMedicationReadMethod(),
+        		GnuHealthParams.getMedicationsParams(this.getAdminSession(),medicationIntIds,1));
 
-        List<TimestampGnu> medicationList = DomainParserGnu.fromJson(
-        		medicationTimeString, type, TimestampGnu.class);
-        for (int i=0;i<medicationList.size();i++){
-            TimestampGnu tT = medicationList.get(i);
-            tT.prepareDateFormat();
-            medicationTimeMap.put(medicationIds[i],tT.getTime());
+//        System.out.println("medicationTimeString   "+medicationTimeString);
+        
+        try{
+	        List<TimestampGnu> medicationList = DomainParserGnu.fromJson(
+	        		medicationTimeString, type, TimestampGnu.class);
+	        for (int i=0;i<medicationList.size();i++){
+	            TimestampGnu tT = medicationList.get(i);
+	            tT.prepareDateFormat();
+	            medicationTimeMap.put(medicationIntIds[i],tT.getTime());
+	        }
+        }catch(Exception e){
+        	//no medication found
         }
         
               
@@ -996,10 +1042,10 @@ public class GNUHealthConnectorImpl extends Connector {
 
     }
     
-    private PatientGnu getPatientById(int patientId){
+    public PatientGnu getPatientById(String patientId){
     	String patientString = "false";
     	patientString = execute(GnuHealthMethods.getPatientReadMethod(),
-        		GnuHealthParams.getReturnPatientsParams(this.getAdminSession(),new int[]{patientId},0));
+        		GnuHealthParams.getReturnPatientsParams(this.getAdminSession(),new int[]{Integer.parseInt(patientId)},0));
     	
     	Type listType = new TypeToken<List<PatientGnu>>() {
         }.getType();
@@ -1057,7 +1103,7 @@ public class GNUHealthConnectorImpl extends Connector {
      *      java.lang.String)
      */
     @Override
-    public List<?> returnDiagnosesForPatient(String session, Integer id) {
+    public List<?> returnDiagnosesForPatient(String session, String id) {
 
         PatientGnu patient = this.getPatientById(id);
         if (patient == null) {
@@ -1161,16 +1207,8 @@ public class GNUHealthConnectorImpl extends Connector {
     }
 
     public List returnMedicationsForPatient(String patientID) {
-        Object[] patientParam = new Object[]{1, getAdminSession(),
-                new int[]{parseInt(patientID)},
-                new String[]{"medications"}, "REPLACE_CONTEXT"};
-        String patient = execute(GnuHealthMethods.getPatientReadMethod(), patientParam);
-        patient = patient.substring(patient.indexOf("[") + 1,
-                patient.indexOf("]}"));
-
-        MedicationHelper medHelper = new Gson().fromJson(patient,
-                MedicationHelper.class);
-        List<String> medicationIds = medHelper.getMedications();
+       
+        List<String> medicationIds = this.getMedicationIdsForPatient(patientID);
 
         List<MedicationGnu> result = new ArrayList<MedicationGnu>();
         for (String medId : medicationIds) {
@@ -1188,6 +1226,21 @@ public class GNUHealthConnectorImpl extends Connector {
         		GnuHealthParams.getMedicationParams(medicationID,this.getAdminSession()));
 
         return result;
+    }
+    
+    private List<String> getMedicationIdsForPatient(String patientId){
+    	Object[] patientParam = new Object[]{1, getAdminSession(),
+                new int[]{parseInt(patientId)},
+                new String[]{"medications"}, "REPLACE_CONTEXT"};
+        String patient = execute(GnuHealthMethods.getPatientReadMethod(), patientParam);
+        patient = patient.substring(patient.indexOf("[") + 1,
+                patient.indexOf("]}"));
+
+        MedicationHelper medHelper = new Gson().fromJson(patient,
+                MedicationHelper.class);
+        List<String> medicationIds = medHelper.getMedications();
+
+        return medicationIds;
     }
 
     /*
