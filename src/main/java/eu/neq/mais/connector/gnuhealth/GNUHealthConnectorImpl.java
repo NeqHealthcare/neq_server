@@ -1111,7 +1111,7 @@ public class GNUHealthConnectorImpl extends Connector {
             if (patient.getDiagnoseIds() != null) {
                 for (String diseaseID : patient.getDiagnoseIds()) {
                     String diagnoseString = execute(GnuHealthMethods.getDiagnoseReadMethod(),
-                    		GnuHealthParams.getReturnDiagnoseParams(diseaseID,this.getAdminSession()));
+                    		GnuHealthParams.getReturnDiagnoseParams(Integer.parseInt(diseaseID),this.getAdminSession()));
 
                     DiagnoseGnu tempDiagnose = DomainParserGnu.fromJson(
                             diagnoseString, DiagnoseGnu.class);
@@ -1150,7 +1150,7 @@ public class GNUHealthConnectorImpl extends Connector {
         if (patient.getDiagnoseIds() != null) {
             for (String diseaseID : patient.getDiagnoseIds()) {
                 String diagnoseString = execute(GnuHealthMethods.getDiagnoseReadMethod(),
-                		GnuHealthParams.getReturnDiagnoseParams(diseaseID,this.getAdminSession()));
+                		GnuHealthParams.getReturnDiagnoseParams(Integer.parseInt(diseaseID),this.getAdminSession()));
                 DiagnoseGnu tmp = DomainParserGnu.fromJson(diagnoseString,
                         DiagnoseGnu.class);
                 tmp.prepareDateFormat();
@@ -1176,7 +1176,7 @@ public class GNUHealthConnectorImpl extends Connector {
      */
     public Diagnose returnDiagnose(String diagnoseID) {
         String diagnose = this.execute(GnuHealthMethods.getDiagnoseReadMethod(),
-        		GnuHealthParams.getReturnDiagnoseParams(diagnoseID,this.getAdminSession()));
+        		GnuHealthParams.getReturnDiagnoseParams(Integer.parseInt(diagnoseID),this.getAdminSession()));
 
         DiagnoseGnu tmp = DomainParserGnu.fromJson(diagnose, DiagnoseGnu.class);
         tmp.prepareDateFormat();
