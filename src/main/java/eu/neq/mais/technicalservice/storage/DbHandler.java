@@ -212,15 +212,19 @@ public class DbHandler {
 
 
                     ISqlJetCursor cursor = table.scope(VitalData.INDEX_VITALDATA_ITEM_ID,
-                            new Object[]{startDate_DB.getTimeInMillis()},
-                            new Object[]{endDate.getTimeInMillis()});
+                            new Object[]{endDate_DB.getTimeInMillis()},
+                            new Object[]{startDate_DB.getTimeInMillis()});
 
                     do {
 
                         VitalData tmp = new VitalData();
                         tmp.read(cursor);
-                        result.add(tmp);
-                        //if (tmp.getUser_id() == user_id)
+
+                        System.out.println(tmp.getUser_id());
+                        System.out.println(user_id);
+                        if (tmp.getUser_id().equals(user_id))
+                            result.add(tmp);
+
                     } while (cursor.next());
 
                     return result;
