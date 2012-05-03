@@ -15,7 +15,7 @@ public class VitalDataGnu implements VitalData {
 
     Integer id;
     String patient_id, state;
-    DateGnu date;
+    Calendar date;
     float bmi, temprature, blood_pressure, fluid_balace;
 
     public VitalDataGnu(String patient_id, double bmi, double temprature, double blood_pressure, double fluid_balace, long date) {
@@ -24,13 +24,15 @@ public class VitalDataGnu implements VitalData {
         this.blood_pressure = (float) blood_pressure;
         this.fluid_balace = (float) fluid_balace;
         this.patient_id = patient_id;
-        this.date = new DateGnu();
+        //this.date = new Date();
 
-        Calendar temp_date = Calendar.getInstance();
-        temp_date.setTimeInMillis(date);
-        this.date.setDay(temp_date.getTime().getDay());
-        this.date.setMonth(temp_date.getTime().getMonth());
-        this.date.setYear(temp_date.getTime().getYear());
+        this.date = Calendar.getInstance();
+
+        this.date.setTimeInMillis(date);
+        //this.date = new Date(temp_date.);
+        //this.date.setDate(temp_date.getTime().getDay());
+        //this.date.setMonth(temp_date.getTime().getMonth());
+        //this.date.setYear(temp_date.getTime().getYear());
 
     }
 
@@ -75,11 +77,11 @@ public class VitalDataGnu implements VitalData {
         this.state = state;
     }
 
-    public DateGnu getDate() {
+    public Calendar getDate() {
         return date;
     }
 
-    public void setDate(DateGnu date) {
+    public void setDate(Calendar date) {
         this.date = date;
     }
 

@@ -56,7 +56,7 @@ public class VitalDataHandler {
             startDate_sql.setTime(sdfToDate.parse(startDate));
 
             endDate_sql = Calendar.getInstance();
-            startDate_sql.setTime(sdfToDate.parse(endDate));
+            endDate_sql.setTime(sdfToDate.parse(endDate));
 
             System.out.print(endDate_sql.getTime());
             System.out.print(startDate_sql.getTime());

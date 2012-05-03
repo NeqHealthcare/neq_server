@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static java.lang.Long.*;
+
 
 public class DbHandler {
 
@@ -198,10 +200,10 @@ public class DbHandler {
     public List<VitalData> getVitalData(final String user_id, final Calendar startDate, final Calendar endDate) {
         final List<VitalData> result = new ArrayList<VitalData>();
         final Calendar startDate_DB = Calendar.getInstance();
-        startDate_DB.setTime(startDate.getTime());
+        //startDate_DB.setTime(startDate.getTime());
 
-        final Calendar endDate_DB = Calendar.getInstance();
-        endDate_DB.setTime(endDate.getTime());
+        final Calendar date_DB = Calendar.getInstance();
+        //endDate_DB.setTime(endDate.getTime());
 
 
         try {
@@ -211,18 +213,20 @@ public class DbHandler {
                     ISqlJetTable table = db.getTable(VitalData.TABLE_NAME);
 
 
-                    ISqlJetCursor cursor = table.scope(VitalData.INDEX_VITALDATA_ITEM_ID,
-                            new Object[]{endDate_DB.getTimeInMillis()},
-                            new Object[]{startDate_DB.getTimeInMillis()});
-
+                    ISqlJetCursor cursor = table.lookup(VitalData.INDEX_VITALDATA_ITEM_ID);
+                    // new Object[]{endDate_DB.getTimeInMillis()},
+                    //new Object[]{startDate_DB.getTimeInMillis()}
                     do {
 
                         VitalData tmp = new VitalData();
                         tmp.read(cursor);
 
-                        System.out.println(tmp.getUser_id());
-                        System.out.println(user_id);
-                        if (tmp.getUser_id().equals(user_id))
+                        date_DB.setTimeInMillis(parseLong(tmp.getDate()));
+                        //System.out.println(date_DB.getTime());
+
+                        if (tmp.getUser_id().equals(user_id) &&
+                                date_DB.before(endDate) &&
+                                date_DB.after(startDate))
                             result.add(tmp);
 
                     } while (cursor.next());
