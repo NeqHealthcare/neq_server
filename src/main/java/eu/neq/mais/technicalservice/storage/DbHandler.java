@@ -7,7 +7,6 @@ import org.tmatesoft.sqljet.core.table.ISqlJetTransaction;
 import org.tmatesoft.sqljet.core.table.SqlJetDb;
 
 import java.io.File;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -34,7 +33,6 @@ public class DbHandler {
         } finally {
             vitalData = new VitalData();
             vitalData.initialize(this.getDb());
-            //this.insertVitalData("14");
             login = new Login();
             login.initialize(this.getDb());
 
@@ -173,13 +171,38 @@ public class DbHandler {
     VitalData methods
      */
 
-    public List<VitalData> getVitalData(final String user_id, final Date startDate) {
+
+    public int getUserItemsCount(final String user_id) {
+
+        try {
+            return (Integer) db.runReadTransaction(new ISqlJetTransaction() {
+
+                public Object run(SqlJetDb db) throws SqlJetException {
+                    ISqlJetTable table = db.getTable(VitalData.TABLE_NAME);
+
+
+                    ISqlJetCursor cursor = table.lookup(VitalData.INDEX_USER_ID,
+                            user_id);
+
+                    return (int) cursor.getRowCount();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+
+    public List<VitalData> getVitalData(final String user_id, final Calendar startDate, final Calendar endDate) {
         final List<VitalData> result = new ArrayList<VitalData>();
         final Calendar startDate_DB = Calendar.getInstance();
-        startDate_DB.setTime(startDate);
+        startDate_DB.setTime(startDate.getTime());
 
         final Calendar endDate_DB = Calendar.getInstance();
-        //startDate_DB.setTime(endDate);
+        endDate_DB.setTime(endDate.getTime());
+
 
         try {
             return (List<VitalData>) db.runReadTransaction(new ISqlJetTransaction() {
@@ -187,15 +210,17 @@ public class DbHandler {
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(VitalData.TABLE_NAME);
 
+
                     ISqlJetCursor cursor = table.scope(VitalData.INDEX_VITALDATA_ITEM_ID,
-                            new Object[]{user_id},
-                            new Object[]{startDate_DB.getTimeInMillis()});
+                            new Object[]{startDate_DB.getTimeInMillis()},
+                            new Object[]{endDate.getTimeInMillis()});
 
                     do {
+
                         VitalData tmp = new VitalData();
                         tmp.read(cursor);
                         result.add(tmp);
-
+                        //if (tmp.getUser_id() == user_id)
                     } while (cursor.next());
 
                     return result;
@@ -215,6 +240,7 @@ public class DbHandler {
             final eu.neq.mais.domain.gnuhealth.VitalDataGnu vitalDataGnu = new eu.neq.mais.domain.gnuhealth.VitalDataGnu(user_id);
             final Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DATE, -100);
+            //System.out.println(calendar.getTime());
 
 
             db.runWriteTransaction(new ISqlJetTransaction() {
@@ -222,7 +248,9 @@ public class DbHandler {
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(VitalData.TABLE_NAME);
                     for (int i = 1; i < 100; i++) {
+                        vitalDataGnu.generateVitalData();
                         calendar.add(Calendar.DATE, 1);
+                        //System.out.println(calendar.getTime());
                         table.insert(user_id, calendar.getTimeInMillis(),
                                 vitalDataGnu.getBmi(),
                                 vitalDataGnu.getTemprature(),

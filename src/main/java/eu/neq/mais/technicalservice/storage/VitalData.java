@@ -29,6 +29,7 @@ public class VitalData implements DbTable {
     public static String FIELD_TEMPRATURE = "temprature";
     public static String FIELD_PULSE = "pulse";
     public static String FIELD_FLUID_BALANCE = "fluid_balance";
+    public static String INDEX_USER_ID = "INDEX_USER_ID";
 
     public VitalData() {
     }
@@ -60,7 +61,9 @@ public class VitalData implements DbTable {
                 //db.dropTable(TABLE_NAME);
                 db.createTable("CREATE TABLE " + TABLE_NAME + " (user_id VARCHAR, " + FIELD_DATE + " INTEGER, " + FIELD_BMI + " DOUBLE, " + FIELD_TEMPRATURE + " DOUBLE, " + FIELD_PULSE + " DOUBLE, " + FIELD_FLUID_BALANCE + " DOUBLE)");
                 //bmi DOUBLE, temprature DOUBLE, pulse DOUBLE, fluid_balance DOUBLE
-                db.createIndex("CREATE INDEX " + INDEX_VITALDATA_ITEM_ID + " ON " + TABLE_NAME + "(" + FIELD_DATE + "," + FIELD_USER_ID + ")");
+                db.createIndex("CREATE INDEX " + INDEX_VITALDATA_ITEM_ID + " ON " + TABLE_NAME + "(" + FIELD_DATE + ")");
+                db.createIndex("CREATE INDEX " + INDEX_USER_ID + " ON " + TABLE_NAME + "(" + FIELD_USER_ID + ")");
+
                 db.commit();
 
                 System.out.println("Creating VitalData Table");

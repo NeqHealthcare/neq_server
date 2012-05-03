@@ -10,8 +10,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -43,21 +45,42 @@ public class VitalDataHandler {
         //Check for right assignmrnt of values
         //Date startDate_sql = new Date(startDate.getMonth(), startDate.getDay(), startDate.getYear());
         //Date endDate_sql = new Date(endDate.getMonth(), endDate.getDay(), endDate.getYear());
+        Calendar startDate_sql = null;
+        Calendar endDate_sql = null;
 
-        Date startDate_sql = new Date(5, 12, 2012);
-        Date endDate_sql = new Date(6, 20, 2012);
+
+        SimpleDateFormat sdfToDate = new SimpleDateFormat("dd.MM.yyyy");
+        try {
+            startDate_sql = Calendar.getInstance();
+
+            startDate_sql.setTime(sdfToDate.parse(startDate));
+
+            endDate_sql = Calendar.getInstance();
+            startDate_sql.setTime(sdfToDate.parse(endDate));
+
+            System.out.print(endDate_sql.getTime());
+            System.out.print(startDate_sql.getTime());
+
+        } catch (ParseException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
 
         try {
 
             DbHandler dbh = new DbHandler();
-            List<eu.neq.mais.technicalservice.storage.VitalData> vitalDataEntries = dbh.getVitalData(String
-                    .valueOf(patient_id), startDate_sql);
 
 
-            if (vitalDataEntries.isEmpty()) {
-                dbh.close();
-                return null;
+            List<eu.neq.mais.technicalservice.storage.VitalData> vitalDataEntries;
+
+
+            if (dbh.getUserItemsCount(patient_id) == 0) {
+                System.out.println(dbh.getUserItemsCount(patient_id));
+                dbh.insertVitalData(patient_id);
+
             }
+            vitalDataEntries = dbh.getVitalData(String
+                    .valueOf(patient_id), startDate_sql, endDate_sql);
+
 
             List<VitalData> vitalDataListGnu = new ArrayList<VitalData>();
 
@@ -74,25 +97,7 @@ public class VitalDataHandler {
 
             }
 
-            /* List<?> labTests = returnAllLabTestRequests();
 
-            for (eu.neq.mais.technicalservice.storage.LabTestRequest labTestRequest : openRequests) {
-                for (Object uncastLabTest : labTests) {
-                    LabTestRequestGnu labTestRequestGnu = (LabTestRequestGnu) uncastLabTest;
-
-                    if (valueOf(
-                            labTestRequest.getRequest_id().replaceAll(" ", ""))
-                            .equals(labTestRequestGnu.getId())) {
-                        if (labTestRequestGnu.getState().equals("tested")) {
-                            //dbh.removeLabTestRequest(labTestRequest.getRequest_id()); OUTSOURCED TO OWN FUNCTION;
-                            recentlyTestedRequestsIds.add(new Integer(labTestRequest
-                                    .getRequest_id().replaceAll(" ", "")));
-                        }
-                    }
-
-                }
-            }
-            */
             dbh.close();
 
             response = new DTOWrapper().wrap(vitalDataListGnu);
