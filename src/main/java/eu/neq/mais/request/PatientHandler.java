@@ -47,7 +47,7 @@ public class PatientHandler {
     @Produces(MediaType.APPLICATION_JSON)
     public String returnPatient(@Context HttpServletResponse servletResponse, @QueryParam("session") String session,
                                 @QueryParam("query") String query,
-                                @QueryParam("ownonly") String ownonly
+                                @QueryParam("ownonly") boolean ownonly
     ) {
 
         String response = new DTOWrapper().wrapError("Error while retrieving patient");
@@ -63,16 +63,17 @@ public class PatientHandler {
             connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
 
             if
-                    (ownonly == "true") {
+            (ownonly == true) {
                 List<?> patientList = connector.returnPersonalPatientsForUIList(session);
                 response = new DTOWrapper().wrap(patientList);
                 logger.info("return patients method returned json object filled with all patients for a specific primary care doctor: " + response);
-            } else if
-                    (query != null) {
+            } else if (query != null) {
                 List<?> patientList = connector.searchForAPatient(query);
                 response = new DTOWrapper().wrap(patientList);
                 logger.info("return patient method returned json object: " + response);
-            } else {
+            } 
+            
+            if(ownonly == false && query != null){
                 List<?> patientList = connector.returnAllPatientsForUIList();
                 response = new DTOWrapper().wrap(patientList);
                 logger.info("return patients method returned json object filled with all patients: " + response);

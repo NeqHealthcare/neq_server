@@ -855,122 +855,7 @@ public class GNUHealthConnectorImpl extends Connector {
             p.prepareDateFormat();
 
         return patientList;
-    }
-
-
-    /**
-     * 
-     * @param session
-     * @param patientId
-     * @return Object[] that contains 0: Object patientTime -> id ; 1:  Map<Object,Object> diagnoseTimeMap -> id,timestamp ; 2: Map<Object,Object> medicationTimeMap -> id,timestamp ; 3: Map<Object,Object> vaccinationTimeMap -> id,timestamp
-     * @throws NoSessionInSessionStoreException
-     */
-    public Object[] getCreateDiagnoseTimestamps(String session,String patientId)
-            throws NoSessionInSessionStoreException {
-    	
-    	PatientGnu pati = this.getPatientById(patientId);
-        
-    	List<String> diagnoseIdList = pati.getDiagnoseIds();
-        int[] diagnoseIntIds = new int[diagnoseIdList.size()];
-        for(int i=0; i<diagnoseIdList.size(); i++){
-        	diagnoseIntIds[i] = Integer.parseInt(diagnoseIdList.get(i));
-        }
-        
-        List<String> medicationIdList = getMedicationIdsForPatient(patientId);
-        int[] medicationIntIds = new int[medicationIdList.size()];
-        for(int i=0; i<medicationIdList.size(); i++){
-        	medicationIntIds[i] = Integer.parseInt(medicationIdList.get(i));
-        }
-        
-        String[] vaccinationIdList = this.getVaccinationIdsForPatient(patientId);
-        int[] vaccinationIntIds = new int[vaccinationIdList.length];
-        for(int i=0; i<vaccinationIdList.length; i++){
-        	try{
-        		vaccinationIntIds[i] = Integer.parseInt(vaccinationIdList[i]);
-        	}catch(NumberFormatException e){
-        		//no vaccination ids found
-        	}
-        }
-    	
-    	//get patient timestamp
-    	Object patientTime = null;
-    	
-        String patientTimeString = "false";
-        patientTimeString = execute(GnuHealthMethods.getPatientReadMethod(),
-        		GnuHealthParams.getReturnPatientsParams(this.getAdminSession(),new int[]{Integer.parseInt(patientId)},1));
-        Type type = new TypeToken<List<TimestampGnu>>() {
-        }.getType();
-        List<TimestampGnu> patientList = DomainParserGnu.fromJson(
-        		patientTimeString, type, TimestampGnu.class);
-        for (TimestampGnu p : patientList){
-            p.prepareDateFormat();
-            patientTime = p.getTime();
-        }
-        
-        //get diagnose stimestamps
-        Map<Object,Object> diagnoseTimeMap = new HashMap<Object,Object>();
-        
-        String diagnoseTimeString = "false";
-        diagnoseTimeString = execute(GnuHealthMethods.getDiagnoseReadMethod(),
-        		GnuHealthParams.getReturnDiagnosesParams(this.getAdminSession(),diagnoseIntIds,1));
-        
-//        System.out.println("diagnoseTimeString   "+diagnoseTimeString);
-        
-        try{
-	        List<TimestampGnu> diagnoseList = DomainParserGnu.fromJson(
-	        		diagnoseTimeString, type, TimestampGnu.class);
-	        for (int i=0;i<diagnoseList.size();i++){
-	            TimestampGnu tT = diagnoseList.get(i);
-	            tT.prepareDateFormat();
-	            diagnoseTimeMap.put(diagnoseIntIds[i],tT.getTime());
-	        }
-        }catch (Exception e){
-        	//no diagnoses found
-        }
-        
-        //get medication stimestamps
-        Map<Object,Object> medicationTimeMap = new HashMap<Object,Object>();
-        
-        String medicationTimeString = "false";
-        medicationTimeString = execute(GnuHealthMethods.getMedicationReadMethod(),
-        		GnuHealthParams.getMedicationsParams(this.getAdminSession(),medicationIntIds,1));
-
-//        System.out.println("medicationTimeString   "+medicationTimeString);
-        
-        try{
-	        List<TimestampGnu> medicationList = DomainParserGnu.fromJson(
-	        		medicationTimeString, type, TimestampGnu.class);
-	        for (int i=0;i<medicationList.size();i++){
-	            TimestampGnu tT = medicationList.get(i);
-	            tT.prepareDateFormat();
-	            medicationTimeMap.put(medicationIntIds[i],tT.getTime());
-	        }
-        }catch(Exception e){
-        	//no medication found
-        }
-        
-      //get vaccination stimestamps
-        Map<Object,Object> vaccinationTimeMap = new HashMap<Object,Object>();
-        
-        String vaccinationTimeString = "false";
-        vaccinationTimeString = execute(GnuHealthMethods.getVaccinationReadMethod(),
-        		GnuHealthParams.getVaccinationsParams(this.getAdminSession(),vaccinationIntIds,1));
-    
-        try{
-	        List<TimestampGnu> vaccinationList = DomainParserGnu.fromJson(
-	        		vaccinationTimeString, type, TimestampGnu.class);
-	        for (int i=0;i<vaccinationList.size();i++){
-	            TimestampGnu tT = vaccinationList.get(i);
-	            tT.prepareDateFormat();
-	            vaccinationTimeMap.put(vaccinationIntIds[i],tT.getTime());
-	        }
-        }catch(Exception e){
-        	//no vaccination found
-        }
-              
-        return new Object[]{patientTime,diagnoseTimeMap,medicationTimeMap,vaccinationTimeMap};  
-    }
-    
+    }   
     
     /**
      * @throws NoSessionInSessionStoreException
@@ -1002,7 +887,6 @@ public class GNUHealthConnectorImpl extends Connector {
 	            }
         	}
         }
-
         return relevantList;
     }
 
