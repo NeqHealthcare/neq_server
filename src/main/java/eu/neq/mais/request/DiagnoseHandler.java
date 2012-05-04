@@ -256,8 +256,7 @@ public class DiagnoseHandler {
             @QueryParam("disease_severity") String disease_severity,
             @QueryParam("is_infectious") boolean is_infectious,
             @QueryParam("extra_info") String extra_info,
-            @QueryParam("patient_id") Integer patient_id,
-            @QueryParam("disease_id") Integer disease_id) {
+            @QueryParam("patient_id") Integer patient_id) {
 
         String response = new DTOWrapper()
                 .wrapError("Error while creating lab test requests");
@@ -297,8 +296,8 @@ public class DiagnoseHandler {
             params.put("disease_severity", disease_severity); //e.g. 3_sv
             params.put("is_infectious", is_infectious); // e.g. true
             params.put("extra_info", extra_info); // e.g. extra info text
-
-
+            params.put("patient_id",patient_id); // e.g. 22
+            
             List<?> labTestCreationSuccessMessage = connector
                     .createDiagnose(params);
 
