@@ -995,10 +995,12 @@ public class GNUHealthConnectorImpl extends Connector {
         
         ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();
         for (PatientGnu p : patientList) {
-            if (Integer.valueOf(p.getPrimary_care_doctor_id()) == party_id) {
-                relevantList.add(p);
-                p.prepareDateFormat();
-            }
+        	if(p.getPrimary_care_doctor_id() != "false"){
+	            if (Integer.valueOf(p.getPrimary_care_doctor_id()) == party_id) {
+	                relevantList.add(p);
+	                p.prepareDateFormat();
+	            }
+        	}
         }
 
         return relevantList;
