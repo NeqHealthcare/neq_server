@@ -41,7 +41,6 @@ public class VitalDataGnu implements VitalData {
         this.generateVitalData();
     }
 
-    @Override
     public VitalData getVitalDataForPatient() {
         return this;
     }

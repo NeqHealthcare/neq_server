@@ -12,7 +12,7 @@ public class TimestampGnu {
 	
 	public void prepareDateFormat() {
 
-		if (!long.class.isInstance(date)) {
+		if (!long.class.isInstance(date) && date != null) {
 			System.out.println("date: "+date);
 			DateGnu temp = new Gson().fromJson(
 					String.valueOf(date), DateGnu.class);
@@ -25,6 +25,8 @@ public class TimestampGnu {
 				date = 0000000000.00000;
 			}
 			
+		}else{
+			date = 0000000000.00000;
 		}
 	}
 

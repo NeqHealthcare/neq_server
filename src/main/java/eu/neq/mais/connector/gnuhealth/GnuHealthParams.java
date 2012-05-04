@@ -3,6 +3,7 @@ package eu.neq.mais.connector.gnuhealth;
 import static java.lang.Integer.parseInt;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import eu.neq.mais.domain.gnuhealth.TimeGnu;
@@ -102,7 +103,7 @@ public abstract class GnuHealthParams {
                 "REPLACE_CONTEXT"};
     }
     
-    public static Object[] getDiagnoseCreationParams(Map<Object,Object> paramMap,Object patientTime, Map<Object,Object> diagnoseTimeMap,Map<Object, Object> medicationTimeMap,Map<Object, Object> vaccinationTimeMap, String adminSession){
+    public static Object[] getDiagnoseCreationParams(Map<Object,Object> paramMap,int[] diagnoseIds, String adminSession){
     	
     	if(!((paramMap.get("date_start_treatment")).equals(false))){
     		paramMap.put("date_start_treatment",new TimeGnuShort(Long.parseLong((String) paramMap.get("date_start_treatment")))); 
@@ -118,55 +119,23 @@ public abstract class GnuHealthParams {
     	}
     	
     	Object patientId = paramMap.get("patient_id");
-    	Object disease_id = paramMap.get("disease_id");
     	
     	paramMap.remove("patient_id");
-    	paramMap.remove("disease_id");
     	
         Object[] createContainer = new Object[2];
         createContainer[0] = "create";
         createContainer[1] = paramMap;
        
         Map<Object, Object> addMap = new HashMap<Object, Object>();
-        
-      	if(!((disease_id).equals(false))){
-      		addMap.put("diseases",new Object[]{new Object[]{"add",new Object[]{disease_id}},createContainer});
-    	}else{
-    	    addMap.put("diseases",new Object[]{new Object[]{"add",new Object[]{}},createContainer});
-    	}
+     
       	      	
-      	String timestamp = "\"_timestamp\": {";
-      	
-     	
-      	//add medication
-      	if(!medicationTimeMap.isEmpty()){
-      		for (Map.Entry<Object,Object> entry : medicationTimeMap.entrySet()) { 
-      			timestamp +="\"gnuhealth.patient.medication,"+entry.getKey()+"\": \""+entry.getValue()+"\",";
-  			}
+        if(diagnoseIds.length != 0){
+      		addMap.put("diseases",new Object[]{new Object[]{"add",diagnoseIds},createContainer});
       	}else{
-      		timestamp +="\"gnuhealth.patient.medication,-2\": null,";
+      		addMap.put("diseases",new Object[]{new Object[]{"add",new Object[]{}},createContainer});
       	}
-      	
-      	//add diagnose
-      	if(!diagnoseTimeMap.isEmpty()){
-      		for (Map.Entry<Object,Object> entry : diagnoseTimeMap.entrySet()) { 
-      			timestamp +="\"gnuhealth.patient.disease,"+entry.getKey()+"\": \""+entry.getValue()+"\",";
-  			}
-      	}
-      	timestamp +="\"gnuhealth.patient.disease,-1\": null,";
-      	
-      	//vaccination 
-      	if(!vaccinationTimeMap.isEmpty()){
-      		for (Map.Entry<Object,Object> entry : vaccinationTimeMap.entrySet()) { 
-      			timestamp +="\"gnuhealth.vaccination,"+entry.getKey()+"\": \""+entry.getValue()+"\",";
-  			}
-      	}
-      	//patient
-      	timestamp +="\"gnuhealth.patient,"+patientId+"\": \""+patientTime+"\"";
-      	timestamp +="}";
-      	String context = "{"+timestamp+", \"groups\": [], \"language\": \"en_US\", \"locale\": {\"date\": \"%m/%d/%Y\", \"thousands_sep\": \",\", \"grouping\": [], \"decimal_point\": \".\"}, \"timezone\": null, \"company\": 1, \"language_direction\": \"ltr\"}";
-		System.out.println("context after CREATION: "+context);   	
-        return new Object[]{1, adminSession,new Object[]{patientId}, addMap, context};
+        
+        return new Object[]{1, adminSession,new Object[]{patientId}, addMap, "REPLACE_CONTEXT"};
     	
     }
 
