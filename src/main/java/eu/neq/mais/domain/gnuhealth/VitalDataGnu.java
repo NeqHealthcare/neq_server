@@ -2,7 +2,9 @@ package eu.neq.mais.domain.gnuhealth;
 
 import eu.neq.mais.domain.VitalData;
 
-import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,7 +17,7 @@ public class VitalDataGnu implements VitalData {
 
     Integer id;
     String patient_id, state;
-    Calendar date;
+    String date;
     float bmi, temprature, blood_pressure, fluid_balace;
 
     public VitalDataGnu(String patient_id, double bmi, double temprature, double blood_pressure, double fluid_balace, long date) {
@@ -24,11 +26,21 @@ public class VitalDataGnu implements VitalData {
         this.blood_pressure = (float) blood_pressure;
         this.fluid_balace = (float) fluid_balace;
         this.patient_id = patient_id;
-        //this.date = new Date();
 
-        this.date = Calendar.getInstance();
+        GregorianCalendar tempDate = new GregorianCalendar();
 
-        this.date.setTimeInMillis(date);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        tempDate.setTimeZone(TimeZone.getDefault());
+        tempDate.setTimeInMillis(date);
+
+
+        try {
+            this.date = dateFormat.format(tempDate.getTime());
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+
         //this.date = new Date(temp_date.);
         //this.date.setDate(temp_date.getTime().getDay());
         //this.date.setMonth(temp_date.getTime().getMonth());
@@ -76,11 +88,11 @@ public class VitalDataGnu implements VitalData {
         this.state = state;
     }
 
-    public Calendar getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Calendar date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
