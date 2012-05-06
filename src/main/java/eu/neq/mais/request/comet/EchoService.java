@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import com.sun.servicetag.SystemEnvironment;
 import org.cometd.bayeux.Message;
 import org.cometd.bayeux.server.BayeuxServer;
 import org.cometd.bayeux.server.ConfigurableServerChannel;
@@ -71,6 +72,7 @@ public final class EchoService {
 	@Listener("/cometd/echo")
 	void echo(ServerSession remote, ServerMessage.Mutable message) {
 		System.out.println("echo");
+        System.out.println(message);
 		remote.deliver(serverSession, message.getChannel(), message.getData(), null);
 
 	}
