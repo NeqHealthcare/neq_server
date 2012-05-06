@@ -11,18 +11,18 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
-public class HelloWorld {
+public class CometdServer {
 
-	public static void main(String[] args) throws Exception {
+	public static void add(Server server) {
 
-		Server server = new Server();
+		//Server server = new Server();
 		QueuedThreadPool qtp = new QueuedThreadPool();
 		qtp.setMinThreads(5);
 		qtp.setMaxThreads(200);
 		server.setThreadPool(qtp);
 		
 		SelectChannelConnector connector=new SelectChannelConnector();
-		connector.setPort(8081);
+		connector.setPort(8082);
         server.addConnector(connector);
         
         ContextHandlerCollection contexts = new ContextHandlerCollection();
@@ -47,18 +47,26 @@ public class HelloWorld {
 		cometd_holder.setInitParameter("transports","org.cometd.websocket.server.WebSocketTransport");
 		context.addServlet(cometd_holder, "/cometd/*");
 			
-		
-//		ServletHolder config = new ServletHolder(ConfigurationServlet.class);
-//		config.setInitOrder(2);
-//		context.addServlet(config, "");
-		
-		server.start();
+				
+		//server.start();
 		
 
 	}
 
-	public HelloWorld() throws Exception {
+	public CometdServer() throws Exception {
 
+	}
+
+	public static void start() {
+		Server cometdServer = new Server();
+		add(cometdServer);
+		try {
+			cometdServer.start();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }

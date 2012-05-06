@@ -124,7 +124,7 @@ public abstract class Connector {
      * @param id
      * @return JSON-String
      */
-    public abstract List<?> returnDashBoardData(String session, String id);
+    public abstract List<?> returnDiagnosesForPatient(String session, String id);
 
     /**
      * Returns all Lab Test Results

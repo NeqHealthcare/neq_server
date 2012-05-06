@@ -17,7 +17,6 @@ import eu.neq.mais.domain.gnuhealth.annotations.MapToGnu;
 public class DomainParserGnu {
 	
 	public static <T> T fromJson(String jsonString, Class<T> targetClass) {
-		
 		jsonString = jsonString.substring(jsonString.indexOf("[") + 1,
 				jsonString.lastIndexOf("]"));
 		
@@ -29,7 +28,6 @@ public class DomainParserGnu {
 				jsonString = jsonString.replace(anno.value(), field.getName());
 			}
 		}
-		
 		return new Gson().fromJson(jsonString, targetClass);
 	}
 	

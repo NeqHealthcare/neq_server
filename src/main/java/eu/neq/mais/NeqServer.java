@@ -22,6 +22,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 import eu.neq.mais.connector.ConnectorFactory;
+import eu.neq.mais.request.comet.CometdServer;
 import eu.neq.mais.technicalservice.FileHandler;
 import eu.neq.mais.technicalservice.Monitor;
 import eu.neq.mais.technicalservice.SessionStore;
@@ -111,6 +112,10 @@ public class NeqServer implements Runnable {
 		//ContextHandlerCollection contexts = new ContextHandlerCollection();
         //contexts.setHandlers(new Handler[] { context });
 	
+		// ADDING COMETD
+		//CometdServer.add(server);
+		CometdServer.start();
+	
 		
 		logger.info("starting server");
 		try {
@@ -131,8 +136,7 @@ public class NeqServer implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-
-
+		
 	}
 	
 	public void stop(){
