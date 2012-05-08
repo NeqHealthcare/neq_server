@@ -86,7 +86,7 @@ public final class EchoService {
 		channel.addAuthorizer(GrantAuthorizer.GRANT_ALL);
 	}
 
-	@Configure("/cometd/pulse/*")
+	@Configure("/cometd/pulse")
 	void pulse(ConfigurableServerChannel channel) {
 		channel.addAuthorizer(GrantAuthorizer.GRANT_ALL);
 	}
@@ -112,7 +112,7 @@ public final class EchoService {
 				public void run() {
 					int packet_id = 0;
 					double x = 0;
-					while (x < 300) {
+					while (x < 30000) {
 						double y = Math.sin(x);
 						String json = new Gson().toJson(new ChartCoordinate(x, y));
 						System.out.println("sending: sin(" + x + ") = " + y);
@@ -120,7 +120,7 @@ public final class EchoService {
 								json, String.valueOf(packet_id++));
 						x += 0.1;
 						try {
-							sleep(1000);
+							sleep(10);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
