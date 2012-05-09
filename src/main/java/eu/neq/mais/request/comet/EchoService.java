@@ -23,7 +23,7 @@ import org.cometd.server.authorizer.GrantAuthorizer;
 
 import com.google.gson.Gson;
 
-import eu.neq.mais.domain.ChartCoordinate;
+import eu.neq.mais.domain.ChartCoordinateFactory;
 
 @Service("echoService")
 public final class EchoService {
@@ -110,12 +110,17 @@ public final class EchoService {
 			final Thread t = new Thread() {
 				
 				public void run() {
+					ChartCoordinateFactory ccf = new ChartCoordinateFactory();
+					Heartbeat hb = new Heartbeat();
 					int packet_id = 0;
+					
+					System.out.println("run");
+					
 					double x = 0;
 					while (x < 30000) {
-						double y = Math.sin(x);
-						String json = new Gson().toJson(new ChartCoordinate(x, y));
-						System.out.println("sending: sin(" + x + ") = " + y);
+						double y = hb.getNextY();
+						String json = new Gson().toJson(ccf.getChartCoordinate(System.currentTimeMillis(), y));
+						System.out.println(y);
 						remote.deliver(serverSession, message.getChannel(),
 								json, String.valueOf(packet_id++));
 						x += 0.1;
