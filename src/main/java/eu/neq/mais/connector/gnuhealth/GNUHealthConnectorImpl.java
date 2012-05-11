@@ -132,9 +132,9 @@ public class GNUHealthConnectorImpl extends Connector {
 //             System.out.println(new DTOWrapper().wrap(res));
              
               // diagnose creation methods         
-//              res = con.returnDiseases();
-//              String response = new DTOWrapper().wrap(res);
-//              System.out.println("r: "+response);
+              res = con.returnDiseases();
+              String response = new DTOWrapper().wrap(res);
+              System.out.println("r: "+response);
 //              System.out.println("-----");
 //              res = con.returnProcedures();
 //              response = new DTOWrapper().wrap(res);
@@ -164,9 +164,9 @@ public class GNUHealthConnectorImpl extends Connector {
           	params.put("extra_info",false); // e.g. extra info text
             params.put("patient_id", 22); // 
           	  
-         	res = con.createDiagnose(params);
-          	
-            for (Object r : res) System.out.println(":"+ ((DiagnoseCreationMessageGnu) r).toString());  
+//         	res = con.createDiagnose(params);
+//          	
+//            for (Object r : res) System.out.println(":"+ ((DiagnoseCreationMessageGnu) r).toString());  
               
         //   con.createLabTestRequest("656465486486", "1", "3", "9");
 
