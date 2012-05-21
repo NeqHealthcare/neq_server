@@ -120,7 +120,7 @@ public final class EchoService {
 					while (x < 30000) {
 						double y = hb.getNextY();
 						String json = new Gson().toJson(ccf.getChartCoordinate(System.currentTimeMillis(), y));
-						System.out.println(y);
+						//System.out.println(y);
 						remote.deliver(serverSession, message.getChannel(),
 								json, String.valueOf(packet_id++));
 						x += 0.1;
