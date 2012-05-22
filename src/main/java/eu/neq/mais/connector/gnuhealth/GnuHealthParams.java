@@ -28,7 +28,7 @@ public abstract class GnuHealthParams {
                 1,
                 adminSession,
                 ids,
-                new String[]{"code", "name", "category.rec_name"
+                new String[]{"id","code", "name", "category.rec_name"
                         },
                 "REPLACE_CONTEXT"};
     }
