@@ -36,9 +36,10 @@ public class CometdServer {
 		CometdServlet cometdServlet = new AnnotationCometdServlet();
 		ServletHolder cometd_holder = new ServletHolder(cometdServlet);
 		cometd_holder.setAsyncSupported(true);
-		cometd_holder.setInitParameter("timeout", "200000");
-		cometd_holder.setInitParameter("interval", "100");
-		cometd_holder.setInitParameter("maxInterval", "100000");
+		cometd_holder.setInitParameter("timeout", "30000");
+		cometd_holder.setInitParameter("ws.timeout", "5000");
+		cometd_holder.setInitParameter("interval", "0");
+		cometd_holder.setInitParameter("maxInterval", "10000");
 		cometd_holder.setInitParameter("multiFrameInterval", "1500");
 		cometd_holder.setInitParameter("directDeliver", "true");
 		cometd_holder.setInitParameter("logLevel", "0");
