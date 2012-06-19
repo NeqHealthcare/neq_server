@@ -6,12 +6,19 @@ import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.DTOWrapper;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
 import eu.neq.mais.technicalservice.Settings;
-import org.eclipse.jetty.server.Response;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -88,5 +95,105 @@ public class PatientHandler {
 
         return response;
     }
+    
+    @OPTIONS
+	@Path("/image")
+	public Response optionsPic(@Context HttpServletResponse servlerResponse) {
+
+		servlerResponse.addHeader("Allow-Control-Allow-Methods",
+				"POST,GET,OPTIONS");
+		servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+		servlerResponse.addHeader("Access-Control-Allow-Origin",
+				Settings.ALLOW_ORIGIN_ADRESS);
+		servlerResponse.addHeader("Access-Control-Allow-Headers",
+				"Content-Type,X-Requested-With");
+		servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+		return null;
+
+	}
+
+	@GET
+	@Path("/image/{id}")
+	@Produces("image/png")
+	public Response getPic(@PathParam("id") String id,
+			@QueryParam("width") String width,
+			@QueryParam("height") String height,
+			@Context HttpServletResponse servlerResponse) {
+
+		servlerResponse.addHeader("Allow-Control-Allow-Methods",
+				"POST,GET,OPTIONS");
+		servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+		servlerResponse.addHeader("Access-Control-Allow-Origin",
+				Settings.ALLOW_ORIGIN_ADRESS);
+		servlerResponse.addHeader("Access-Control-Allow-Headers",
+				"Content-Type,X-Requested-With");
+		servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+		if (!id.contains(".jpg"))
+			id += ".jpg";
+
+		String path = System.getProperty("user.dir")+"/resources/pimages/";
+		File img = new File(path + id);
+
+		if (!img.exists()) {
+			img = new File(path+"default_user.png");
+		}
+
+		BufferedImage image;
+		try {
+			image = ImageIO.read(img);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			
+			if (height != null && width != null) {
+				image = getScaledImage(image, Integer.parseInt(width), Integer.parseInt(height));
+			}
+			
+			ImageIO.write(image, "png", baos);
+
+			return Response.ok(baos.toByteArray()).build();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return Response.serverError().build();
+	}
+	
+	public BufferedImage getScaledImage(BufferedImage originalImage, int IMG_MAX_WIDTH, int IMG_MAX_HEIGHT) {
+		try {
+
+			int IMG_WIDTH = IMG_MAX_WIDTH, IMG_HEIGHT = IMG_MAX_HEIGHT;
+
+			if (originalImage.getWidth() > IMG_MAX_WIDTH
+					|| originalImage.getHeight() > IMG_MAX_HEIGHT) {
+				if (originalImage.getWidth() >= originalImage.getHeight()) {
+					float factor = (float) IMG_MAX_WIDTH
+							/ originalImage.getWidth();
+					IMG_WIDTH = IMG_MAX_WIDTH;
+					IMG_HEIGHT = Math.round(originalImage.getHeight() * factor);
+				} else {
+					float factor = (float) IMG_MAX_HEIGHT
+							/ originalImage.getHeight();
+					IMG_WIDTH = Math.round(originalImage.getWidth() * factor);
+					IMG_HEIGHT = IMG_MAX_HEIGHT;
+				}
+			} else {
+				IMG_WIDTH = originalImage.getWidth();
+				IMG_HEIGHT = originalImage.getHeight();
+			}
+			BufferedImage resizedImage = new BufferedImage(IMG_WIDTH,
+					IMG_HEIGHT, originalImage.getType());
+			Graphics2D g = resizedImage.createGraphics();
+			g.drawImage(originalImage, 0, 0, IMG_WIDTH, IMG_HEIGHT, null);
+			g.dispose();
+
+			return resizedImage;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
 
 }

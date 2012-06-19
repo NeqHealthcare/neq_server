@@ -37,6 +37,7 @@ public class NeqServer implements Runnable {
 	
 	private static NeqServer instance = null;
 	private static SessionStore sessionStore = new SessionStore();
+	private static int port = 8080;
 	
 	private Server server = null;
 	
@@ -61,7 +62,7 @@ public class NeqServer implements Runnable {
 		server = new Server();
 		
 		SelectChannelConnector connector = new SelectChannelConnector();
-        connector.setPort(8080);
+        connector.setPort(port);
         
         //default connector
         connector.setMaxIdleTime(30000);
@@ -161,6 +162,14 @@ public class NeqServer implements Runnable {
 
 	public static void setSessionStore(SessionStore sessionStore) {
 		NeqServer.sessionStore = sessionStore;
+	}
+	
+	public static int getPort() {
+		return port;
+	}
+
+	public static void setPort(int port) {
+		NeqServer.port = port;
 	}
 	
 
