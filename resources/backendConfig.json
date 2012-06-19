@@ -1,22 +1,32 @@
 [
-{
-     "sid" : "gnuhealth1",
-     "url" : "theilemann.dyndns.org",
-     "jsonport" : 8000,
-     "xmlport" : 7070,
-     "connector":"eu.neq.mais.connector.gnuhealth.GNUHealthConnectorImpl",
-     "db": "devel_01",
-     "admin_user":"admin",
-     "admin_pw":"iswi223<<"
- },
- {
-     "sid" : gnuhealth2,
-     "url" : "ec2-176-34-200-228.eu-west-1.compute.amazonaws.com",
-     "jsonport" : 8000,
-     "xmlport" : 7070,
-     "connector":"eu.neq.mais.connector.gnuhealth.GNUHealthConnectorImpl",
-     "db": "db_03",
-     "admin_user":"admin",
-     "admin_pw":"kHq0hE"
- }
- ]
+    {
+        "sid":"gnuhealth1",
+        "url":"theilemann.dyndns.org",
+        "jsonport":8000,
+        "xmlport":7070,
+        "connector":"eu.neq.mais.connector.gnuhealth.GNUHealthConnectorImpl",
+        "db":"devel_01",
+        "admin_user":"admin",
+        "admin_pw":"iswi223<<"
+    },
+    {
+        "sid":gnuhealth2,
+        "url":"ec2-176-34-200-228.eu-west-1.compute.amazonaws.com",
+        "jsonport":8000,
+        "xmlport":7070,
+        "connector":"eu.neq.mais.connector.gnuhealth.GNUHealthConnectorImpl",
+        "db":"db_03",
+        "admin_user":"admin",
+        "admin_pw":"kHq0hE"
+    } ,
+    {
+        "sid":gnuhealth_fast,
+        "url":"ec2-54-247-12-247.eu-west-1.compute.amazonaws.com",
+        "jsonport":8000,
+        "xmlport":7070,
+        "connector":"eu.neq.mais.connector.gnuhealth.GNUHealthConnectorImpl",
+        "db":"db_03",
+        "admin_user":"admin",
+        "admin_pw":"kHq0hE"
+    }
+]

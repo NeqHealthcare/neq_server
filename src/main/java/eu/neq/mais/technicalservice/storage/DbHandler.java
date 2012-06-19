@@ -255,7 +255,7 @@ public class DbHandler {
 
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(VitalData.TABLE_NAME);
-                    for (int i = 1; i < 360; i++) {
+                    for (int i = 1; i < 100; i++) {
                         vitalDataGnu.generateVitalData();
                         calendar.add(Calendar.DATE, 1);
                         //System.out.println(calendar.getTime());
