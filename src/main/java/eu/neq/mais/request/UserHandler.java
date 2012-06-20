@@ -5,18 +5,25 @@ import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.domain.User;
 import eu.neq.mais.technicalservice.DTOWrapper;
+import eu.neq.mais.technicalservice.ImageHandler;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
 import eu.neq.mais.technicalservice.Settings;
 import eu.neq.mais.technicalservice.storage.DbHandler;
 import eu.neq.mais.technicalservice.storage.Login;
 
 import javax.activation.MimetypesFileTypeMap;
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -98,69 +105,69 @@ public class UserHandler {
 
 
     @OPTIONS
-    @Path("//image/")
-    public Response returnImageOptions(@Context HttpServletResponse servlerResponse) {
+	@Path("/image")
+	public Response optionsPic(@Context HttpServletResponse servlerResponse) {
 
-        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
-        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
-        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
-        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
-        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+		servlerResponse.addHeader("Allow-Control-Allow-Methods",
+				"POST,GET,OPTIONS");
+		servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+		servlerResponse.addHeader("Access-Control-Allow-Origin",
+				Settings.ALLOW_ORIGIN_ADRESS);
+		servlerResponse.addHeader("Access-Control-Allow-Headers",
+				"Content-Type,X-Requested-With");
+		servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
+		return null;
 
-        return null;
+	}
 
-    }
+	@GET
+	@Path("/image/{id}")
+	@Produces("image/png")
+	public Response getPic(@PathParam("id") String id,
+			@QueryParam("width") String width,
+			@QueryParam("height") String height,
+			@Context HttpServletResponse servlerResponse) {
 
-    @GET
-    @Path("/image/")
-    @Produces("image/*")
-    public Response returnImage(@Context HttpServletResponse servlerResponse, @QueryParam("session") String session, @QueryParam("size") String size) {
-        String imagePath = "false";
-        File image = new File(imagePath);
+		servlerResponse.addHeader("Allow-Control-Allow-Methods",
+				"POST,GET,OPTIONS");
+		servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+		servlerResponse.addHeader("Access-Control-Allow-Origin",
+				Settings.ALLOW_ORIGIN_ADRESS);
+		servlerResponse.addHeader("Access-Control-Allow-Headers",
+				"Content-Type,X-Requested-With");
+		servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
-        String response = "";
+		if (!id.contains(".jpg"))
+			id += ".jpg";
 
-        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
-        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
-        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
-        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
-        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+		String path = System.getProperty("user.dir")+Settings.DOCTOR_IMAGE_PATH;
+		File img = new File(path + id);
 
-        if (!image.exists()) {
-            throw new WebApplicationException(404);
-        }
+		if (!img.exists()) {
+			img = new File(path+"default_user.png");
+		}
 
-        try {
-            connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
-//			imagePath = connector.getImage(session,size);
-        } catch (Exception e) {
-            e.printStackTrace();
-            imagePath = "false";
-        } catch (NoSessionInSessionStoreException e) {
-            response = new DTOWrapper().wrapError(e.toString());
-        }
-        String mt = new MimetypesFileTypeMap().getContentType(image);
+		BufferedImage image;
+		try {
+			image = ImageIO.read(img);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			
+			if (height != null && width != null) {
+				image = ImageHandler.getScaledImage(image, Integer.parseInt(width), Integer.parseInt(height));
+			}
+			
+			ImageIO.write(image, "png", baos);
 
-        logger.info("return image for a specific user: ");
-        return Response.ok(image, mt).build();
-//		servlerResponse.setContentType(session);
-//		return servlerResponse.getContentType();
-    }
+			return Response.ok(baos.toByteArray()).build();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-    @OPTIONS
-    @Path("/lastLogin")
-    public Response returnLastLoginOptions(@Context HttpServletResponse servlerResponse) {
-
-        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
-        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
-        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
-        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
-        servlerResponse.addHeader("Access-Control-Max-Age", "60");
-
-        return null;
-    }
-
+		return Response.serverError().build();
+	}
+	
+	
     @GET
     @Path("/lastLogin")
     @Produces(MediaType.APPLICATION_JSON)

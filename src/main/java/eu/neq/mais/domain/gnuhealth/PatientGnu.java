@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import eu.neq.mais.NeqServer;
 import eu.neq.mais.domain.Patient;
 import eu.neq.mais.domain.gnuhealth.annotations.MapToGnu;
+import eu.neq.mais.technicalservice.Settings;
 
 /**
  * 
@@ -137,7 +138,7 @@ public class PatientGnu extends Patient {
 
 		if (LinkedHashMap.class.isInstance(photo)) 
 		{
-			File f = new File(System.getProperty("user.dir")+"/resources/pimages/"+id+".jpg");
+			File f = new File(System.getProperty("user.dir")+Settings.PATIENT_IMAGE_PATH+id+".jpg");
 			System.out.print(" --- exists: "+f.exists());
 			if (!f.exists()) 
 			{

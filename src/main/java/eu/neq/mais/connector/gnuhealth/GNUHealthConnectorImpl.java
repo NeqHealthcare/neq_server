@@ -23,9 +23,11 @@ import eu.neq.mais.technicalservice.storage.DbHandler;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.util.*;
 
 import static java.lang.Integer.parseInt;
@@ -1045,7 +1047,17 @@ public class GNUHealthConnectorImpl extends Connector {
         personalInfo.setName(getUserRecName(user_id));
         personalInfo.setPhysician_id(String.valueOf(getPhysicianId(Integer.valueOf(user_id))));
         personalInfo.setId(user_id);
-        personalInfo.setImage_url("http://i43.tinypic.com/29lzamh.png");
+        
+        try {
+			InetAddress addr = InetAddress.getLocalHost();
+			String photourl = addr.getHostAddress() + ":" + NeqServer.getPort() + "/user/image/"+user_id;
+			personalInfo.setImage_url(photourl);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+        
+        
+        //personalInfo.setImage_url("http://i43.tinypic.com/29lzamh.png");
 
         return personalInfo;
     }

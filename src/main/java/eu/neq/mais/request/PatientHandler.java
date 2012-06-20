@@ -4,6 +4,7 @@ import eu.neq.mais.NeqServer;
 import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.DTOWrapper;
+import eu.neq.mais.technicalservice.ImageHandler;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
 import eu.neq.mais.technicalservice.Settings;
 
@@ -133,7 +134,7 @@ public class PatientHandler {
 		if (!id.contains(".jpg"))
 			id += ".jpg";
 
-		String path = System.getProperty("user.dir")+"/resources/pimages/";
+		String path = System.getProperty("user.dir")+Settings.PATIENT_IMAGE_PATH;
 		File img = new File(path + id);
 
 		if (!img.exists()) {
@@ -146,7 +147,7 @@ public class PatientHandler {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			
 			if (height != null && width != null) {
-				image = getScaledImage(image, Integer.parseInt(width), Integer.parseInt(height));
+				image = ImageHandler.getScaledImage(image, Integer.parseInt(width), Integer.parseInt(height));
 			}
 			
 			ImageIO.write(image, "png", baos);
@@ -159,41 +160,4 @@ public class PatientHandler {
 		return Response.serverError().build();
 	}
 	
-	public BufferedImage getScaledImage(BufferedImage originalImage, int IMG_MAX_WIDTH, int IMG_MAX_HEIGHT) {
-		try {
-
-			int IMG_WIDTH = IMG_MAX_WIDTH, IMG_HEIGHT = IMG_MAX_HEIGHT;
-
-			if (originalImage.getWidth() > IMG_MAX_WIDTH
-					|| originalImage.getHeight() > IMG_MAX_HEIGHT) {
-				if (originalImage.getWidth() >= originalImage.getHeight()) {
-					float factor = (float) IMG_MAX_WIDTH
-							/ originalImage.getWidth();
-					IMG_WIDTH = IMG_MAX_WIDTH;
-					IMG_HEIGHT = Math.round(originalImage.getHeight() * factor);
-				} else {
-					float factor = (float) IMG_MAX_HEIGHT
-							/ originalImage.getHeight();
-					IMG_WIDTH = Math.round(originalImage.getWidth() * factor);
-					IMG_HEIGHT = IMG_MAX_HEIGHT;
-				}
-			} else {
-				IMG_WIDTH = originalImage.getWidth();
-				IMG_HEIGHT = originalImage.getHeight();
-			}
-			BufferedImage resizedImage = new BufferedImage(IMG_WIDTH,
-					IMG_HEIGHT, originalImage.getType());
-			Graphics2D g = resizedImage.createGraphics();
-			g.drawImage(originalImage, 0, 0, IMG_WIDTH, IMG_HEIGHT, null);
-			g.dispose();
-
-			return resizedImage;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-
-
 }
