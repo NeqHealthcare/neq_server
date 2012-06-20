@@ -5,6 +5,8 @@ import java.awt.image.BufferedImage;
 
 public class ImageHandler {
 	
+	
+	
 	public static BufferedImage getScaledImage(BufferedImage originalImage, int IMG_MAX_WIDTH, int IMG_MAX_HEIGHT) {
 		try {
 
