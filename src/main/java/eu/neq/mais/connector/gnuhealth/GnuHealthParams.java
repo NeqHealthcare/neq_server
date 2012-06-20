@@ -72,7 +72,7 @@ public abstract class GnuHealthParams {
                 1,
                 adminSession,
                 ids,
-                new String[]{"data", "link", "description", "type" //or type since data gives all data
+                new String[]{"link", "description", "type",  //or type since data gives all data
                 },
                 new GnuMetaData(user)};
     }

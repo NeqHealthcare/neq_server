@@ -5,12 +5,12 @@ import eu.neq.mais.domain.gnuhealth.VitalDataGnu;
 import eu.neq.mais.technicalservice.DTOWrapper;
 import eu.neq.mais.technicalservice.Settings;
 import eu.neq.mais.technicalservice.storage.DbHandler;
-import org.eclipse.jetty.server.Response;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,14 +51,21 @@ public class VitalDataHandler {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getVitalDataForPatient(@QueryParam("session") String sessionString, @QueryParam("patientId") String patient_id,
+    public String getVitalDataForPatient(@Context HttpServletResponse servlerResponse, @QueryParam("session") String sessionString, @QueryParam("patientId") String patient_id,
                                          @QueryParam("start_Date") String startDate, @QueryParam("end_Date") String endDate) {
 
 
         String response;
+
+
+        servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers", "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
+
+
         //Parse Dates
-
-
         //Check for right assignmrnt of values
         //Date startDate_sql = new Date(startDate.getMonth(), startDate.getDay(), startDate.getYear());
         //Date endDate_sql = new Date(endDate.getMonth(), endDate.getDay(), endDate.getYear());
@@ -123,7 +130,15 @@ public class VitalDataHandler {
 
             response = new DTOWrapper().wrapError("Error while retrieving vital data information: " + e.toString());
         }
+
+
         return response;
+
+        //Response.ok(response, MediaType.APPLICATION_JSON).build();
+
+        //.header("Allow-Control-Allow-Methods", "POST,GET,OPTIONS")
+        //.header("X-Requested-With", "XMLHttpRequest")
+        //        .header("Access-Control-Allow-Origin","*").
         //return "test";
     }
 
