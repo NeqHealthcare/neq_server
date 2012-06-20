@@ -1,9 +1,17 @@
 package eu.neq.mais.domain.gnuhealth;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.LinkedHashMap;
 import java.util.List;
+import sun.misc.BASE64Decoder;
 
 import com.google.gson.Gson;
 
+import eu.neq.mais.NeqServer;
 import eu.neq.mais.domain.Patient;
 import eu.neq.mais.domain.gnuhealth.annotations.MapToGnu;
 
@@ -24,6 +32,8 @@ public class PatientGnu extends Patient {
 
 	private String sex;
 	private String id;
+	
+	private Object photo;
 
 	@MapToGnu("primary_care_doctor.rec_name")
 	private String primary_care_doctor_rec_name;
@@ -121,6 +131,54 @@ public class PatientGnu extends Patient {
 				+ ", latestDiagnoseRecName: " + latestDiagnoseRecName
 				+ ", dob: " + dob + ", sex: " + sex + ", id: " + id
 				+ ", pcdrecname: " + primary_care_doctor_rec_name;
+	}
+	
+	public void makePhoto() {
+
+		if (LinkedHashMap.class.isInstance(photo)) 
+		{
+			File f = new File(System.getProperty("user.dir")+"/resources/pimages/"+id+".jpg");
+			System.out.print(" --- exists: "+f.exists());
+			if (!f.exists()) 
+			{
+
+				LinkedHashMap<String, String> lhm = (LinkedHashMap<String, String>) photo;
+				byte[] data;
+
+				try 
+				{
+					data = new BASE64Decoder().decodeBuffer((String) lhm
+							.get("base64"));
+
+					FileOutputStream fos = new FileOutputStream(f);
+					fos.write(data);
+					fos.close();
+				} 
+				catch (IOException e1) 
+				{
+					e1.printStackTrace();
+				}
+			}
+			
+		} 
+		
+		InetAddress addr;
+		try {
+			addr = InetAddress.getLocalHost();
+			photo = addr.getHostAddress() + ":" + NeqServer.getPort() + "/patient/image/"+id;
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public Object getPhoto() {
+		makePhoto();
+		return photo;
+	}
+
+	public void setPhoto(Object photo) {
+		this.photo = photo;
 	}
 
 }

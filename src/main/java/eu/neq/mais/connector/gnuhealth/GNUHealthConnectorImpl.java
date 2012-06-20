@@ -823,8 +823,10 @@ public class GNUHealthConnectorImpl extends Connector {
                 patientListString, listType, PatientGnu.class);
         patientList = addLatestDiagnoseToPatient(patientList);
 
-        for (PatientGnu p : patientList)
+        for (PatientGnu p : patientList) {
             p.prepareDateFormat();
+            p.makePhoto();
+        }
 
         return patientList;
     }
@@ -856,6 +858,7 @@ public class GNUHealthConnectorImpl extends Connector {
                 if (Integer.valueOf(p.getPrimary_care_doctor_id()) == party_id) {
                     relevantList.add(p);
                     p.prepareDateFormat();
+                    p.makePhoto();
                 }
             }
         }
@@ -918,6 +921,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
         for (PatientGnu p : relevantList) {
             p.prepareDateFormat();
+            p.makePhoto();
         }
 
         return relevantList;

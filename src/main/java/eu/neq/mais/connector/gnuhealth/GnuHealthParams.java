@@ -266,7 +266,7 @@ public abstract class GnuHealthParams {
                     allPatientIds,
                     new String[]{"rec_name", "dob", "diseases", "sex",
                             "primary_care_doctor.name",
-                            "primary_care_doctor.rec_name"}, "REPLACE_CONTEXT"};
+                            "primary_care_doctor.rec_name", "photo"}, "REPLACE_CONTEXT"};
         } else if (typeOfParams == 1) {
             return new Object[]{
                     1,
