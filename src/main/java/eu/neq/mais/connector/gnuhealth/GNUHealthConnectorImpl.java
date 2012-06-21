@@ -66,11 +66,21 @@ public class GNUHealthConnectorImpl extends Connector {
 
             // LOGIN
             String user_session = con.login(login_name, password, "gnuhealth2");
-            List<?> res = con.checkForTestedLabRequests("1");
+            List<?> res = null;
+            res = con.checkForTestedLabRequests("1");
             for (Object r : res) System.out.println("1:" + r);
 
             System.out.println("-----");
-
+          
+          //Update Chatter Users --> Following
+          try {
+				res = con.updateChatterUser(NeqServer.getSessionStore().getUserId(user_session),9,true);
+			} catch (NoSessionInSessionStoreException e) {
+				e.printStackTrace();
+			}
+          for (Object r : res) System.out.println("1:"+ (r).toString());
+          System.out.println(new DTOWrapper().wrap(res)); 
+          
           //Chatter Users
           try {
 				res = con.returnChatterUsers(NeqServer.getSessionStore().getUserId(user_session));
@@ -79,6 +89,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			}
           for (Object r : res) System.out.println("1:"+ ((ChatterUser) r).toString());
           System.out.println(new DTOWrapper().wrap(res)); 
+
 
 //              
 //              Object[] fk = ((GNUHealthConnectorImpl)con).getCreateDiagnoseTimestamps(user_session, "21");
