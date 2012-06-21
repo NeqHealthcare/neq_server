@@ -12,7 +12,7 @@ public class TimeGnuShort {
 	public TimeGnuShort(long time){
 		GregorianCalendar cal = new GregorianCalendar();
 		cal.setTimeInMillis(time);
-		this.month = cal.get(Calendar.MONTH);
+		this.month = cal.get(Calendar.MONTH)+1;
 		this.year = cal.get(Calendar.YEAR);
 		this.day = cal.get(Calendar.DAY_OF_MONTH);
 	}
