@@ -242,14 +242,20 @@ public class GNUHealthConnectorImpl extends Connector {
         }
 
     }
-    
-    /*
-     * Helping method returning the record name of a user.
-     *
-     * @param id user's ID
-     *
-     * @return Record name
-     */
+
+	
+    @Override
+	public List<?> updateChatterUser(Integer user, Integer followed_user,
+			boolean is_followed) {
+    	
+    	 DbHandler dbh = new DbHandler();
+         boolean result = dbh.updateFollowingUser(user.toString(), followed_user.toString(), is_followed);
+         dbh.close();
+         
+		List<Boolean> resultList = new ArrayList<Boolean>();
+		resultList.add(result);
+		return resultList;
+	}
     
 
 	@Override
@@ -274,17 +280,31 @@ public class GNUHealthConnectorImpl extends Connector {
 	       }.getType();
 	       List<ChatterUser> userList = new Gson().fromJson(cleansed, listType);
 	       List<ChatterUser> reducedUserList = new ArrayList<ChatterUser>(userList);
+	      
+	  	   DbHandler dbh = new DbHandler();
+	  	   
+           List<eu.neq.mais.technicalservice.storage.FollowingUser> followingUsers = dbh.getFollowingUsers(userId.toString());
+           dbh.close();
+          
+           Set<String> followingUsersSet = new HashSet<String>();
+           for (eu.neq.mais.technicalservice.storage.FollowingUser followingUser : followingUsers) {
+        	   followingUsersSet.add(followingUser.getFollowed_user_id());
+           }
+     
 	       
 	       // SEARCH FOR ID
 	       for (ChatterUser u : userList) {
-	           if (u.getId().equals(userId)){
+	    	   Integer id = Integer.parseInt(u.getId());
+	           if (id.equals(userId)){
 	               reducedUserList.remove(u);
-	               System.out.println("user detected and removed");
 	           }else{
 	        	   try {
 		       			InetAddress addr = InetAddress.getLocalHost();
 		       			String photourl = addr.getHostAddress() + ":" + NeqServer.getPort() + "/user/image/"+u.getId();
 		       			u.setImage_url(photourl);
+		       			if(followingUsersSet.contains(u.getId())){
+		       				u.setIsFollowed(true);
+		       			}
 		       		} catch (UnknownHostException e) {
 		       			e.printStackTrace();
 		       		}
@@ -1614,6 +1634,7 @@ public class GNUHealthConnectorImpl extends Connector {
             this.medications = medications;
         }
     }
+
 
 
 }

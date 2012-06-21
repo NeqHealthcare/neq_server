@@ -294,6 +294,17 @@ public abstract class Connector {
      */
 	public abstract List<?> returnChatterUsers(Integer userId);
 
+	/**
+	 * This method sets the is_followed status of the potentially followed_user to true or false with regards to the user who wants to follow/unfollow 
+	 * 
+	 * @param user
+	 * @param followed_user
+	 * @param is_followed
+	 * @return
+	 */
+	public abstract List<?> updateChatterUser(Integer user, Integer followed_user,
+			boolean is_followed);
+
 
 
 

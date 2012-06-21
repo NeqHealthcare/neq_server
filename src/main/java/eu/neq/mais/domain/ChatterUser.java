@@ -30,6 +30,10 @@ public class ChatterUser {
 	public void setImage_url(String image_url) {
 		this.image_url = image_url;
 	}
+	
+	public void setIsFollowed(boolean isFollowed){
+		this.isFollowed = isFollowed;
+	}
 
 	public String toString(){
 		return "id: "+id+"  rec_name: "+rec_name+"  image_url: "+image_url+"   isFollowed: "+isFollowed;

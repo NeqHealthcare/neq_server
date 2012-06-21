@@ -23,6 +23,8 @@ public class DbHandler {
     private Login login;
     private VitalData vitalData;
     private LabTestRequest labTestRequest;
+    private FollowingUser followingUser;
+    private ChatterMessage chatterMessage;
 
 
     public DbHandler() {
@@ -40,6 +42,12 @@ public class DbHandler {
 
             labTestRequest = new LabTestRequest();
             labTestRequest.initialize(this.getDb());
+            
+            followingUser = new FollowingUser();
+            followingUser.initialize(this.getDb());
+            
+            chatterMessage = new ChatterMessage();
+            chatterMessage.initialize(this.getDb());
         }
 
     }
@@ -52,6 +60,93 @@ public class DbHandler {
             e.printStackTrace();
         }
     }
+    
+    public boolean updateFollowingUser(final String user_id, final String followed_user_id, final Boolean isFollowing){
+
+        try {
+            db.runWriteTransaction(new ISqlJetTransaction() {
+
+                public Object run(SqlJetDb db) throws SqlJetException {
+                	if(isFollowing){
+                		ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
+                        table.insert(user_id, followed_user_id);	
+                        System.out.println("inserted: "+user_id+"   "+followed_user_id);
+                	}else{
+                		ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
+                        ISqlJetCursor cursor = table.lookup(FollowingUser.INDEX_USER_ID, user_id, 
+                        				FollowingUser.INDEX_FOLLOWED_USER_ID, followed_user_id);
+                        
+                        while (!cursor.eof()) {
+                        	cursor.delete();
+                        }
+                        cursor.close();         		
+                	}
+                    
+
+                    return true;
+                }
+            });
+        } catch (SqlJetException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true; 	
+    	
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<FollowingUser> getFollowingUsers(final String user_id) {
+        final List<FollowingUser> result = new ArrayList<FollowingUser>();
+
+        try {
+            return (List<FollowingUser>) db.runReadTransaction(new ISqlJetTransaction() {
+
+                public Object run(SqlJetDb db) throws SqlJetException {
+                    ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
+                    ISqlJetCursor cursor = table.lookup(FollowingUser.INDEX_USER_ID, user_id);
+
+                    do {
+                    	FollowingUser tmp = new FollowingUser();
+                        tmp.read(cursor);
+                        result.add(tmp);
+
+                    } while (cursor.next());
+
+                    return result;
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+    
+    
+    public boolean saveChatterMessage(final String message,final long timestamp,final long parent_id,final String creator_id)
+    
+    {
+
+        try {
+            db.runWriteTransaction(new ISqlJetTransaction() {
+
+                public Object run(SqlJetDb db) throws SqlJetException {
+                    ISqlJetTable table = db.getTable(ChatterMessage.TABLE_NAME);
+                    table.insert(message, timestamp,parent_id,creator_id);
+
+                    return true;
+                }
+            });
+        } catch (SqlJetException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    
 
     public Login getLatestLogin(final String user_id) {
         Login result = null;
