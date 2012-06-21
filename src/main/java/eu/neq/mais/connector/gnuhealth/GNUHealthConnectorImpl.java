@@ -282,10 +282,9 @@ public class GNUHealthConnectorImpl extends Connector {
 	       List<ChatterUser> reducedUserList = new ArrayList<ChatterUser>(userList);
 	      
 	  	   DbHandler dbh = new DbHandler();
-	  	   
            List<eu.neq.mais.technicalservice.storage.FollowingUser> followingUsers = dbh.getFollowingUsers(userId.toString());
            dbh.close();
-          
+           
            Set<String> followingUsersSet = new HashSet<String>();
            for (eu.neq.mais.technicalservice.storage.FollowingUser followingUser : followingUsers) {
         	   followingUsersSet.add(followingUser.getFollowed_user_id());
@@ -310,7 +309,6 @@ public class GNUHealthConnectorImpl extends Connector {
 		       		}
 	           }
 	       }
-
 	       return reducedUserList;
        
 	}

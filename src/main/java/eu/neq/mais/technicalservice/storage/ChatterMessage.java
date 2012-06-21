@@ -66,7 +66,7 @@ public class ChatterMessage implements DbTable {
     public static void main(String[] args) {
         DbHandler dbh = new DbHandler();
 
-        LabTestRequest r = new LabTestRequest();
+        FollowingUser r = new FollowingUser();
         r.initialize(dbh.getDb());
 
 

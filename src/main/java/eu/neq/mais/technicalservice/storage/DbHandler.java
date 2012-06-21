@@ -70,8 +70,8 @@ public class DbHandler {
                 	if(isFollowing){
                 		ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
                         table.insert(user_id, followed_user_id);	
-                        System.out.println("inserted: "+user_id+"   "+followed_user_id);
-                	}else{
+                	}
+                	else{
                 		ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
                         ISqlJetCursor cursor = table.lookup(FollowingUser.INDEX_USER_ID, user_id, 
                         				FollowingUser.INDEX_FOLLOWED_USER_ID, followed_user_id);
