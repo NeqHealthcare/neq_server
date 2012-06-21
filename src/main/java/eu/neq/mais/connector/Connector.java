@@ -277,7 +277,22 @@ public abstract class Connector {
 
     public abstract List<?> returnDocumentList(String id);
 
+    /**
+     * returns the requested document
+     * 
+     * @param documentID
+     * @return document
+     */
     public abstract List<DocumentGnu> returnDocumentData(String documentID);
+
+    
+    /**
+     * Returns all chatter users except the one requesting the chatter users
+     * 
+     * @param userId
+     * @return
+     */
+	public abstract List<?> returnChatterUsers(Integer userId);
 
 
 

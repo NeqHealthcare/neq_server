@@ -33,6 +33,8 @@ import java.util.*;
 import static java.lang.Integer.parseInt;
 import static java.lang.Integer.valueOf;
 
+import eu.neq.mais.domain.ChatterUser;
+
 /**
  * Connector implementation for a GNU Health Hospital Information System. All
  * methods provided by this class deal with accessing information of the
@@ -69,6 +71,14 @@ public class GNUHealthConnectorImpl extends Connector {
 
             System.out.println("-----");
 
+          //Chatter Users
+          try {
+				res = con.returnChatterUsers(NeqServer.getSessionStore().getUserId(user_session));
+			} catch (NoSessionInSessionStoreException e) {
+				e.printStackTrace();
+			}
+          for (Object r : res) System.out.println("1:"+ ((ChatterUser) r).toString());
+          System.out.println(new DTOWrapper().wrap(res)); 
 
 //              
 //              Object[] fk = ((GNUHealthConnectorImpl)con).getCreateDiagnoseTimestamps(user_session, "21");
@@ -107,40 +117,40 @@ public class GNUHealthConnectorImpl extends Connector {
 //             System.out.println(new DTOWrapper().wrap(res));
 
             // diagnose creation methods
-            res = con.returnDiseases();
-            String response = new DTOWrapper().wrap(res);
-            System.out.println("r: " + response);
+//            res = con.returnDiseases();
+//            String response = new DTOWrapper().wrap(res);
+//            System.out.println("r: " + response);
 //              System.out.println("-----");
 //              res = con.returnProcedures();
 //              response = new DTOWrapper().wrap(res);
 //              System.out.println("r: "+response);
 //              
-            Map<Object, Object> params = new HashMap<Object, Object>();
-
-            params.put("status", null); //e.g. c
-            params.put("is_allergy", false); //e.g. true
-            params.put("doctor", 1); //e.g. 1
-            params.put("pregnancy_warning", false); //e.g. true
-            params.put("age", 10); //e.g. 15
-            params.put("weeks_of_pregnancy", 0); //e.g. 10
-            params.put("date_start_treatment", "489534758098"); //e.g. 489534758098
-            params.put("short_comment", false); //e.g. text
-            params.put("is_on_treatment", false); //e.g. true
-            params.put("is_active", false); //e.g. true
-            params.put("diagnosed_date", "1337693785897"); //e.g. 489534758098
-            params.put("treatment_description", false); //e.g. text
-            params.put("healed_date", "1337693785897"); //e.g. 489534758098
-            params.put("date_stop_treatment", "1337693785897"); //e.g. 489534758098
-            params.put("pcs_code", false); //e.g. 5
-            params.put("pathology", 4); //e.g. 11 aka disease ID **** GNUHEALTH
-            params.put("allergy_type", "da"); //e.g. fa
-            params.put("disease_severity", "1_mi"); //e.g. 3_sv
-            params.put("is_infectious", false); // e.g. true
-            params.put("extra_info", false); // e.g. extra info text
-            params.put("patient_id", 14); // 
-
-            res = con.createDiagnose(params);
-            System.out.println(new DTOWrapper().wrap(res));
+//            Map<Object, Object> params = new HashMap<Object, Object>();
+//
+//            params.put("status", null); //e.g. c
+//            params.put("is_allergy", false); //e.g. true
+//            params.put("doctor", 1); //e.g. 1
+//            params.put("pregnancy_warning", false); //e.g. true
+//            params.put("age", 10); //e.g. 15
+//            params.put("weeks_of_pregnancy", 0); //e.g. 10
+//            params.put("date_start_treatment", "489534758098"); //e.g. 489534758098
+//            params.put("short_comment", false); //e.g. text
+//            params.put("is_on_treatment", false); //e.g. true
+//            params.put("is_active", false); //e.g. true
+//            params.put("diagnosed_date", "1337693785897"); //e.g. 489534758098
+//            params.put("treatment_description", false); //e.g. text
+//            params.put("healed_date", "1337693785897"); //e.g. 489534758098
+//            params.put("date_stop_treatment", "1337693785897"); //e.g. 489534758098
+//            params.put("pcs_code", false); //e.g. 5
+//            params.put("pathology", 4); //e.g. 11 aka disease ID **** GNUHEALTH
+//            params.put("allergy_type", "da"); //e.g. fa
+//            params.put("disease_severity", "1_mi"); //e.g. 3_sv
+//            params.put("is_infectious", false); // e.g. true
+//            params.put("extra_info", false); // e.g. extra info text
+//            params.put("patient_id", 14); // 
+//
+//            res = con.createDiagnose(params);
+//            System.out.println(new DTOWrapper().wrap(res));
 
 //            for (Object r : res) System.out.println(":"+ ((DiagnoseCreationMessageGnu) r).toString());  
 
@@ -232,6 +242,59 @@ public class GNUHealthConnectorImpl extends Connector {
         }
 
     }
+    
+    /*
+     * Helping method returning the record name of a user.
+     *
+     * @param id user's ID
+     *
+     * @return Record name
+     */
+    
+
+	@Override
+	public List<?> returnChatterUsers(Integer userId) {
+
+	    String session = getAdminSession();
+	       // Getting all User Ids
+	       int[] ids = getAllUserIds();
+
+	       // Searching for all Ids and fields: name, login
+	       Object[] params = new Object[]{1, session, ids,
+	               new String[]{"id","rec_name"}, "REPLACE_CONTEXT"};
+
+	       // Execute search
+	       String res = execute("model.res.user.read", params);
+
+	       // cleanse json transmission overhead (transaction id, etc..)
+	       String cleansed = res.substring(res.indexOf("["), res.indexOf("]") + 1);
+
+	       // convert to list
+	       Type listType = new TypeToken<List<ChatterUser>>() {
+	       }.getType();
+	       List<ChatterUser> userList = new Gson().fromJson(cleansed, listType);
+	       List<ChatterUser> reducedUserList = new ArrayList<ChatterUser>(userList);
+	       
+	       // SEARCH FOR ID
+	       for (ChatterUser u : userList) {
+	           if (u.getId().equals(userId)){
+	               reducedUserList.remove(u);
+	               System.out.println("user detected and removed");
+	           }else{
+	        	   try {
+		       			InetAddress addr = InetAddress.getLocalHost();
+		       			String photourl = addr.getHostAddress() + ":" + NeqServer.getPort() + "/user/image/"+u.getId();
+		       			u.setImage_url(photourl);
+		       		} catch (UnknownHostException e) {
+		       			e.printStackTrace();
+		       		}
+	           }
+	       }
+
+	       return reducedUserList;
+       
+	}
+
 
 
     @Override
@@ -1244,7 +1307,7 @@ public class GNUHealthConnectorImpl extends Connector {
     }
 
     /*
-      * Helping method returning the cecord name of a user.
+      * Helping method returning the record name of a user.
       *
       * @param id user's ID
       *

@@ -1,33 +1,39 @@
 package eu.neq.mais.request;
 
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+
+import org.eclipse.jetty.server.Response;
+
 import eu.neq.mais.NeqServer;
 import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.technicalservice.DTOWrapper;
-import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
 import eu.neq.mais.technicalservice.Settings;
-import org.eclipse.jetty.server.Response;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import java.util.List;
-import java.util.logging.Logger;
+import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
 
 /**
  * @author Jan Gansen
  */
-@Path("/appointment/")
-public class AppointmentHandler {
-
-    protected static Logger logger = Logger.getLogger("eu.neq.mais.request");
+@Path("/chatter/")
+public class ChatterHandler {
+	
+	protected static Logger logger = Logger.getLogger("eu.neq.mais.request");
 
     private Connector connector;
 
     @OPTIONS
-    @Path("/latest")
-    public Response returnAppointmentsOptions(@Context HttpServletResponse servlerResponse) {
+    @Path("/people")
+    public Response returnPeopleOptions(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -41,13 +47,12 @@ public class AppointmentHandler {
     }
 
     @GET
-    @Path("/latest")
+    @Path("/people")
     @Produces(MediaType.APPLICATION_JSON)
-    public String returnAppointments(@Context HttpServletResponse servlerResponse,
-                                   @QueryParam("session") String session,
-                                   @QueryParam("count") String count) {
+    public String returnMedication(@Context HttpServletResponse servlerResponse,
+                                   @QueryParam("session") String session) {
 
-        String response = new DTOWrapper().wrapError("Error while retrieving appointments");
+        String response = new DTOWrapper().wrapError("Error while retrieving people");
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -57,18 +62,19 @@ public class AppointmentHandler {
 
         try {
             connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
-            List<?> appointments = connector.returnAppointments(Integer.parseInt(count), NeqServer.getSessionStore().getUserId(session));
-            response = new DTOWrapper().wrap(appointments);
+            List<?> people = connector.returnChatterUsers(NeqServer.getSessionStore().getUserId(session));
+            response = new DTOWrapper().wrap(people);
 
         } catch (Exception e) {
             e.printStackTrace();
         } catch (NoSessionInSessionStoreException e) {
             response = new DTOWrapper().wrapError(e.toString());
         }
-        logger.info("return appointment method returned json object: " + response);
+        logger.info("return chatter people method returned json object: " + response);
 
 
         return response;
 
     }
+
 }
