@@ -170,9 +170,16 @@ public class DbHandler {
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(Login.TABLE_NAME);
                     ISqlJetCursor cursor = table.lookup(Login.INDEX_USER_ID, user_id);
+                    Login login = null;
+                    try{
+                    	cursor.last();
+                    	login = new Login(cursor);
+                    }
+                    finally {
+                		cursor.close();
+            	    }
 
-                    cursor.last();
-                    return new Login(cursor);
+                    return login;
                 }
             });
         } catch (SqlJetException e) {
@@ -302,8 +309,15 @@ public class DbHandler {
 
                     ISqlJetCursor cursor = table.lookup(VitalData.INDEX_USER_ID,
                             user_id);
+                    int rows = 0;
+                    try{
+                    	rows = (int) cursor.getRowCount();
+                    }
+                    finally {
+                		cursor.close();
+            	    }
 
-                    return (int) cursor.getRowCount();
+                    return rows;
                 }
             });
         } catch (Exception e) {
