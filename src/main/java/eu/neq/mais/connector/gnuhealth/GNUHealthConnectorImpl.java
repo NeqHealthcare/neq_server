@@ -92,16 +92,16 @@ public class GNUHealthConnectorImpl extends Connector {
 
           
           //Create Template Messages
-          for(int i = 0; i<10; i++){
-        	try {
-  				res = con.saveChatterPost(NeqServer.getSessionStore().getUserId(user_session), "This is a test message: "+System.currentTimeMillis(),null);
-  			} catch (NoSessionInSessionStoreException e) {
-  				e.printStackTrace();
-  			}
-            for (Object r : res) System.out.println("y:"+ (r).toString());
-            System.out.println(new DTOWrapper().wrap(res));   
-          }
-          System.out.println("--------------------------- test messages created");
+//          for(int i = 0; i<10; i++){
+//        	try {
+//  				res = con.saveChatterPost(NeqServer.getSessionStore().getUserId(user_session), "This is a test message: "+System.currentTimeMillis(),null);
+//  			} catch (NoSessionInSessionStoreException e) {
+//  				e.printStackTrace();
+//  			}
+//            for (Object r : res) System.out.println("y:"+ (r).toString());
+//            System.out.println(new DTOWrapper().wrap(res));   
+//          }
+//          System.out.println("--------------------------- test messages created");
           
           //Retrieve test messages
           try {
