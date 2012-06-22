@@ -24,7 +24,7 @@ public class DbHandler {
     private VitalData vitalData;
     private LabTestRequest labTestRequest;
     private FollowingUser followingUser;
-    private ChatterMessage chatterMessage;
+    private ChatterPost chatterPost;
 
 
     public DbHandler() {
@@ -46,8 +46,8 @@ public class DbHandler {
             followingUser = new FollowingUser();
             followingUser.initialize(this.getDb());
             
-            chatterMessage = new ChatterMessage();
-            chatterMessage.initialize(this.getDb());
+            chatterPost = new ChatterPost();
+            chatterPost.initialize(this.getDb());
         }
 
     }
@@ -115,12 +115,14 @@ public class DbHandler {
                     ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
                     ISqlJetCursor cursor = table.lookup(FollowingUser.INDEX_USER_ID, user_id);
                 	try{
-	                    do {
-	                    	FollowingUser tmp = new FollowingUser();
-	                        tmp.read(cursor);
-	                        result.add(tmp);
-	
-	                    } while (cursor.next());
+                		if (!cursor.eof()) {
+		                    do {
+		                    	FollowingUser tmp = new FollowingUser();
+		                        tmp.read(cursor);
+		                        result.add(tmp);
+		
+		                    } while (cursor.next());
+                		}
                 	}
                 	finally {
                 		cursor.close();
@@ -137,7 +139,7 @@ public class DbHandler {
     }
     
     
-    public boolean saveChatterMessage(final String message,final long timestamp,final long parent_id,final String creator_id)
+    public boolean saveChatterPost(final String message,final Long timestamp,final Long parent_id,final String creator_id)
     
     {
 
@@ -145,7 +147,7 @@ public class DbHandler {
             db.runWriteTransaction(new ISqlJetTransaction() {
 
                 public Object run(SqlJetDb db) throws SqlJetException {
-                    ISqlJetTable table = db.getTable(ChatterMessage.TABLE_NAME);
+                    ISqlJetTable table = db.getTable(ChatterPost.TABLE_NAME);
                     table.insert(message, timestamp,parent_id,creator_id);
 
                     return true;
@@ -157,6 +159,40 @@ public class DbHandler {
         }
 
         return true;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<ChatterPost> getChatterPosts(final String[] userIds) {
+        final List<ChatterPost> result = new ArrayList<ChatterPost>();
+
+        try {
+            return (List<ChatterPost>) db.runReadTransaction(new ISqlJetTransaction() {
+
+                public Object run(SqlJetDb db) throws SqlJetException {
+                    ISqlJetTable table = db.getTable(ChatterPost.TABLE_NAME);
+                    ISqlJetCursor cursor = table.lookup(ChatterPost.INDEX_CREATOR_ID, userIds);
+                	try{
+                		if (!cursor.eof()) {
+		                    do {
+		                    	ChatterPost tmp = new ChatterPost();
+		                        tmp.read(cursor);
+		                        result.add(tmp);
+		
+		                    } while (cursor.next());
+                		}
+                	}
+                	finally {
+                		cursor.close();
+            	    }
+
+                    return result;
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     
@@ -245,12 +281,14 @@ public class DbHandler {
                     ISqlJetCursor cursor = table.lookup(LabTestRequest.INDEX_USER_ID, user_id);
 
                     try{
-	                    do {
-	                        LabTestRequest tmp = new LabTestRequest();
-	                        tmp.read(cursor);
-	                        result.add(tmp);
-	
-	                    } while (cursor.next());
+                    	if (!cursor.eof()) {
+		                    do {
+		                        LabTestRequest tmp = new LabTestRequest();
+		                        tmp.read(cursor);
+		                        result.add(tmp);
+		
+		                    } while (cursor.next());
+                    	}
 	                    }
                 	finally {
                 		cursor.close();

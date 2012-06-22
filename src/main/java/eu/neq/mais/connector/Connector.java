@@ -305,6 +305,24 @@ public abstract class Connector {
 	public abstract List<?> updateChatterUser(Integer user, Integer followed_user,
 			boolean is_followed);
 
+	/**
+	 * This method saves a chatter post with the following attributes
+	 * 
+	 * @param userId - the user that created the post
+	 * @param message - the message
+	 * @param parentId - (optional) the id of the message to which this post is a reply
+	 * @return
+	 */
+	public abstract List<?> saveChatterPost(Integer userId, String message, Long parentId);
+
+	/**
+	 * This method returns messages from all the people followed by the user
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	public abstract List<?> returnChatterPosts(Integer userId);
+
 
 
 

@@ -72,24 +72,47 @@ public class GNUHealthConnectorImpl extends Connector {
 
             System.out.println("-----");
           
-          //Update Chatter Users --> Following
-          try {
-				res = con.updateChatterUser(NeqServer.getSessionStore().getUserId(user_session),9,false);
-			} catch (NoSessionInSessionStoreException e) {
-				e.printStackTrace();
-			}
-          for (Object r : res) System.out.println("1:"+ (r).toString());
-          System.out.println(new DTOWrapper().wrap(res)); 
-          
-          //Chatter Users
-          try {
-				res = con.returnChatterUsers(NeqServer.getSessionStore().getUserId(user_session));
-			} catch (NoSessionInSessionStoreException e) {
-				e.printStackTrace();
-			}
-          for (Object r : res) System.out.println("1:"+ ((ChatterUser) r).toString());
-          System.out.println(new DTOWrapper().wrap(res)); 
+//          //Update Chatter Users --> Following
+//          try {
+//				res = con.updateChatterUser(NeqServer.getSessionStore().getUserId(user_session),9,false);
+//			} catch (NoSessionInSessionStoreException e) {
+//				e.printStackTrace();
+//			}
+//          for (Object r : res) System.out.println("1:"+ (r).toString());
+//          System.out.println(new DTOWrapper().wrap(res)); 
+//          
+//          //RetrieveChatter Users
+//          try {
+//				res = con.returnChatterUsers(NeqServer.getSessionStore().getUserId(user_session));
+//			} catch (NoSessionInSessionStoreException e) {
+//				e.printStackTrace();
+//			}
+//          for (Object r : res) System.out.println("1:"+ ((ChatterUser) r).toString());
+//          System.out.println(new DTOWrapper().wrap(res)); 
 
+          
+          //Create Template Messages
+          for(int i = 0; i<10; i++){
+        	try {
+  				res = con.saveChatterPost(NeqServer.getSessionStore().getUserId(user_session), "This is a test message: "+System.currentTimeMillis(),null);
+  			} catch (NoSessionInSessionStoreException e) {
+  				e.printStackTrace();
+  			}
+            for (Object r : res) System.out.println("y:"+ (r).toString());
+            System.out.println(new DTOWrapper().wrap(res));   
+          }
+          System.out.println("--------------------------- test messages created");
+          
+          //Retrieve test messages
+          try {
+				res = con.returnChatterPosts(NeqServer.getSessionStore().getUserId(user_session));
+			} catch (NoSessionInSessionStoreException e) {
+				e.printStackTrace();
+			}
+          for (Object r : res) System.out.println("x:"+ ((ChatterUser) r).toString());
+          System.out.println(new DTOWrapper().wrap(res));
+          
+          System.out.println("--------------------------- test messages retrieved");
 
 //              
 //              Object[] fk = ((GNUHealthConnectorImpl)con).getCreateDiagnoseTimestamps(user_session, "21");
@@ -254,6 +277,43 @@ public class GNUHealthConnectorImpl extends Connector {
 
     }
 
+    
+	@Override
+	public List<?> saveChatterPost(Integer userId, String message, Long parentId) {
+		
+    	boolean result = false;
+    	
+    	for(int i=0;i<8;i++){
+	    	 DbHandler dbh = new DbHandler();
+	         result = dbh.saveChatterPost(message,System.currentTimeMillis(),parentId,userId.toString());
+	         dbh.close();
+	         if(result){
+	        	 break;
+	         }
+    	}
+         
+		List<Boolean> resultList = new ArrayList<Boolean>();
+		resultList.add(result);
+		return resultList;
+	}
+
+
+	@Override
+	public List<?> returnChatterPosts(Integer userId) {
+		List<eu.neq.mais.domain.ChatterUser> userList = (List<eu.neq.mais.domain.ChatterUser>)returnChatterUsers(userId);
+		String[] userIds = new String[userList.size()+1];
+		for(int i=0;i<userList.size();i++){
+			userIds[i] = userList.get(i).getId();
+		}
+		userIds[userList.size()] = userId.toString();
+		
+		 DbHandler dbh = new DbHandler();
+         List<eu.neq.mais.technicalservice.storage.ChatterPost> posts = dbh.getChatterPosts(userIds);
+         dbh.close();
+		
+	
+		return posts;
+	}
 	
     @Override
 	public List<?> updateChatterUser(Integer user, Integer followed_user,
@@ -279,7 +339,7 @@ public class GNUHealthConnectorImpl extends Connector {
 	@Override
 	public List<?> returnChatterUsers(Integer userId) {
 
-	    String session = getAdminSession();
+	       String session = getAdminSession();
 	       // Getting all User Ids
 	       int[] ids = getAllUserIds();
 

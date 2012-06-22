@@ -5,32 +5,32 @@ import org.tmatesoft.sqljet.core.SqlJetTransactionMode;
 import org.tmatesoft.sqljet.core.table.ISqlJetCursor;
 import org.tmatesoft.sqljet.core.table.SqlJetDb;
 
-public class ChatterMessage implements DbTable {
+public class ChatterPost implements DbTable {
 
 	
-	long id;
+	Long id;
     String message;
-    long timestamp;
-    long parent_id;
+    Long timestamp;
+    Long parent_id;
     String creator_id;
     
 
-    public static String TABLE_NAME = "CHATTER_MESSAGE_TABLE";
+    public static String TABLE_NAME = "CHATTER_POST_TABLE";
     public static String FIELD_ID = "id";
     public static String FIELD_MESSAGE = "message";
     public static String FIELD_TIMESTAMP = "timestamp";
     public static String FIELD_PARENT_ID = "parent_id";
     public static String FIELD_CREATOR_ID = "creator_id";
        
-    public static String INDEX_ID = "id_index_ChatterMessage";
-    public static String INDEX_PARENT_ID = "parent_id_index_ChatterMessage";
-    public static String INDEX_CREATOR_ID = "creator_id_index_ChatterMessage";
+    public static String INDEX_ID = "sqlite_autoindex_CHATTER_POST_TABLE_1";
+    public static String INDEX_PARENT_ID = "parent_id_index_ChatterPost";
+    public static String INDEX_CREATOR_ID = "creator_id_index_ChatterPost";
     
 
-    public ChatterMessage() {
+    public ChatterPost() {
     }
 
-    public ChatterMessage(ISqlJetCursor cursor) {
+    public ChatterPost(ISqlJetCursor cursor) {
         this();
         this.read(cursor);
     }
@@ -49,13 +49,12 @@ public class ChatterMessage implements DbTable {
 
     public void initialize(SqlJetDb db) {
         try {
-            if (!db.getSchema().getTableNames().contains(LabTestRequest.TABLE_NAME)) {
+            if (!db.getSchema().getTableNames().contains(TABLE_NAME)) {
                 db.beginTransaction(SqlJetTransactionMode.WRITE);
                 //db.dropTable(TABLE_NAME);
                 db.createTable("CREATE TABLE " + TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT,message VARCHAR,timestamp INTEGER,parent_id INTEGER, creator_id VARCHAR)");
-                db.createIndex("CREATE INDEX " + INDEX_ID + " ON " + TABLE_NAME + "(" + INDEX_ID + ")");
-                db.createIndex("CREATE INDEX " + INDEX_PARENT_ID + " ON " + TABLE_NAME + "(" + INDEX_PARENT_ID + ")");
-                db.createIndex("CREATE INDEX " + INDEX_CREATOR_ID + " ON " + TABLE_NAME + "(" + INDEX_CREATOR_ID + ")");
+                db.createIndex("CREATE INDEX " + INDEX_PARENT_ID + " ON " + TABLE_NAME + "(" + FIELD_PARENT_ID + ")");
+                db.createIndex("CREATE INDEX " + INDEX_CREATOR_ID + " ON " + TABLE_NAME + "(" + FIELD_CREATOR_ID + ")");
                 db.commit();
             }
         } catch (SqlJetException e) {
@@ -66,7 +65,7 @@ public class ChatterMessage implements DbTable {
     public static void main(String[] args) {
         DbHandler dbh = new DbHandler();
 
-        FollowingUser r = new FollowingUser();
+        ChatterPost r = new ChatterPost();
         r.initialize(dbh.getDb());
 
 
