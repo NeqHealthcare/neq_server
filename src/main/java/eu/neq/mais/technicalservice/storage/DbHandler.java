@@ -61,6 +61,7 @@ public class DbHandler {
         }
     }
     
+    
     public boolean updateFollowingUser(final String user_id, final String followed_user_id, final Boolean isFollowing){
 
         try {
@@ -68,18 +69,26 @@ public class DbHandler {
 
                 public Object run(SqlJetDb db) throws SqlJetException {
                 	if(isFollowing){
+
                 		ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
                         table.insert(user_id, followed_user_id);	
                 	}
                 	else{
                 		ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
-                        ISqlJetCursor cursor = table.lookup(FollowingUser.INDEX_USER_ID, user_id, 
-                        				FollowingUser.INDEX_FOLLOWED_USER_ID, followed_user_id);
+                        ISqlJetCursor cursor = table.lookup(FollowingUser.INDEX_USER_ID, user_id);
                         
-                        while (!cursor.eof()) {
-                        	cursor.delete();
-                        }
-                        cursor.close();         		
+                        try {
+                            if (!cursor.eof()) {
+                              do {
+                              	if(cursor.getString(FollowingUser.FIELD_FOLLOWED_USER_ID).equals(followed_user_id)){
+                                  	cursor.delete();
+                              	}
+                               } while(cursor.next());
+                            }
+                          } finally {
+                            cursor.close();
+                          }
+                       		
                 	}
                     
 
@@ -105,13 +114,17 @@ public class DbHandler {
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
                     ISqlJetCursor cursor = table.lookup(FollowingUser.INDEX_USER_ID, user_id);
-
-                    do {
-                    	FollowingUser tmp = new FollowingUser();
-                        tmp.read(cursor);
-                        result.add(tmp);
-
-                    } while (cursor.next());
+                	try{
+	                    do {
+	                    	FollowingUser tmp = new FollowingUser();
+	                        tmp.read(cursor);
+	                        result.add(tmp);
+	
+	                    } while (cursor.next());
+                	}
+                	finally {
+                		cursor.close();
+            	    }
 
                     return result;
                 }
@@ -176,8 +189,12 @@ public class DbHandler {
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(LabTestRequest.TABLE_NAME);
                     ISqlJetCursor cursor = table.lookup(LabTestRequest.INDEX_REQUEST_ID, request_id);
-                    cursor.delete();
-
+                    try{
+                    	cursor.delete();
+                    }                	
+                    finally {
+                		cursor.close();
+            	    }
                     return true;
                 }
             });
@@ -220,12 +237,17 @@ public class DbHandler {
                     ISqlJetTable table = db.getTable(LabTestRequest.TABLE_NAME);
                     ISqlJetCursor cursor = table.lookup(LabTestRequest.INDEX_USER_ID, user_id);
 
-                    do {
-                        LabTestRequest tmp = new LabTestRequest();
-                        tmp.read(cursor);
-                        result.add(tmp);
-
-                    } while (cursor.next());
+                    try{
+	                    do {
+	                        LabTestRequest tmp = new LabTestRequest();
+	                        tmp.read(cursor);
+	                        result.add(tmp);
+	
+	                    } while (cursor.next());
+	                    }
+                	finally {
+                		cursor.close();
+            	    }
 
                     return result;
                 }
@@ -311,20 +333,25 @@ public class DbHandler {
                     ISqlJetCursor cursor = table.lookup(VitalData.INDEX_VITALDATA_ITEM_ID);
                     // new Object[]{endDate_DB.getTimeInMillis()},
                     //new Object[]{startDate_DB.getTimeInMillis()}
-                    do {
-
-                        VitalData tmp = new VitalData();
-                        tmp.read(cursor);
-
-                        date_DB.setTimeInMillis(parseLong(tmp.getDate()));
-                        //System.out.println(date_DB.getTime());
-
-                        if (tmp.getUser_id().equals(user_id) &&
-                                date_DB.before(endDate) &&
-                                date_DB.after(startDate))
-                            result.add(tmp);
-
-                    } while (cursor.next());
+                    try{
+	                    do {
+	
+	                        VitalData tmp = new VitalData();
+	                        tmp.read(cursor);
+	
+	                        date_DB.setTimeInMillis(parseLong(tmp.getDate()));
+	                        //System.out.println(date_DB.getTime());
+	
+	                        if (tmp.getUser_id().equals(user_id) &&
+	                                date_DB.before(endDate) &&
+	                                date_DB.after(startDate))
+	                            result.add(tmp);
+	
+	                    } while (cursor.next());
+                    }                	
+                    finally {
+                		cursor.close();
+            	    }
 
                     return result;
                 }

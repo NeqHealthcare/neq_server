@@ -74,7 +74,7 @@ public class GNUHealthConnectorImpl extends Connector {
           
           //Update Chatter Users --> Following
           try {
-				res = con.updateChatterUser(NeqServer.getSessionStore().getUserId(user_session),9,true);
+				res = con.updateChatterUser(NeqServer.getSessionStore().getUserId(user_session),9,false);
 			} catch (NoSessionInSessionStoreException e) {
 				e.printStackTrace();
 			}
@@ -259,9 +259,16 @@ public class GNUHealthConnectorImpl extends Connector {
 	public List<?> updateChatterUser(Integer user, Integer followed_user,
 			boolean is_followed) {
     	
-    	 DbHandler dbh = new DbHandler();
-         boolean result = dbh.updateFollowingUser(user.toString(), followed_user.toString(), is_followed);
-         dbh.close();
+    	boolean result = false;
+    	
+    	for(int i=0;i<8;i++){
+	    	 DbHandler dbh = new DbHandler();
+	         result = dbh.updateFollowingUser(user.toString(), followed_user.toString(), is_followed);
+	         dbh.close();
+	         if(result){
+	        	 break;
+	         }
+    	}
          
 		List<Boolean> resultList = new ArrayList<Boolean>();
 		resultList.add(result);
@@ -276,7 +283,7 @@ public class GNUHealthConnectorImpl extends Connector {
 	       // Getting all User Ids
 	       int[] ids = getAllUserIds();
 
-	       // Searching for all Ids and fields: name, login
+	       // Searching for all Ids and fields rec_name,id
 	       Object[] params = new Object[]{1, session, ids,
 	               new String[]{"id","rec_name"}, "REPLACE_CONTEXT"};
 
@@ -302,7 +309,6 @@ public class GNUHealthConnectorImpl extends Connector {
            }
      
 	       
-	       // SEARCH FOR ID
 	       for (ChatterUser u : userList) {
 	    	   Integer id = Integer.parseInt(u.getId());
 	           if (id.equals(userId)){
@@ -532,14 +538,16 @@ public class GNUHealthConnectorImpl extends Connector {
             for (Object uncastLabTest : labTests) {
                 LabTestRequestGnu labTestRequestGnu = (LabTestRequestGnu) uncastLabTest;
 
-                if (valueOf(
-                        labTestRequest.getRequest_id().replaceAll(" ", ""))
-                        .equals(labTestRequestGnu.getId())) {
-                    if (labTestRequestGnu.getState().equals("tested")) {
-                        //dbh.removeLabTestRequest(labTestRequest.getRequest_id()); OUTSOURCED TO OWN FUNCTION;
-                        recentlyTestedRequestsIds.add(new Integer(labTestRequest
-                                .getRequest_id().replaceAll(" ", "")));
-                    }
+                if(labTestRequest.getRequest_id() != null){
+	                if (valueOf(
+	                        labTestRequest.getRequest_id().replaceAll(" ", ""))
+	                        .equals(labTestRequestGnu.getId())) {
+	                    if (labTestRequestGnu.getState().equals("tested")) {
+	                        //dbh.removeLabTestRequest(labTestRequest.getRequest_id()); OUTSOURCED TO OWN FUNCTION;
+	                        recentlyTestedRequestsIds.add(new Integer(labTestRequest
+	                                .getRequest_id().replaceAll(" ", "")));
+	                    }
+	                }
                 }
 
             }
