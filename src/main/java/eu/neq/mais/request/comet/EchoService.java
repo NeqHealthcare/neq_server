@@ -1,12 +1,9 @@
 package eu.neq.mais.request.comet;
 
-
 import java.util.HashMap;
-
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-
 
 import org.cometd.bayeux.server.BayeuxServer;
 import org.cometd.bayeux.server.ConfigurableServerChannel;
@@ -38,34 +35,41 @@ public final class EchoService {
 	@PostConstruct
 	void init() {
 		server.addListener(new BayeuxServer.SubscriptionListener() {
-			
+
 			public void unsubscribed(ServerSession arg0, ServerChannel channel) {
-				int subscribers = channel.getSubscribers().size();
-//				System.out.println("UNsubscribed: "+channel.toString()+" - # of Subscriptions " + subscribers);
-				
-				if (subscribers == 0) {
-//					System.out.println("--> last subscriber, stopping pulse thread for: "+channel.toString());
-					
-					request.get(channel.toString()).end();
-					request.get(channel.toString()).interrupt();
-					request.remove(channel.toString());		
+				if (channel.toString().contains("/echo")) {
+					int subscribers = channel.getSubscribers().size();
+					// System.out.println("UNsubscribed: "+channel.toString()+" - # of Subscriptions "
+					// + subscribers);
+
+					if (subscribers == 0) {
+						// System.out.println("--> last subscriber, stopping pulse thread for: "+channel.toString());
+
+						request.get(channel.toString()).end();
+						request.get(channel.toString()).interrupt();
+						request.remove(channel.toString());
+					}
 				}
 			}
-			
+
 			public void subscribed(ServerSession arg0, ServerChannel channel) {
-//				System.out.println("subscribed: "+channel.toString() + " - # of Subscriptions: "+channel.getSubscribers().size()+ " - # of Listeners: "+channel.getListeners().size());
-				
-				if (channel.getSubscribers().size() == 1) {
-					Pulse pulseThread = new Pulse(channel.toString()); 
-					request.put(channel.toString(), pulseThread);
-							
-//					System.out.println("--> first subscriber, start pulse thread for channel "+channel.toString());
-					pulseThread.start();
+				if (channel.toString().contains("/echo")) {
+					// System.out.println("subscribed: "+channel.toString() +
+					// " - # of Subscriptions: "+channel.getSubscribers().size()+
+					// " - # of Listeners: "+channel.getListeners().size());
+
+					if (channel.getSubscribers().size() == 1) {
+						Pulse pulseThread = new Pulse(channel.toString());
+						request.put(channel.toString(), pulseThread);
+
+						// System.out.println("--> first subscriber, start pulse thread for channel "+channel.toString());
+						pulseThread.start();
+					}
+
 				}
-				
 			}
 		});
-		
+
 	}
 
 	@Configure("/**")
@@ -90,40 +94,39 @@ public final class EchoService {
 
 	}
 
-
 	class Pulse extends Thread {
-		
+
 		String channel;
 		boolean active = true;
-		
+
 		public Pulse(String channel) {
 			this.channel = channel;
 		}
-		
+
 		public void run() {
 			ChartCoordinateFactory ccf = new ChartCoordinateFactory();
 			Heartbeat hb = new Heartbeat();
 			int packetId = 0;
 
-			
 			while (active) {
 				double y = hb.getNextY();
-				String json = new Gson().toJson(ccf.getChartCoordinate(System.currentTimeMillis(), y));
-							
-				server.getChannel(channel).publish(serverSession, json, String.valueOf(packetId++));
+				String json = new Gson().toJson(ccf.getChartCoordinate(
+						System.currentTimeMillis(), y));
+
+				server.getChannel(channel).publish(serverSession, json,
+						String.valueOf(packetId++));
 				try {
 					sleep(100);
 				} catch (InterruptedException e) {
 					// intentioned exception -> initiates thread termination!
-				} 
+				}
 			}
 
 		}
-		
+
 		public void end() {
 			active = false;
 		}
 	};
-
 
 }
