@@ -300,7 +300,7 @@ public class GNUHealthConnectorImpl extends Connector {
     	
     	//retrieve all users the user with userId is following
  	    Set<String> followingUsersSet =  getAllUserIdsOfFollowingUsers(userId.toString());
-    	    	
+ 	   
     	BayeuxServer server = EchoService.getBayeuxServer();
     	ServerSession serverSession = EchoService.getServerSession();
     	//publish ids of all users that are affected by this change so that they are notified
@@ -308,7 +308,6 @@ public class GNUHealthConnectorImpl extends Connector {
 	    	server.getChannel(EchoService.CHATTER_CHANNEL_NAME).publish(serverSession, new Gson().toJson(followingUsersSet.toArray()),
 					String.valueOf(gnid++));
     	}
-         
 		List<Boolean> resultList = new ArrayList<Boolean>();
 		resultList.add(result);
 		return resultList;
