@@ -114,6 +114,40 @@ public class DbHandler {
 
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
+                    ISqlJetCursor cursor = table.lookup(FollowingUser.INDEX_FOLLOWED_USER_ID, user_id);
+                	try{
+                		if (!cursor.eof()) {
+		                    do {
+		                    	FollowingUser tmp = new FollowingUser();
+		                        tmp.read(cursor);
+		                        result.add(tmp);
+		
+		                    } while (cursor.next());
+                		}
+                	}
+                	finally {
+                		cursor.close();
+            	    }
+
+                    return result;
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<FollowingUser> getFollowedUsers(final String user_id) {
+        final List<FollowingUser> result = new ArrayList<FollowingUser>();
+
+        try {
+            return (List<FollowingUser>) db.runReadTransaction(new ISqlJetTransaction() {
+
+                public Object run(SqlJetDb db) throws SqlJetException {
+                    ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
                     ISqlJetCursor cursor = table.lookup(FollowingUser.INDEX_USER_ID, user_id);
                 	try{
                 		if (!cursor.eof()) {

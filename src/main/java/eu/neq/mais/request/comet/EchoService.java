@@ -25,12 +25,22 @@ import eu.neq.mais.domain.ChartCoordinateFactory;
 @Service("echoService")
 public final class EchoService {
 
+	public static String CHATTER_CHANNEL_NAME = "/cometd/chatter";
+	
 	@Inject
-	private BayeuxServer server;
+	private static BayeuxServer server;
 	@Session
-	private ServerSession serverSession;
+	private static ServerSession serverSession;
 
 	private HashMap<String, Pulse> request = new HashMap<String, Pulse>();
+	
+	public static BayeuxServer getBayeuxServer(){
+		return server;
+	}
+	
+	public static ServerSession getServerSession(){
+		return serverSession;
+	}
 
 	@PostConstruct
 	void init() {
@@ -44,6 +54,15 @@ public final class EchoService {
 
 					if (subscribers == 0) {
 						// System.out.println("--> last subscriber, stopping pulse thread for: "+channel.toString());
+
+						request.get(channel.toString()).end();
+						request.get(channel.toString()).interrupt();
+						request.remove(channel.toString());
+					}
+				}
+				if (channel.toString().contains("/chatter")) {
+					int subscribers = channel.getSubscribers().size();
+					if (subscribers == 0) {
 
 						request.get(channel.toString()).end();
 						request.get(channel.toString()).interrupt();
@@ -84,6 +103,11 @@ public final class EchoService {
 
 	@Configure("/cometd/pulse")
 	void pulse(ConfigurableServerChannel channel) {
+		channel.addAuthorizer(GrantAuthorizer.GRANT_ALL);
+	}
+	
+	@Configure("/cometd/chatter")
+	void chatter(ConfigurableServerChannel channel) {
 		channel.addAuthorizer(GrantAuthorizer.GRANT_ALL);
 	}
 

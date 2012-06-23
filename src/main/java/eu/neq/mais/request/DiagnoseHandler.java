@@ -277,31 +277,7 @@ public class DiagnoseHandler {
 
             Map<Object, Object> params = new HashMap<Object, Object>();
             
-            
-            
-            
-            System.out.println("status "+status);
-            System.out.println("is_allergy "+is_allergy);
-            System.out.println("doctor "+doctor);
-            System.out.println("pregnancy_warning "+pregnancy_warning);
-            System.out.println("age "+age);
-            System.out.println("weeks_of_pregnancy "+weeks_of_pregnancy);
-            System.out.println("date_start_treatment "+date_start_treatment);
-            System.out.println("short_comment "+short_comment);
-            System.out.println("is_on_treatment "+is_on_treatment);
-            System.out.println("is_active "+is_active);
-            System.out.println("diagnosed_date "+diagnosed_date);
-            System.out.println("treatment_description "+treatment_description);
-            System.out.println("healed_date "+healed_date);
-            System.out.println("date_stop_treatment "+date_stop_treatment);
-            System.out.println("pcs_code "+pcs_code);
-            System.out.println("pathology "+pathology);
-            System.out.println("allergy_type "+allergy_type);
-            System.out.println("disease_severity "+disease_severity);
-            System.out.println("is_infectious "+is_infectious);
-            System.out.println("extra_info "+extra_info);
-            System.out.println("patient_id "+patient_id);
-           
+                    
             
 
             if(status == "null"){

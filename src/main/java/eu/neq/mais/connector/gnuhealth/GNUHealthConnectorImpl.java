@@ -15,6 +15,7 @@ import eu.neq.mais.domain.ChatterPost;
 import eu.neq.mais.domain.Diagnose;
 import eu.neq.mais.domain.LabTestResult;
 import eu.neq.mais.domain.gnuhealth.*;
+import eu.neq.mais.request.comet.EchoService;
 import eu.neq.mais.technicalservice.Backend;
 import eu.neq.mais.technicalservice.DTOWrapper;
 import eu.neq.mais.technicalservice.FileHandler;
@@ -30,6 +31,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.util.*;
+
+import org.cometd.bayeux.server.BayeuxServer;
+import org.cometd.bayeux.server.ServerChannel;
+import org.cometd.bayeux.server.ServerSession;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.Integer.valueOf;
@@ -292,27 +297,65 @@ public class GNUHealthConnectorImpl extends Connector {
 	        	 break;
 	         }
     	}
+    	
+    	//retrieve all users the user with userId is following
+ 	    Set<String> followingUsersSet =  getAllUserIdsOfFollowingUsers(userId.toString());
+    	    	
+    	BayeuxServer server = EchoService.getBayeuxServer();
+    	ServerSession serverSession = EchoService.getServerSession();
+    	//publish ids of all users that are affected by this change so that they are notified
+    	if(server.getChannel(EchoService.CHATTER_CHANNEL_NAME) != null){
+	    	server.getChannel(EchoService.CHATTER_CHANNEL_NAME).publish(serverSession, new Gson().toJson(followingUsersSet.toArray()),
+					String.valueOf(gnid++));
+    	}
          
 		List<Boolean> resultList = new ArrayList<Boolean>();
 		resultList.add(result);
 		return resultList;
 	}
 
+	/*
+	 * returns user ids of all users that follow the user with the userId
+	 */
+	private Set<String> getAllUserIdsOfFollowingUsers(String userId){
+		DbHandler dbh = new DbHandler();
+
+		List<eu.neq.mais.technicalservice.storage.FollowingUser> followingUsers = dbh.getFollowingUsers(userId.toString());
+         dbh.close();
+         Set<String> followingUsersSet = new HashSet<String>();
+         for (eu.neq.mais.technicalservice.storage.FollowingUser followingUser : followingUsers) {
+      	   followingUsersSet.add(followingUser.getUser_id());
+         }
+         followingUsersSet.remove(userId);
+         
+         return followingUsersSet;
+	}
+	/*
+	 * helper method that returns all user ids of the followed users
+	 */
+	private Set<String> getAllUserIdsOfFollowedUsers(String userId){
+		 
+		DbHandler dbh = new DbHandler();
+	  	//retrieve all users the user with userId is following
+		List<eu.neq.mais.technicalservice.storage.FollowingUser> followedUsers = dbh.getFollowedUsers(userId.toString());
+         dbh.close();
+         Set<String> followedUsersSet = new HashSet<String>();
+         for (eu.neq.mais.technicalservice.storage.FollowingUser followingUser : followedUsers) {
+        	 followedUsersSet.add(followingUser.getFollowed_user_id());
+         }
+         followedUsersSet.add(userId.toString());
+         
+         return followedUsersSet;
+	}
 
 	@Override
 	public List<?> returnChatterPosts(Integer userId) {
-  	   DbHandler dbh = new DbHandler();
   	   //retrieve all users the user with userId is following
-       List<eu.neq.mais.technicalservice.storage.FollowingUser> followingUsers = dbh.getFollowingUsers(userId.toString());
-       dbh.close();
-       Set<String> followingUsersSet = new HashSet<String>();
-       for (eu.neq.mais.technicalservice.storage.FollowingUser followingUser : followingUsers) {
-    	   followingUsersSet.add(followingUser.getFollowed_user_id());
-       }
-       followingUsersSet.add(userId.toString());
-       dbh = new DbHandler();
+	   Set<String> followedUsersSet =  getAllUserIdsOfFollowedUsers(userId.toString());
+       followedUsersSet.add(userId.toString());
+       DbHandler dbh = new DbHandler();
        //retrieve all posts from all the users the user is following, including his/her own posts
-       List<eu.neq.mais.technicalservice.storage.ChatterPost> posts = dbh.getChatterPosts(followingUsersSet);
+       List<eu.neq.mais.technicalservice.storage.ChatterPost> posts = dbh.getChatterPosts(followedUsersSet);
        dbh.close();
        
        //the domain model list of posts.
