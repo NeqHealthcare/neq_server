@@ -37,7 +37,7 @@ public final class EchoService {
 		server.addListener(new BayeuxServer.SubscriptionListener() {
 
 			public void unsubscribed(ServerSession arg0, ServerChannel channel) {
-				if (channel.toString().contains("/echo")) {
+				if (channel.toString().contains("/pulse")) {
 					int subscribers = channel.getSubscribers().size();
 					// System.out.println("UNsubscribed: "+channel.toString()+" - # of Subscriptions "
 					// + subscribers);
@@ -53,7 +53,7 @@ public final class EchoService {
 			}
 
 			public void subscribed(ServerSession arg0, ServerChannel channel) {
-				if (channel.toString().contains("/echo")) {
+				if (channel.toString().contains("/pulse")) {
 					// System.out.println("subscribed: "+channel.toString() +
 					// " - # of Subscriptions: "+channel.getSubscribers().size()+
 					// " - # of Listeners: "+channel.getListeners().size());
