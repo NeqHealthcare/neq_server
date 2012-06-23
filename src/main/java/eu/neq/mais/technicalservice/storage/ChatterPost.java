@@ -26,6 +26,9 @@ public class ChatterPost implements DbTable {
     public static String INDEX_PARENT_ID = "parent_id_index_ChatterPost";
     public static String INDEX_CREATOR_ID = "creator_id_index_ChatterPost";
     
+    public String toString(){
+    	return "id: "+id+" message: "+message+" timestamp: "+timestamp+" parent_id: "+parent_id+" creator_id: "+creator_id;
+    }
 
     public ChatterPost() {
     }

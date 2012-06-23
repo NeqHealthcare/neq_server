@@ -11,6 +11,7 @@ import eu.neq.mais.NeqServer;
 import eu.neq.mais.connector.Connector;
 import eu.neq.mais.connector.ConnectorFactory;
 import eu.neq.mais.domain.Article;
+import eu.neq.mais.domain.ChatterPost;
 import eu.neq.mais.domain.Diagnose;
 import eu.neq.mais.domain.LabTestResult;
 import eu.neq.mais.domain.gnuhealth.*;
@@ -74,7 +75,7 @@ public class GNUHealthConnectorImpl extends Connector {
           
 //          //Update Chatter Users --> Following
 //          try {
-//				res = con.updateChatterUser(NeqServer.getSessionStore().getUserId(user_session),9,false);
+//				res = con.updateChatterUser(NeqServer.getSessionStore().getUserId(user_session),9,true);
 //			} catch (NoSessionInSessionStoreException e) {
 //				e.printStackTrace();
 //			}
@@ -94,7 +95,7 @@ public class GNUHealthConnectorImpl extends Connector {
           //Create Template Messages
 //          for(int i = 0; i<10; i++){
 //        	try {
-//  				res = con.saveChatterPost(NeqServer.getSessionStore().getUserId(user_session), "This is a test message: "+System.currentTimeMillis(),null);
+//  				res = con.saveChatterPost(NeqServer.getSessionStore().getUserId(user_session), "This is a test message: "+System.currentTimeMillis(),-1l);
 //  			} catch (NoSessionInSessionStoreException e) {
 //  				e.printStackTrace();
 //  			}
@@ -106,10 +107,10 @@ public class GNUHealthConnectorImpl extends Connector {
           //Retrieve test messages
           try {
 				res = con.returnChatterPosts(NeqServer.getSessionStore().getUserId(user_session));
-			} catch (NoSessionInSessionStoreException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
-          for (Object r : res) System.out.println("x:"+ ((ChatterUser) r).toString());
+          for (Object r : res) System.out.println("x:"+ ((ChatterPost) r).toString());
           System.out.println(new DTOWrapper().wrap(res));
           
           System.out.println("--------------------------- test messages retrieved");
@@ -300,19 +301,69 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	@Override
 	public List<?> returnChatterPosts(Integer userId) {
-		List<eu.neq.mais.domain.ChatterUser> userList = (List<eu.neq.mais.domain.ChatterUser>)returnChatterUsers(userId);
-		String[] userIds = new String[userList.size()+1];
-		for(int i=0;i<userList.size();i++){
-			userIds[i] = userList.get(i).getId();
-		}
-		userIds[userList.size()] = userId.toString();
-		
-		 DbHandler dbh = new DbHandler();
-         List<eu.neq.mais.technicalservice.storage.ChatterPost> posts = dbh.getChatterPosts(userIds);
-         dbh.close();
-		
+  	   DbHandler dbh = new DbHandler();
+  	   //retrieve all users the user with userId is following
+       List<eu.neq.mais.technicalservice.storage.FollowingUser> followingUsers = dbh.getFollowingUsers(userId.toString());
+       dbh.close();
+       Set<String> followingUsersSet = new HashSet<String>();
+       for (eu.neq.mais.technicalservice.storage.FollowingUser followingUser : followingUsers) {
+    	   followingUsersSet.add(followingUser.getFollowed_user_id());
+       }
+       followingUsersSet.add(userId.toString());
+       dbh = new DbHandler();
+       //retrieve all posts from all the users the user is following, including his/her own posts
+       List<eu.neq.mais.technicalservice.storage.ChatterPost> posts = dbh.getChatterPosts(followingUsersSet);
+       dbh.close();
+       
+       //the domain model list of posts.
+       Map<Long,ChatterPost> domainPostList = new HashMap<Long,ChatterPost>();
+       
+       //the reduced domain model list that is send to the frontend (post that have a parent are only send as child of the parent)
+       Map<Long,ChatterPost> finalPostList = new HashMap<Long,ChatterPost>();
+       
+       //helper map that lists all childs of a parent post
+       Map<Long, ArrayList<Long>> parentChildMap = new HashMap<Long,ArrayList<Long>>();
+       
+       //create a ChatterPost from the ...storage.ChatterPost instance. This one holds also the user_image 
+       for(eu.neq.mais.technicalservice.storage.ChatterPost post : posts){
+    	   ChatterPost tempPost = null;
+    	   Long parent_id = post.getParent_id();
+    	   try {
+    		   tempPost = new ChatterPost(post.getId(),post.getMessage(),post.getTimestamp(),post.getCreator_id(),parent_id,InetAddress.getLocalHost().getHostAddress() + ":" + NeqServer.getPort() + "/user/image/"+post.getCreator_id());
+    	   } catch (UnknownHostException e) {
+				tempPost = new ChatterPost(post.getId(),post.getMessage(),post.getTimestamp(),post.getCreator_id(),parent_id,"");
+				e.printStackTrace();
+    	   }
+    	   domainPostList.put(tempPost.getId(), tempPost);
+    	   //adds a post as child to the parentChildMap if it has a parent --> parent_id != -1
+    	   if(parent_id != -1){
+    		   
+    		   if(parentChildMap.containsKey(parent_id)){
+        		   List<Long> childs = parentChildMap.get(parent_id);
+        		   childs.add(tempPost.getId());
+        	   }else{
+        		   ArrayList<Long> childs = new ArrayList<Long>();
+        		   childs.add(tempPost.getId());
+        		   parentChildMap.put(parent_id, childs);
+        	   }
+    		   
+    	   }else{
+    		 //add only those posts to the final map that have no parent
+    		   finalPostList.put(tempPost.getId(), tempPost);
+    	   }
+       }
+       
+       //adds all childs of a parent to its ChatterPost instance     
+       for(ChatterPost post :domainPostList.values()){
+    	   if(parentChildMap.containsKey(post.getId())){
+    		   for(Long child : parentChildMap.get(post.getId())){
+    			   post.addChild(domainPostList.get(child));
+    		   }
+    	   }
+       }
+         
 	
-		return posts;
+       return new ArrayList<ChatterPost>(finalPostList.values());
 	}
 	
     @Override

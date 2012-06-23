@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
 
 import static java.lang.Long.*;
 
@@ -162,7 +163,7 @@ public class DbHandler {
     }
     
     @SuppressWarnings("unchecked")
-    public List<ChatterPost> getChatterPosts(final String[] userIds) {
+    public List<ChatterPost> getChatterPosts(final Set<String> userIds) {
         final List<ChatterPost> result = new ArrayList<ChatterPost>();
 
         try {
@@ -170,21 +171,25 @@ public class DbHandler {
 
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(ChatterPost.TABLE_NAME);
-                    ISqlJetCursor cursor = table.lookup(ChatterPost.INDEX_CREATOR_ID, userIds);
-                	try{
-                		if (!cursor.eof()) {
-		                    do {
-		                    	ChatterPost tmp = new ChatterPost();
-		                        tmp.read(cursor);
-		                        result.add(tmp);
-		
-		                    } while (cursor.next());
-                		}
-                	}
-                	finally {
-                		cursor.close();
-            	    }
+                    for(String userId : userIds){
+                    ISqlJetCursor cursor = table.lookup(ChatterPost.INDEX_CREATOR_ID, userId);
+                    
+	                    try{
+	                		if (!cursor.eof()) {
+			                    do {
+			                    	ChatterPost tmp = new ChatterPost();
+			                        tmp.read(cursor);
+			                        result.add(tmp);
+			
+			                    } while (cursor.next());
+	                		}
+	                	}
+	                	finally {
+	                		cursor.close();
+	            	    }
 
+                    }
+                    
                     return result;
                 }
             });
