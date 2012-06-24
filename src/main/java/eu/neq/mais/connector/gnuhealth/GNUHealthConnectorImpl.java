@@ -604,16 +604,12 @@ public class GNUHealthConnectorImpl extends Connector {
 
         PatientGnu patient = this.getPatientById(String.valueOf(params.get("patient_id")));
 
-        List<String> diagnoseIdList = patient.getDiagnoseIds();
-        int[] diagnoseIds = new int[diagnoseIdList.size()];
-        for (int i = 0; i < diagnoseIdList.size(); i++) {
-            diagnoseIds[i] = Integer.parseInt(diagnoseIdList.get(i));
-        }
+        Integer[] ids  = patient.getDiagnoseIds().toArray(new Integer[0]); 
 
         //---- create diagnose ---//
         String diagnoseCreationMessage = execute(
                 GnuHealthMethods.getPatientWriteMethod(),
-                GnuHealthParams.getDiagnoseCreationParams(params, diagnoseIds, this.getAdminSession()));
+                GnuHealthParams.getDiagnoseCreationParams(params, ids, this.getAdminSession()));
 
         List<DiagnoseCreationMessageGnu> result = new ArrayList<DiagnoseCreationMessageGnu>();
         String successId = diagnoseCreationMessage.substring(
@@ -1241,11 +1237,9 @@ public class GNUHealthConnectorImpl extends Connector {
         for (PatientGnu patient : patientList) {
             DiagnoseGnu latestDiagnose = null;
             if (patient.getDiagnoseIds() != null) {
-            	List<String> diagnosIdList = patient.getDiagnoseIds();
-            	int[] ids  = new int[diagnosIdList.size()];
-            	for(int i = 0; i<diagnosIdList.size();i++){
-            		ids[i] = Integer.parseInt(diagnosIdList.get(i));
-            	}
+
+            	Integer[] ids  = patient.getDiagnoseIds().toArray(new Integer[0]); 
+
                 String diagnoseString = execute(GnuHealthMethods.getDiagnoseReadMethod(),
                         GnuHealthParams.getReturnDiagnoseParams(ids, this.getAdminSession(),1));
                 Type listType = new TypeToken<List<DiagnoseGnu>>() {
@@ -1286,11 +1280,7 @@ public class GNUHealthConnectorImpl extends Connector {
         List<DiagnoseGnu> diagnoseList = new ArrayList<DiagnoseGnu>();
         if (patient.getDiagnoseIds() != null) {
             	
-            	List<String> diagnosIdList = patient.getDiagnoseIds();
-            	int[] ids  = new int[diagnosIdList.size()];
-            	for(int i = 0; i<diagnosIdList.size();i++){
-            		ids[i] = Integer.parseInt(diagnosIdList.get(i));
-            	}         	
+        	Integer[] ids  = patient.getDiagnoseIds().toArray(new Integer[0]);      	
   	
                 String diagnoseString = execute(GnuHealthMethods.getDiagnoseReadMethod(),
                         GnuHealthParams.getReturnDiagnoseParams(ids, this.getAdminSession(),0));
@@ -1321,7 +1311,7 @@ public class GNUHealthConnectorImpl extends Connector {
      */
     public Diagnose returnDiagnose(String diagnoseID) {
         String diagnose = this.execute(GnuHealthMethods.getDiagnoseReadMethod(),
-                GnuHealthParams.getReturnDiagnoseParams(new int[]{Integer.parseInt(diagnoseID)}, this.getAdminSession(),0));
+                GnuHealthParams.getReturnDiagnoseParams(new Integer[]{Integer.parseInt(diagnoseID)}, this.getAdminSession(),0));
 
         Type listType = new TypeToken<List<DiagnoseGnu>>() {
         }.getType();

@@ -103,7 +103,7 @@ public abstract class GnuHealthParams {
                 "REPLACE_CONTEXT"};
     }
 
-    public static Object[] getDiagnoseCreationParams(Map<Object, Object> paramMap, int[] diagnoseIds, String adminSession) {
+    public static Object[] getDiagnoseCreationParams(Map<Object, Object> paramMap, Integer[] diagnoseIds, String adminSession) {
 
         if (!((paramMap.get("date_start_treatment")).equals(false))) {
             paramMap.put("date_start_treatment", new TimeGnuShort(Long.parseLong((String) paramMap.get("date_start_treatment"))));
@@ -289,7 +289,7 @@ public abstract class GnuHealthParams {
 
     }
 
-    public static Object[] getReturnDiagnoseParams(int[] id, String adminSession, int typOfParams) {
+    public static Object[] getReturnDiagnoseParams(Integer[] id, String adminSession, int typOfParams) {
     	if(typOfParams == 0){
 	        return new Object[]{
 	                1,

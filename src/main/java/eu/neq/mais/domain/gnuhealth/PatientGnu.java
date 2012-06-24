@@ -26,7 +26,7 @@ public class PatientGnu extends Patient {
 	private String rec_name;
 	// contains diagnoses id, but has to be named diseases because of automatic
 	// json to instance process
-	private List<String> diseases;
+	private List<Integer> diseases;
 	private String latestDiagnoseRecName;
 	// private List<DiagnoseGnu> diagnoseList;
 	private Object dob;
@@ -64,11 +64,11 @@ public class PatientGnu extends Patient {
 		this.rec_name = rec_name;
 	}
 
-	public List<String> getDiagnoseIds() {
+	public List<Integer> getDiagnoseIds() {
 		return diseases;
 	}
 
-	public void setDiagnoseIds(List<String> diagnoseIds) {
+	public void setDiagnoseIds(List<Integer> diagnoseIds) {
 		this.diseases = diagnoseIds;
 	}
 
