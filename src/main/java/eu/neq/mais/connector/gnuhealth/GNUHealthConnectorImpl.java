@@ -1226,7 +1226,8 @@ public class GNUHealthConnectorImpl extends Connector {
         }
 
     }
-
+    
+    
     /*
       * Helping method adding the latest diagnosis to patient objects.
       *
@@ -1240,21 +1241,27 @@ public class GNUHealthConnectorImpl extends Connector {
         for (PatientGnu patient : patientList) {
             DiagnoseGnu latestDiagnose = null;
             if (patient.getDiagnoseIds() != null) {
-                for (String diseaseID : patient.getDiagnoseIds()) {
-                    String diagnoseString = execute(GnuHealthMethods.getDiagnoseReadMethod(),
-                            GnuHealthParams.getReturnDiagnoseParams(Integer.parseInt(diseaseID), this.getAdminSession(),1));
-                    DiagnoseGnu tempDiagnose = DomainParserGnu.fromJson(
-                            diagnoseString, DiagnoseGnu.class);
+            	List<String> diagnosIdList = patient.getDiagnoseIds();
+            	int[] ids  = new int[diagnosIdList.size()];
+            	for(int i = 0; i<diagnosIdList.size();i++){
+            		ids[i] = Integer.parseInt(diagnosIdList.get(i));
+            	}
+                String diagnoseString = execute(GnuHealthMethods.getDiagnoseReadMethod(),
+                        GnuHealthParams.getReturnDiagnoseParams(ids, this.getAdminSession(),1));
+                Type listType = new TypeToken<List<DiagnoseGnu>>() {
+                }.getType();
+                List<DiagnoseGnu> diagnoseList = DomainParserGnu.fromJson(
+                		diagnoseString, listType, DiagnoseGnu.class);
+                for (DiagnoseGnu diagnose : diagnoseList) {
                     if (latestDiagnose != null) {
                         latestDiagnose = latestDiagnose
-                                .returnLatest(tempDiagnose);
+                                .returnLatest(diagnose);
                     } else {
-                        latestDiagnose = tempDiagnose;
+                        latestDiagnose = diagnose;
                     }
                 }
             }
             if (latestDiagnose != null) {
-                latestDiagnose.prepareDateFormat();
                 patient.setLatestDiagnoseRecName(latestDiagnose
                         .getPathology_rec_name());
             }
@@ -1278,15 +1285,23 @@ public class GNUHealthConnectorImpl extends Connector {
 
         List<DiagnoseGnu> diagnoseList = new ArrayList<DiagnoseGnu>();
         if (patient.getDiagnoseIds() != null) {
-            for (String diseaseID : patient.getDiagnoseIds()) {
+            	
+            	List<String> diagnosIdList = patient.getDiagnoseIds();
+            	int[] ids  = new int[diagnosIdList.size()];
+            	for(int i = 0; i<diagnosIdList.size();i++){
+            		ids[i] = Integer.parseInt(diagnosIdList.get(i));
+            	}         	
+  	
                 String diagnoseString = execute(GnuHealthMethods.getDiagnoseReadMethod(),
-                        GnuHealthParams.getReturnDiagnoseParams(Integer.parseInt(diseaseID), this.getAdminSession(),0));
-                DiagnoseGnu tmp = DomainParserGnu.fromJson(diagnoseString,
-                        DiagnoseGnu.class);
-                tmp.prepareDateFormat();
-                diagnoseList.add(tmp);
-
-            }
+                        GnuHealthParams.getReturnDiagnoseParams(ids, this.getAdminSession(),0));
+                
+                Type listType = new TypeToken<List<DiagnoseGnu>>() {
+                }.getType();
+                diagnoseList = DomainParserGnu.fromJson(
+                		diagnoseString, listType, DiagnoseGnu.class);
+                for(DiagnoseGnu diagnose : diagnoseList){
+                	diagnose.prepareDateFormat();
+                }
         }
 
         if (diagnoseList.isEmpty()) {
@@ -1306,10 +1321,15 @@ public class GNUHealthConnectorImpl extends Connector {
      */
     public Diagnose returnDiagnose(String diagnoseID) {
         String diagnose = this.execute(GnuHealthMethods.getDiagnoseReadMethod(),
-                GnuHealthParams.getReturnDiagnoseParams(Integer.parseInt(diagnoseID), this.getAdminSession(),0));
+                GnuHealthParams.getReturnDiagnoseParams(new int[]{Integer.parseInt(diagnoseID)}, this.getAdminSession(),0));
 
-        DiagnoseGnu tmp = DomainParserGnu.fromJson(diagnose, DiagnoseGnu.class);
-        tmp.prepareDateFormat();
+        Type listType = new TypeToken<List<DiagnoseGnu>>() {
+        }.getType();
+        List<DiagnoseGnu> diagnoseList = DomainParserGnu.fromJson(
+        		diagnose, listType, DiagnoseGnu.class);
+       
+        DiagnoseGnu tmp = diagnoseList.get(0); 
+		tmp.prepareDateFormat();
 
         return tmp;
     }

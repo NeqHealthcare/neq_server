@@ -289,12 +289,12 @@ public abstract class GnuHealthParams {
 
     }
 
-    public static Object[] getReturnDiagnoseParams(int id, String adminSession, int typOfParams) {
+    public static Object[] getReturnDiagnoseParams(int[] id, String adminSession, int typOfParams) {
     	if(typOfParams == 0){
 	        return new Object[]{
 	                1,
 	                adminSession,
-	                new int[]{id},
+	                id,
 	                new String[]{"status", "pregnancy_warning", "is_active",
 	                        "short_comment", "diagnosed_date", "healed_date",
 	                        "pathology", "disease_severity", "is_infectious",
@@ -309,7 +309,7 @@ public abstract class GnuHealthParams {
     		 return new Object[]{
  	                1,
  	                adminSession,
- 	                new int[]{id},
+ 	                id,
  	                new String[]{"diagnosed_date",
  	                        "pathology.rec_name"},
  	                "REPLACE_CONTEXT"};
@@ -317,7 +317,7 @@ public abstract class GnuHealthParams {
     		 return new Object[]{
   	                1,
   	                adminSession,
-  	                new int[]{id},
+  	                id,
   	                new String[]{"id"},
   	                "REPLACE_CONTEXT"};
     	}
