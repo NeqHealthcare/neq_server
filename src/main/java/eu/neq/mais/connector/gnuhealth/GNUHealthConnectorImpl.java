@@ -86,8 +86,8 @@ public class GNUHealthConnectorImpl extends Connector {
 //			}
 //          for (Object r : res) System.out.println("1:"+ (r).toString());
 //          System.out.println(new DTOWrapper().wrap(res)); 
-//          
-//          //RetrieveChatter Users
+          
+          //RetrieveChatter Users
 //          try {
 //				res = con.returnChatterUsers(NeqServer.getSessionStore().getUserId(user_session));
 //			} catch (NoSessionInSessionStoreException e) {
@@ -98,7 +98,7 @@ public class GNUHealthConnectorImpl extends Connector {
 
           
           //Create Template Messages
-//          for(int i = 0; i<10; i++){
+//          for(int i = 0; i<5; i++){
 //        	try {
 //  				res = con.saveChatterPost(NeqServer.getSessionStore().getUserId(user_session), "This is a test message: "+System.currentTimeMillis(),-1l);
 //  			} catch (NoSessionInSessionStoreException e) {
@@ -110,15 +110,15 @@ public class GNUHealthConnectorImpl extends Connector {
 //          System.out.println("--------------------------- test messages created");
           
           //Retrieve test messages
-          try {
-				res = con.returnChatterPosts(NeqServer.getSessionStore().getUserId(user_session));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-          for (Object r : res) System.out.println("x:"+ ((ChatterPost) r).toString());
-          System.out.println(new DTOWrapper().wrap(res));
-          
-          System.out.println("--------------------------- test messages retrieved");
+//          try {
+//				res = con.returnChatterPosts(NeqServer.getSessionStore().getUserId(user_session));
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//          for (Object r : res) System.out.println("x:"+ ((ChatterPost) r).toString());
+//          System.out.println(new DTOWrapper().wrap(res));
+//          
+//          System.out.println("--------------------------- test messages retrieved");
 
 //              
 //              Object[] fk = ((GNUHealthConnectorImpl)con).getCreateDiagnoseTimestamps(user_session, "21");
@@ -304,7 +304,7 @@ public class GNUHealthConnectorImpl extends Connector {
     	BayeuxServer server = EchoService.getBayeuxServer();
     	ServerSession serverSession = EchoService.getServerSession();
     	//publish ids of all users that are affected by this change so that they are notified
-    	if(server.getChannel(EchoService.CHATTER_CHANNEL_NAME) != null){
+    	if(server != null && server.getChannel(EchoService.CHATTER_CHANNEL_NAME) != null){
 	    	server.getChannel(EchoService.CHATTER_CHANNEL_NAME).publish(serverSession, new Gson().toJson(followingUsersSet.toArray()),
 					String.valueOf(gnid++));
     	}
@@ -371,9 +371,9 @@ public class GNUHealthConnectorImpl extends Connector {
     	   ChatterPost tempPost = null;
     	   Long parent_id = post.getParent_id();
     	   try {
-    		   tempPost = new ChatterPost(post.getId(),post.getMessage(),post.getTimestamp(),post.getCreator_id(),parent_id,InetAddress.getLocalHost().getHostAddress() + ":" + NeqServer.getPort() + "/user/image/"+post.getCreator_id());
+    		   tempPost = new ChatterPost(post.getId(),post.getMessage(),post.getTimestamp(),getUserRecName(post.getCreator_id()),InetAddress.getLocalHost().getHostAddress() + ":" + NeqServer.getPort() + "/user/image/"+post.getCreator_id());
     	   } catch (UnknownHostException e) {
-				tempPost = new ChatterPost(post.getId(),post.getMessage(),post.getTimestamp(),post.getCreator_id(),parent_id,"");
+				tempPost = new ChatterPost(post.getId(),post.getMessage(),post.getTimestamp(),getUserRecName(post.getCreator_id()),"");
 				e.printStackTrace();
     	   }
     	   domainPostList.put(tempPost.getId(), tempPost);
@@ -450,10 +450,12 @@ public class GNUHealthConnectorImpl extends Connector {
 	       Type listType = new TypeToken<List<ChatterUser>>() {
 	       }.getType();
 	       List<ChatterUser> userList = new Gson().fromJson(cleansed, listType);
+	       
+	       // final list that contains more information e.g. followed status
 	       List<ChatterUser> reducedUserList = new ArrayList<ChatterUser>(userList);
 	      
 	  	   DbHandler dbh = new DbHandler();
-           List<eu.neq.mais.technicalservice.storage.FollowingUser> followingUsers = dbh.getFollowingUsers(userId.toString());
+           List<eu.neq.mais.technicalservice.storage.FollowingUser> followingUsers = dbh.getFollowedUsers(userId.toString());
            dbh.close();
            
            Set<String> followingUsersSet = new HashSet<String>();

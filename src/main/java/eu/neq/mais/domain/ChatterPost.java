@@ -23,17 +23,11 @@ public class ChatterPost {
 	public void setTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
 	}
-	public Long getParent_id() {
-		return parent_id;
+	public String getCreatorName() {
+		return creator_name;
 	}
-	public void setParent_id(Long parent_id) {
-		this.parent_id = parent_id;
-	}
-	public String getCreator_id() {
-		return creator_id;
-	}
-	public void setCreator_id(String creator_id) {
-		this.creator_id = creator_id;
+	public void setCreatorName(String creatorname) {
+		this.creator_name = creatorname;
 	}
 	public String getImage_url() {
 		return image_url;
@@ -55,22 +49,20 @@ public class ChatterPost {
 	Long id;
     String message;
     Long timestamp;
-    Long parent_id;
-    String creator_id;
+    String creator_name;
     String image_url;
     List<ChatterPost> child_posts = new ArrayList<ChatterPost>();
 
-    public ChatterPost (Long id, String message, Long timestamp,String creator_id, Long parent_id, String image_url){
+    public ChatterPost (Long id, String message, Long timestamp,String creator_name, String image_url){
     	this.id = id;
     	this.message = message;
     	this.timestamp = timestamp;
-    	this.creator_id = creator_id;
-    	this.parent_id = parent_id;
+    	this.creator_name = creator_name;
     	this.image_url = image_url;
     }
     
     public String toString(){
-    	String returnS = "id: "+id+" message: "+message+" timestamp: "+timestamp+" parent_id: "+parent_id+" creator_id: "+creator_id+" image_url: "+image_url;
+    	String returnS = "id: "+id+" message: "+message+" timestamp: "+timestamp+" creator_name: "+creator_name+" image_url: "+image_url;
     	for(ChatterPost child : child_posts){
     		returnS = System.getProperty(System.getProperty("line.separator"))+"  -------- child "+child.toString();
     	}
