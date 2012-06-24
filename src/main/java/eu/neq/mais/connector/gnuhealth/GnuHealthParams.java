@@ -273,6 +273,12 @@ public abstract class GnuHealthParams {
                     adminSession,
                     allPatientIds,
                     new String[]{"create_date"}, "REPLACE_CONTEXT"};
+        } else if (typeOfParams == 10) {
+            return new Object[]{
+                    1,
+                    adminSession,
+                    allPatientIds,
+                    new String[]{"primary_care_doctor.name"}, "REPLACE_CONTEXT"};
         } else {
             return new Object[]{
                     1,

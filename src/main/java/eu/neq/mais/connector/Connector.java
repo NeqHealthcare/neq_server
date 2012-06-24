@@ -322,6 +322,14 @@ public abstract class Connector {
 	 * @return
 	 */
 	public abstract List<?> returnChatterPosts(Integer userId);
+	
+	/**
+	 * This method returns the number of patients a user has 
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	public abstract List<?> returnNumberOfPatients(Integer userId);
 
 
 

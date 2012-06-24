@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -75,21 +76,27 @@ public class UserHandler {
 
         try {
             connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
+           
             String user_id = String.valueOf(NeqServer.getSessionStore().getUserId(session));
+           
             person = connector.returnPersonalInformation(user_id);
-
+           
             /*
             * Number of patients
             */
-            List<?> nrOfpatients = connector.returnPersonalPatientsForUIList(session);
+           
+            List<?> nrOfpatients = connector.returnNumberOfPatients(Integer.parseInt(user_id));
+            
             person.setNumber_of_patients(String.valueOf(nrOfpatients.size()));
 
             /*
             * last login
             */
+
             DbHandler dbH = new DbHandler();
             Login l = dbH.getLatestLogin(user_id);
             dbH.close();
+
             person.setLastLogin(l.getDateOfLogin());
 
             response = new DTOWrapper().wrap(person);

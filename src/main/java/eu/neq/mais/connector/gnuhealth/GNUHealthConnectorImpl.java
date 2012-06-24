@@ -237,8 +237,8 @@ public class GNUHealthConnectorImpl extends Connector {
             // params3);
             // logger.info("res3: "+res3);
 
-            // // Find personal Patient List for UI
-//               con.returnPersonalPatientsForUIList(user_session);
+             // Find personal Patient List for UI
+               con.returnPersonalPatientsForUIList(user_session);
 
             // System.out.println(con.returnDashBoardData(user_session, "9"));
 
@@ -1087,6 +1087,31 @@ public class GNUHealthConnectorImpl extends Connector {
 
         return patientList;
     }
+    
+    
+
+	public List<?> returnNumberOfPatients(Integer userId){
+		
+        String patientListString = "false";
+        
+        patientListString = execute(GnuHealthMethods.getPatientReadMethod(),
+                GnuHealthParams.getReturnPatientsParams(this.getAdminSession(), getAllPatientIds(), 10));
+        Type listType = new TypeToken<List<PatientGnu>>() {
+        }.getType();
+        List<PatientGnu> patientList = DomainParserGnu.fromJson(
+                patientListString, listType, PatientGnu.class);
+
+        int party_id = getPartyId(userId);
+        ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();
+        for (PatientGnu p : patientList) {
+            if (p.getPrimary_care_doctor_id() != "false") {
+                if (Integer.valueOf(p.getPrimary_care_doctor_id()) == party_id) {
+                    relevantList.add(p);
+                }
+            }
+        }
+        return relevantList;
+	}
 
     /**
      * @throws NoSessionInSessionStoreException
@@ -1096,10 +1121,9 @@ public class GNUHealthConnectorImpl extends Connector {
     public List<?> returnPersonalPatientsForUIList(String session)
             throws NoSessionInSessionStoreException {
         String patientListString = "false";
-
+        
         patientListString = execute(GnuHealthMethods.getPatientReadMethod(),
                 GnuHealthParams.getReturnPatientsParams(this.getAdminSession(), getAllPatientIds(), 0));
-
         Type listType = new TypeToken<List<PatientGnu>>() {
         }.getType();
         List<PatientGnu> patientList = DomainParserGnu.fromJson(
@@ -1298,7 +1322,6 @@ public class GNUHealthConnectorImpl extends Connector {
      */
     public UserGnu returnPersonalInformation(String user_id) throws NoSessionInSessionStoreException {
         UserGnu personalInfo = new UserGnu();
-
         personalInfo.setName(getUserRecName(user_id));
         personalInfo.setPhysician_id(String.valueOf(getPhysicianId(Integer.valueOf(user_id))));
         personalInfo.setId(user_id);
@@ -1311,10 +1334,7 @@ public class GNUHealthConnectorImpl extends Connector {
 			e.printStackTrace();
 		}
         
-        
-        //personalInfo.setImage_url("http://i43.tinypic.com/29lzamh.png");
-
-        return personalInfo;
+       return personalInfo;
     }
 
     @Override
