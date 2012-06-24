@@ -106,33 +106,33 @@ public class GNUHealthConnectorImpl extends Connector {
 			// for (Object r : res) System.out.println("1:"+ ((ChatterUser)
 			// r).toString());
 			// System.out.println(new DTOWrapper().wrap(res));
+//
+//			// Create Template Messages
+			 for(int i = 0; i<5; i++){
+			 try {
+			 res =
+			 con.saveChatterPost(NeqServer.getSessionStore().getUserId(user_session),
+			 "This is a test message: "+System.currentTimeMillis(),-1l);
+			 } catch (NoSessionInSessionStoreException e) {
+			 e.printStackTrace();
+			 }
+			 for (Object r : res) System.out.println("y:"+ (r).toString());
+			 System.out.println(new DTOWrapper().wrap(res));
+			 }
+			 System.out.println("--------------------------- test messages created");
 
-			// Create Template Messages
-			// for(int i = 0; i<5; i++){
-			// try {
-			// res =
-			// con.saveChatterPost(NeqServer.getSessionStore().getUserId(user_session),
-			// "This is a test message: "+System.currentTimeMillis(),-1l);
-			// } catch (NoSessionInSessionStoreException e) {
-			// e.printStackTrace();
-			// }
-			// for (Object r : res) System.out.println("y:"+ (r).toString());
-			// System.out.println(new DTOWrapper().wrap(res));
-			// }
-			// System.out.println("--------------------------- test messages created");
-
-			// Retrieve test messages
-			// try {
-			// res =
-			// con.returnChatterPosts(NeqServer.getSessionStore().getUserId(user_session));
-			// } catch (Exception e) {
-			// e.printStackTrace();
-			// }
-			// for (Object r : res) System.out.println("x:"+ ((ChatterPost)
-			// r).toString());
-			// System.out.println(new DTOWrapper().wrap(res));
-			//
-			// System.out.println("--------------------------- test messages retrieved");
+//			 Retrieve test messages
+			 try {
+			 res =
+			 con.returnChatterPosts(NeqServer.getSessionStore().getUserId(user_session));
+			 } catch (Exception e) {
+			 e.printStackTrace();
+			 }
+			 for (Object r : res) System.out.println("x:"+ ((ChatterPost)
+			 r).toString());
+			 System.out.println(new DTOWrapper().wrap(res));
+			
+			 System.out.println("--------------------------- test messages retrieved");
 
 			//
 			// Object[] fk =
@@ -381,77 +381,61 @@ public class GNUHealthConnectorImpl extends Connector {
 
 	@Override
 	public List<?> returnChatterPosts(Integer userId) {
-		// retrieve all users the user with userId is following
-		Set<String> followedUsersSet = getAllUserIdsOfFollowedUsers(userId
-				.toString());
-		followedUsersSet.add(userId.toString());
-		DbHandler dbh = new DbHandler();
-		// retrieve all posts from all the users the user is following,
-		// including his/her own posts
-		List<eu.neq.mais.technicalservice.storage.ChatterPost> posts = dbh
-				.getChatterPosts(followedUsersSet);
-		dbh.close();
+		int i = 0;
+  	   //retrieve all users the user with userId is following
+	   Set<String> followedUsersSet =  getAllUserIdsOfFollowedUsers(userId.toString());
+       followedUsersSet.add(userId.toString());
 
-		// the domain model list of posts.
-		Map<Long, ChatterPost> domainPostList = new HashMap<Long, ChatterPost>();
+       DbHandler dbh = new DbHandler();
+       //retrieve all posts from all the users the user is following, including his/her own posts
+       List<eu.neq.mais.technicalservice.storage.ChatterPost> posts = dbh.getChatterPosts(followedUsersSet);
+       dbh.close();
 
-		// the reduced domain model list that is send to the frontend (post that
-		// have a parent are only send as child of the parent)
-		Map<Long, ChatterPost> finalPostList = new HashMap<Long, ChatterPost>();
+       //the domain model list of posts.
+       Map<Long,ChatterPost> domainPostList = new HashMap<Long,ChatterPost>();
+       
+       //the reduced domain model list that is send to the frontend (post that have a parent are only send as child of the parent)
+       Map<Long,ChatterPost> finalPostList = null;
+       
+       //helper map that lists all childs of a parent post
+       Map<Long, ArrayList<Long>> parentChildMap = new HashMap<Long,ArrayList<Long>>();
+       
 
-		// helper map that lists all childs of a parent post
-		Map<Long, ArrayList<Long>> parentChildMap = new HashMap<Long, ArrayList<Long>>();
+       
+       //load mapping of user ids to rec_names for further processing
+       Map<String,String> userIdRecNameMap = getUserIdRecNameMap();
 
-		// create a ChatterPost from the ...storage.ChatterPost instance. This
-		// one holds also the user_image
-		for (eu.neq.mais.technicalservice.storage.ChatterPost post : posts) {
-			ChatterPost tempPost = null;
-			Long parent_id = post.getParent_id();
-			try {
-				tempPost = new ChatterPost(post.getId(), post.getMessage(),
-						post.getTimestamp(),
-						getUserRecName(post.getCreator_id()), InetAddress
-								.getLocalHost().getHostAddress()
-								+ ":"
-								+ NeqServer.getPort()
-								+ "/user/image/"
-								+ post.getCreator_id());
-			} catch (UnknownHostException e) {
-				tempPost = new ChatterPost(post.getId(), post.getMessage(),
-						post.getTimestamp(),
-						getUserRecName(post.getCreator_id()), "");
-				e.printStackTrace();
-			}
-			domainPostList.put(tempPost.getId(), tempPost);
-			// adds a post as child to the parentChildMap if it has a parent -->
-			// parent_id != -1
-			if (parent_id != -1) {
+       //create a ChatterPost from the ...storage.ChatterPost instance. This one holds also the user_image 
+       for(eu.neq.mais.technicalservice.storage.ChatterPost post : posts){
+    	   
+           String image_address = "";
+           try {
+        	   image_address = InetAddress.getLocalHost().getHostAddress() + ":" + NeqServer.getPort() + "/user/image/"+post.getCreator_id();
+           } catch (UnknownHostException e) {
+           }
+    	   ChatterPost tempPost = null;
+    	   tempPost = new ChatterPost(post.getId(),post.getMessage(),post.getTimestamp(),userIdRecNameMap.get(post.getCreator_id()),image_address);
 
-				if (parentChildMap.containsKey(parent_id)) {
-					List<Long> childs = parentChildMap.get(parent_id);
-					childs.add(tempPost.getId());
-				} else {
-					ArrayList<Long> childs = new ArrayList<Long>();
-					childs.add(tempPost.getId());
-					parentChildMap.put(parent_id, childs);
-				}
+    	   domainPostList.put(tempPost.getId(), tempPost);
+       }
+       
+       finalPostList = new HashMap<Long,ChatterPost>(domainPostList);
+       
+       //create a ChatterPost from the ...storage.ChatterPost instance. This one holds also the user_image 
+       for(eu.neq.mais.technicalservice.storage.ChatterPost post : posts){
 
-			} else {
-				// add only those posts to the final map that have no parent
-				finalPostList.put(tempPost.getId(), tempPost);
-			}
-		}
+    	   Long parent_id = post.getParent_id();
 
-		// adds all childs of a parent to its ChatterPost instance
-		for (ChatterPost post : domainPostList.values()) {
-			if (parentChildMap.containsKey(post.getId())) {
-				for (Long child : parentChildMap.get(post.getId())) {
-					post.addChild(domainPostList.get(child));
-				}
-			}
-		}
-
-		return new ArrayList<ChatterPost>(finalPostList.values());
+    	   if(parent_id != -1){
+    		   //adds all childs of a parent to its ChatterPost instance 
+    		   domainPostList.get(parent_id).addChild(domainPostList.get(post.getId()));
+    		   finalPostList.remove(post.getId());
+    		   
+    	   }  	   
+    	   
+       }
+      
+       return new ArrayList<ChatterPost>(finalPostList.values());
 	}
 
 	@Override
@@ -1889,6 +1873,37 @@ public class GNUHealthConnectorImpl extends Connector {
 		}
 		return idList;
 	}
+	
+	  private Map<String,String> getUserIdRecNameMap (){
+		    
+   	   String session = getAdminSession();
+          // Getting all User Ids
+          int[] ids = getAllUserIds();
+
+          // Searching for all Ids and fields: name, login
+          Object[] params = new Object[]{1, session, ids,
+                  new String[]{"name", "rec_name"}, "REPLACE_CONTEXT"};
+
+          // Execute search
+          String res = execute("model.res.user.read", params);
+
+          // cleanse json transmission overhead (transaction id, etc..)
+          String cleansed = res.substring(res.indexOf("["), res.indexOf("]") + 1);
+
+          // convert to list
+          Type listType = new TypeToken<List<UserGnu>>() {
+          }.getType();
+          List<UserGnu> userList = new Gson().fromJson(cleansed, listType);
+
+          Map<String,String> userIdRecNameMap = new HashMap<String,String>();
+          // create mapping
+          for (UserGnu u : userList) {
+       	   userIdRecNameMap.put(u.getId(), u.getRec_name());
+       
+          }
+
+          return userIdRecNameMap;
+   }
 
 	@Override
 	public List<?> returnDiseases() {
