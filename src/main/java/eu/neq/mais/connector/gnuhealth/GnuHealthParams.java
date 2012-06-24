@@ -289,21 +289,38 @@ public abstract class GnuHealthParams {
 
     }
 
-    public static Object[] getReturnDiagnoseParams(int id, String adminSession) {
-        return new Object[]{
-                1,
-                adminSession,
-                new int[]{id},
-                new String[]{"status", "pregnancy_warning", "is_active",
-                        "short_comment", "diagnosed_date", "healed_date",
-                        "pathology", "disease_severity", "is_infectious",
-                        "is_allergy", "pathology.rec_name",
-                        "date_start_treatment", "doctor", "age",
-                        "weeks_of_pregnancy", "is_on_treatment",
-                        "treatment_description", "extra_info",
-                        "date_stop_treatment", "pcs_code", "allergy_type",
-                        "doctor.rec_name", "pcs_code.rec_name"},
-                "REPLACE_CONTEXT"};
+    public static Object[] getReturnDiagnoseParams(int id, String adminSession, int typOfParams) {
+    	if(typOfParams == 0){
+	        return new Object[]{
+	                1,
+	                adminSession,
+	                new int[]{id},
+	                new String[]{"status", "pregnancy_warning", "is_active",
+	                        "short_comment", "diagnosed_date", "healed_date",
+	                        "pathology", "disease_severity", "is_infectious",
+	                        "is_allergy", "pathology.rec_name",
+	                        "date_start_treatment", "doctor", "age",
+	                        "weeks_of_pregnancy", "is_on_treatment",
+	                        "treatment_description", "extra_info",
+	                        "date_stop_treatment", "pcs_code", "allergy_type",
+	                        "doctor.rec_name", "pcs_code.rec_name"},
+	                "REPLACE_CONTEXT"};
+    	}else if(typOfParams == 1){
+    		 return new Object[]{
+ 	                1,
+ 	                adminSession,
+ 	                new int[]{id},
+ 	                new String[]{"diagnosed_date",
+ 	                        "pathology.rec_name"},
+ 	                "REPLACE_CONTEXT"};
+    	}else{
+    		 return new Object[]{
+  	                1,
+  	                adminSession,
+  	                new int[]{id},
+  	                new String[]{"id"},
+  	                "REPLACE_CONTEXT"};
+    	}
     }
 
     public static Object[] getReturnDiagnosesParams(String adminSession, int[] diagnoseIds, int typeOfParams) {

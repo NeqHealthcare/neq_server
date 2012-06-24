@@ -1128,12 +1128,11 @@ public class GNUHealthConnectorImpl extends Connector {
         }.getType();
         List<PatientGnu> patientList = DomainParserGnu.fromJson(
                 patientListString, listType, PatientGnu.class);
-        patientList = addLatestDiagnoseToPatient(patientList);
 
         int party_id = getPartyId(NeqServer.getSessionStore().getUserId(
                 session));
 
-        ArrayList<PatientGnu> relevantList = new ArrayList<PatientGnu>();
+        List<PatientGnu> relevantList = new ArrayList<PatientGnu>();
         for (PatientGnu p : patientList) {
             if (p.getPrimary_care_doctor_id() != "false") {
                 if (Integer.valueOf(p.getPrimary_care_doctor_id()) == party_id) {
@@ -1143,6 +1142,7 @@ public class GNUHealthConnectorImpl extends Connector {
                 }
             }
         }
+        relevantList = addLatestDiagnoseToPatient(relevantList);
         return relevantList;
     }
 
@@ -1238,13 +1238,11 @@ public class GNUHealthConnectorImpl extends Connector {
     private List<PatientGnu> addLatestDiagnoseToPatient(
             List<PatientGnu> patientList) {
         for (PatientGnu patient : patientList) {
-
             DiagnoseGnu latestDiagnose = null;
             if (patient.getDiagnoseIds() != null) {
                 for (String diseaseID : patient.getDiagnoseIds()) {
                     String diagnoseString = execute(GnuHealthMethods.getDiagnoseReadMethod(),
-                            GnuHealthParams.getReturnDiagnoseParams(Integer.parseInt(diseaseID), this.getAdminSession()));
-
+                            GnuHealthParams.getReturnDiagnoseParams(Integer.parseInt(diseaseID), this.getAdminSession(),1));
                     DiagnoseGnu tempDiagnose = DomainParserGnu.fromJson(
                             diagnoseString, DiagnoseGnu.class);
                     if (latestDiagnose != null) {
@@ -1282,7 +1280,7 @@ public class GNUHealthConnectorImpl extends Connector {
         if (patient.getDiagnoseIds() != null) {
             for (String diseaseID : patient.getDiagnoseIds()) {
                 String diagnoseString = execute(GnuHealthMethods.getDiagnoseReadMethod(),
-                        GnuHealthParams.getReturnDiagnoseParams(Integer.parseInt(diseaseID), this.getAdminSession()));
+                        GnuHealthParams.getReturnDiagnoseParams(Integer.parseInt(diseaseID), this.getAdminSession(),0));
                 DiagnoseGnu tmp = DomainParserGnu.fromJson(diagnoseString,
                         DiagnoseGnu.class);
                 tmp.prepareDateFormat();
@@ -1308,7 +1306,7 @@ public class GNUHealthConnectorImpl extends Connector {
      */
     public Diagnose returnDiagnose(String diagnoseID) {
         String diagnose = this.execute(GnuHealthMethods.getDiagnoseReadMethod(),
-                GnuHealthParams.getReturnDiagnoseParams(Integer.parseInt(diagnoseID), this.getAdminSession()));
+                GnuHealthParams.getReturnDiagnoseParams(Integer.parseInt(diagnoseID), this.getAdminSession(),0));
 
         DiagnoseGnu tmp = DomainParserGnu.fromJson(diagnose, DiagnoseGnu.class);
         tmp.prepareDateFormat();
