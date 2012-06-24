@@ -150,10 +150,9 @@ public class LabTestHandler {
             List<?> res = connector.checkForTestedLabRequests(doctor_id);
             response = new DTOWrapper().wrap(res);
         } catch (Exception e) {
-
             e.printStackTrace();
         } catch (NoSessionInSessionStoreException e) {
-            e.printStackTrace();
+            logger.info("No Session in SessionStore Exception: Front-End not logged in, probably due to MAIS restart or connection timeout");
         }
 
 

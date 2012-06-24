@@ -28,6 +28,9 @@ public abstract class Connector {
     private Backend backend;
     protected static Logger logger = Logger.getLogger("eu.neq.mais.connector");
     private static Connector instance = null;
+    protected static String adminSession = null;
+    
+    public abstract void init();
 
     public Connector() {
         logger.setLevel(Level.ALL); // DEBUG PURPOSES
@@ -330,6 +333,8 @@ public abstract class Connector {
 	 * @return
 	 */
 	public abstract List<?> returnNumberOfPatients(Integer userId);
+	
+	
 
 
 
