@@ -93,7 +93,6 @@ public class PatientHandler {
             response = new DTOWrapper().wrapError(es.toString());
         }
 
-
         return response;
     }
     
