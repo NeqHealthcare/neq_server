@@ -33,40 +33,16 @@ public class DbHandler {
         try {
 
             //For high speed in memory
-            this.db = new SqlJetDb(SqlJetDb.IN_MEMORY, true);
-            this.db.open();
+            //this.db = new SqlJetDb(SqlJetDb.IN_MEMORY, true);
+            //this.db.open();
 
 
             //For persistent storage
             File f = new File(LOCATION + DB_NAME);
-            SqlJetDb temp_db = new SqlJetDb(f, true);
-            temp_db.open();
-
-            /* db.beginTransaction(SqlJetTransactionMode.WRITE);
-                        try {
-                            for (String table: temp_db.getSchema().getTableNames())
-                            {
-                            db.createTable(table);
-                            ISqlJetCursor cursor = temp_db.getTable(table).open();
-                                while (!cursor.eof())
-                                   cursor.
-
-                            }
-                                               }
+            this.db = new SqlJetDb(f, true);
+            this.db.open();
 
 
-            */
-
-
-            /*       for (String i: temp_db.getSchema().getTableNames())
-            {
-                this.db.alterTable(temp_db.getTable(i).getDataBase().;
-            }*/
-
-
-            //this.db.getFile().
-            // SqlJetDb.open(f, true);
-            //this.insertVitalData("test");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
