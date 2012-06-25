@@ -28,6 +28,9 @@ public abstract class Connector {
     private Backend backend;
     protected static Logger logger = Logger.getLogger("eu.neq.mais.connector");
     private static Connector instance = null;
+    protected static String adminSession = null;
+    
+    public abstract void init();
 
     public Connector() {
         logger.setLevel(Level.ALL); // DEBUG PURPOSES
@@ -277,7 +280,61 @@ public abstract class Connector {
 
     public abstract List<?> returnDocumentList(String id);
 
+    /**
+     * returns the requested document
+     * 
+     * @param documentID
+     * @return document
+     */
     public abstract List<DocumentGnu> returnDocumentData(String documentID);
+
+    
+    /**
+     * Returns all chatter users except the one requesting the chatter users
+     * 
+     * @param userId
+     * @return
+     */
+	public abstract List<?> returnChatterUsers(Integer userId);
+
+	/**
+	 * This method sets the is_followed status of the potentially followed_user to true or false with regards to the user who wants to follow/unfollow 
+	 * 
+	 * @param user
+	 * @param followed_user
+	 * @param is_followed
+	 * @return
+	 */
+	public abstract List<?> updateChatterUser(Integer user, Integer followed_user,
+			boolean is_followed);
+
+	/**
+	 * This method saves a chatter post with the following attributes
+	 * 
+	 * @param userId - the user that created the post
+	 * @param message - the message
+	 * @param parentId - (optional) the id of the message to which this post is a reply
+	 * @return
+	 */
+	public abstract List<?> saveChatterPost(Integer userId, String message, Long parentId);
+
+	/**
+	 * This method returns messages from all the people followed by the user
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	public abstract List<?> returnChatterPosts(Integer userId);
+	
+	/**
+	 * This method returns the number of patients a user has 
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	public abstract List<?> returnNumberOfPatients(Integer userId);
+	
+	
 
 
 

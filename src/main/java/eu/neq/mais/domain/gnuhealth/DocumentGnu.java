@@ -4,7 +4,6 @@ import eu.neq.mais.domain.Document;
 import sun.misc.BASE64Decoder;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -20,11 +19,13 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class DocumentGnu implements Document {
-    String User;
+    String last_user;
     int id;
     DateGnu lastEdited;
     String description;
     DataGnu data;
+    String type;
+    String name;
 
 
     public DataGnu getData() {
@@ -60,11 +61,11 @@ public class DocumentGnu implements Document {
     }
 
     public String getUser() {
-        return User;
+        return last_user;
     }
 
     public void setUser(String user) {
-        User = user;
+        last_user = user;
     }
 
     public byte[] getImage() {

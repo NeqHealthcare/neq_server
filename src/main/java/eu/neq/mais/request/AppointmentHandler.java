@@ -27,7 +27,7 @@ public class AppointmentHandler {
 
     @OPTIONS
     @Path("/latest")
-    public Response returnMedicationHandeler(@Context HttpServletResponse servlerResponse) {
+    public Response returnAppointmentsOptions(@Context HttpServletResponse servlerResponse) {
 
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
@@ -43,7 +43,7 @@ public class AppointmentHandler {
     @GET
     @Path("/latest")
     @Produces(MediaType.APPLICATION_JSON)
-    public String returnMedication(@Context HttpServletResponse servlerResponse,
+    public String returnAppointments(@Context HttpServletResponse servlerResponse,
                                    @QueryParam("session") String session,
                                    @QueryParam("count") String count) {
 

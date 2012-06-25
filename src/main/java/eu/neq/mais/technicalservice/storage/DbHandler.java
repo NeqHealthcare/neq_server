@@ -10,29 +10,44 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
 
-import static java.lang.Long.*;
+import static java.lang.Long.parseLong;
 
 
 public class DbHandler {
 
-    public static String LOCATION = "./resources/";
-    public static String DB_NAME = "MAIS_INTERNAL_DB2";
+    public String LOCATION = "./resources/";
+    public String DB_NAME = "MAIS_INTERNAL_DB2";
     private SqlJetDb db;
 
     private Login login;
     private VitalData vitalData;
     private LabTestRequest labTestRequest;
+    private FollowingUser followingUser;
+    private ChatterPost chatterPost;
 
 
     public DbHandler() {
-        File f = new File(LOCATION + DB_NAME);
+
         try {
-            this.db = SqlJetDb.open(f, true);
-            //this.insertVitalData("test");
-        } catch (SqlJetException e) {
+
+            //For high speed in memory
+            //this.db = new SqlJetDb(SqlJetDb.IN_MEMORY, true);
+            //this.db.open();
+
+
+            //For persistent storage
+            File f = new File(LOCATION + DB_NAME);
+            this.db = new SqlJetDb(f, true);
+            this.db.open();
+
+
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
+
+
             vitalData = new VitalData();
             vitalData.initialize(this.getDb());
             login = new Login();
@@ -40,31 +55,217 @@ public class DbHandler {
 
             labTestRequest = new LabTestRequest();
             labTestRequest.initialize(this.getDb());
+
+            followingUser = new FollowingUser();
+            followingUser.initialize(this.getDb());
+
+            chatterPost = new ChatterPost();
+            chatterPost.initialize(this.getDb());
         }
 
     }
 
 
     public void close() {
+
+        //todo
+        //write method that synchronises the in memory db contents with in persistent db
+        //File f = new File(LOCATION + DB_NAME);
+        // try {
+        //SqlJetDb.(f, true).createTable(this.db.);
+        //this.db.close();
+
+        /* } catch (SqlJetException e) {
+            e.printStackTrace();
+        }*/
+    }
+
+
+    public boolean updateFollowingUser(final String user_id, final String followed_user_id, final Boolean isFollowing) {
+
         try {
-            this.db.close();
+            db.runWriteTransaction(new ISqlJetTransaction() {
+
+                public Object run(SqlJetDb db) throws SqlJetException {
+                    if (isFollowing) {
+
+                        ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
+                        table.insert(user_id, followed_user_id);
+                    } else {
+                        ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
+                        ISqlJetCursor cursor = table.lookup(FollowingUser.INDEX_USER_ID, user_id);
+
+                        try {
+                            if (!cursor.eof()) {
+                                do {
+                                    if (cursor.getString(FollowingUser.FIELD_FOLLOWED_USER_ID).equals(followed_user_id)) {
+                                        cursor.delete();
+                                    }
+                                } while (cursor.next());
+                            }
+                        } finally {
+                            cursor.close();
+                        }
+
+                    }
+
+
+                    return true;
+                }
+            });
         } catch (SqlJetException e) {
             e.printStackTrace();
+            return false;
         }
+
+        return true;
+
     }
+
+    @SuppressWarnings("unchecked")
+    public List<FollowingUser> getFollowingUsers(final String user_id) {
+        final List<FollowingUser> result = new ArrayList<FollowingUser>();
+
+        try {
+            return (List<FollowingUser>) db.runReadTransaction(new ISqlJetTransaction() {
+
+                public Object run(SqlJetDb db) throws SqlJetException {
+                    ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
+                    ISqlJetCursor cursor = table.lookup(FollowingUser.INDEX_FOLLOWED_USER_ID, user_id);
+                    try {
+                        if (!cursor.eof()) {
+                            do {
+                                FollowingUser tmp = new FollowingUser();
+                                tmp.read(cursor);
+                                result.add(tmp);
+
+                            } while (cursor.next());
+                        }
+                    } finally {
+                        cursor.close();
+                    }
+
+                    return result;
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<FollowingUser> getFollowedUsers(final String user_id) {
+        final List<FollowingUser> result = new ArrayList<FollowingUser>();
+
+        try {
+            return (List<FollowingUser>) db.runReadTransaction(new ISqlJetTransaction() {
+
+                public Object run(SqlJetDb db) throws SqlJetException {
+                    ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
+                    ISqlJetCursor cursor = table.lookup(FollowingUser.INDEX_USER_ID, user_id);
+                    try {
+                        if (!cursor.eof()) {
+                            do {
+                                FollowingUser tmp = new FollowingUser();
+                                tmp.read(cursor);
+                                result.add(tmp);
+
+                            } while (cursor.next());
+                        }
+                    } finally {
+                        cursor.close();
+                    }
+
+                    return result;
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+
+    public boolean saveChatterPost(final String message, final Long timestamp, final Long parent_id, final String creator_id)
+
+    {
+
+        try {
+            db.runWriteTransaction(new ISqlJetTransaction() {
+
+                public Object run(SqlJetDb db) throws SqlJetException {
+                    ISqlJetTable table = db.getTable(ChatterPost.TABLE_NAME);
+                    table.insert(message, timestamp, parent_id, creator_id);
+
+                    return true;
+                }
+            });
+        } catch (SqlJetException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<ChatterPost> getChatterPosts(final Set<String> userIds) {
+        final List<ChatterPost> result = new ArrayList<ChatterPost>();
+
+        try {
+            return (List<ChatterPost>) db.runReadTransaction(new ISqlJetTransaction() {
+
+                public Object run(SqlJetDb db) throws SqlJetException {
+                    ISqlJetTable table = db.getTable(ChatterPost.TABLE_NAME);
+                    for (String userId : userIds) {
+                        ISqlJetCursor cursor = table.lookup(ChatterPost.INDEX_CREATOR_ID, userId);
+
+                        try {
+                            if (!cursor.eof()) {
+                                do {
+                                    ChatterPost tmp = new ChatterPost();
+                                    tmp.read(cursor);
+                                    result.add(tmp);
+
+                                } while (cursor.next());
+                            }
+                        } finally {
+                            cursor.close();
+                        }
+
+                    }
+
+                    return result;
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
 
     public Login getLatestLogin(final String user_id) {
         Login result = null;
 
         try {
             return (Login) db.runReadTransaction(new ISqlJetTransaction() {
-
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(Login.TABLE_NAME);
                     ISqlJetCursor cursor = table.lookup(Login.INDEX_USER_ID, user_id);
+                    Login login = null;
+                    try {
+                        cursor.last();
+                        login = new Login(cursor);
+                    } finally {
+                        cursor.close();
+                    }
 
-                    cursor.last();
-                    return new Login(cursor);
+                    return login;
                 }
             });
         } catch (SqlJetException e) {
@@ -81,8 +282,11 @@ public class DbHandler {
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(LabTestRequest.TABLE_NAME);
                     ISqlJetCursor cursor = table.lookup(LabTestRequest.INDEX_REQUEST_ID, request_id);
-                    cursor.delete();
-
+                    try {
+                        cursor.delete();
+                    } finally {
+                        cursor.close();
+                    }
                     return true;
                 }
             });
@@ -125,12 +329,18 @@ public class DbHandler {
                     ISqlJetTable table = db.getTable(LabTestRequest.TABLE_NAME);
                     ISqlJetCursor cursor = table.lookup(LabTestRequest.INDEX_USER_ID, user_id);
 
-                    do {
-                        LabTestRequest tmp = new LabTestRequest();
-                        tmp.read(cursor);
-                        result.add(tmp);
+                    try {
+                        if (!cursor.eof()) {
+                            do {
+                                LabTestRequest tmp = new LabTestRequest();
+                                tmp.read(cursor);
+                                result.add(tmp);
 
-                    } while (cursor.next());
+                            } while (cursor.next());
+                        }
+                    } finally {
+                        cursor.close();
+                    }
 
                     return result;
                 }
@@ -185,8 +395,14 @@ public class DbHandler {
 
                     ISqlJetCursor cursor = table.lookup(VitalData.INDEX_USER_ID,
                             user_id);
+                    int rows = 0;
+                    try {
+                        rows = (int) cursor.getRowCount();
+                    } finally {
+                        cursor.close();
+                    }
 
-                    return (int) cursor.getRowCount();
+                    return rows;
                 }
             });
         } catch (Exception e) {
@@ -216,20 +432,24 @@ public class DbHandler {
                     ISqlJetCursor cursor = table.lookup(VitalData.INDEX_VITALDATA_ITEM_ID);
                     // new Object[]{endDate_DB.getTimeInMillis()},
                     //new Object[]{startDate_DB.getTimeInMillis()}
-                    do {
+                    try {
+                        do {
 
-                        VitalData tmp = new VitalData();
-                        tmp.read(cursor);
+                            VitalData tmp = new VitalData();
+                            tmp.read(cursor);
 
-                        date_DB.setTimeInMillis(parseLong(tmp.getDate()));
-                        //System.out.println(date_DB.getTime());
+                            date_DB.setTimeInMillis(parseLong(tmp.getDate()));
+                            //System.out.println(date_DB.getTime());
 
-                        if (tmp.getUser_id().equals(user_id) &&
-                                date_DB.before(endDate) &&
-                                date_DB.after(startDate))
-                            result.add(tmp);
+                            if (tmp.getUser_id().equals(user_id) &&
+                                    date_DB.before(endDate) &&
+                                    date_DB.after(startDate))
+                                result.add(tmp);
 
-                    } while (cursor.next());
+                        } while (cursor.next());
+                    } finally {
+                        cursor.close();
+                    }
 
                     return result;
                 }
@@ -247,7 +467,7 @@ public class DbHandler {
         try {
             final eu.neq.mais.domain.gnuhealth.VitalDataGnu vitalDataGnu = new eu.neq.mais.domain.gnuhealth.VitalDataGnu(user_id);
             final Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.DATE, -100);
+            calendar.add(Calendar.DATE, -50);
             //System.out.println(calendar.getTime());
 
 
@@ -255,7 +475,7 @@ public class DbHandler {
 
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(VitalData.TABLE_NAME);
-                    for (int i = 1; i < 100; i++) {
+                    for (int i = 1; i < 50; i++) {
                         vitalDataGnu.generateVitalData();
                         calendar.add(Calendar.DATE, 1);
                         //System.out.println(calendar.getTime());
@@ -269,9 +489,13 @@ public class DbHandler {
                     return true;
                 }
             });
+
+
         } catch (SqlJetException e) {
             e.printStackTrace();
         }
+
+
     }
 
 

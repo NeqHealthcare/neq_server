@@ -7,6 +7,7 @@ import eu.neq.mais.domain.LabTestResult;
 import eu.neq.mais.technicalservice.DTOWrapper;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
 import eu.neq.mais.technicalservice.Settings;
+import eu.neq.mais.technicalservice.storage.DBFacade;
 import eu.neq.mais.technicalservice.storage.DbHandler;
 import org.eclipse.jetty.server.Response;
 
@@ -108,7 +109,7 @@ public class LabTestHandler {
         servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
         try {
-            DbHandler dbh = new DbHandler();
+            DbHandler dbh = DBFacade.getInstance();
             boolean worked = dbh.removeLabTestRequest(labTestRequestId);
             dbh.close();
 
@@ -150,10 +151,9 @@ public class LabTestHandler {
             List<?> res = connector.checkForTestedLabRequests(doctor_id);
             response = new DTOWrapper().wrap(res);
         } catch (Exception e) {
-
             e.printStackTrace();
         } catch (NoSessionInSessionStoreException e) {
-            e.printStackTrace();
+            logger.info("No Session in SessionStore Exception: Front-End not logged in, probably due to MAIS restart or connection timeout");
         }
 
 

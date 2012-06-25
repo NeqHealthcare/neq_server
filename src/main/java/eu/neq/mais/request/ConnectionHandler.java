@@ -62,7 +62,7 @@ public class ConnectionHandler {
         try {
             connector = ConnectorFactory.getConnector(backendSid);
             session = connector.login(username, password, backendSid);
-
+             
             if (session.contains("false"))
                 response = new DTOWrapper().wrapError("Wrong login credentials (username/password). Please try again.");
             else response = new DTOWrapper().wrap(session);
