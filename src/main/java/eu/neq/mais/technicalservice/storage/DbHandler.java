@@ -12,13 +12,13 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
-import static java.lang.Long.*;
+import static java.lang.Long.parseLong;
 
 
 public class DbHandler {
 
-    public static String LOCATION = "./resources/";
-    public static String DB_NAME = "MAIS_INTERNAL_DB2";
+    public String LOCATION = "./resources/";
+    public String DB_NAME = "MAIS_INTERNAL_DB2";
     private SqlJetDb db;
 
     private Login login;
@@ -29,13 +29,49 @@ public class DbHandler {
 
 
     public DbHandler() {
-        File f = new File(LOCATION + DB_NAME);
+
         try {
-            this.db = SqlJetDb.open(f, true);
+
+            //For high speed in memory
+            this.db = new SqlJetDb(SqlJetDb.IN_MEMORY, true);
+            this.db.open();
+
+
+            //For persistent storage
+            File f = new File(LOCATION + DB_NAME);
+            SqlJetDb temp_db = new SqlJetDb(f, true);
+            temp_db.open();
+
+            /* db.beginTransaction(SqlJetTransactionMode.WRITE);
+                        try {
+                            for (String table: temp_db.getSchema().getTableNames())
+                            {
+                            db.createTable(table);
+                            ISqlJetCursor cursor = temp_db.getTable(table).open();
+                                while (!cursor.eof())
+                                   cursor.
+
+                            }
+                                               }
+
+
+            */
+
+
+            /*       for (String i: temp_db.getSchema().getTableNames())
+            {
+                this.db.alterTable(temp_db.getTable(i).getDataBase().;
+            }*/
+
+
+            //this.db.getFile().
+            // SqlJetDb.open(f, true);
             //this.insertVitalData("test");
-        } catch (SqlJetException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
+
+
             vitalData = new VitalData();
             vitalData.initialize(this.getDb());
             login = new Login();
@@ -43,10 +79,10 @@ public class DbHandler {
 
             labTestRequest = new LabTestRequest();
             labTestRequest.initialize(this.getDb());
-            
+
             followingUser = new FollowingUser();
             followingUser.initialize(this.getDb());
-            
+
             chatterPost = new ChatterPost();
             chatterPost.initialize(this.getDb());
         }
@@ -55,43 +91,48 @@ public class DbHandler {
 
 
     public void close() {
-        try {
-            this.db.close();
-        } catch (SqlJetException e) {
+
+        //todo
+        //write method that synchronises the in memory db contents with in persistent db
+        //File f = new File(LOCATION + DB_NAME);
+        // try {
+        //SqlJetDb.(f, true).createTable(this.db.);
+        //this.db.close();
+
+        /* } catch (SqlJetException e) {
             e.printStackTrace();
-        }
+        }*/
     }
-    
-    
-    public boolean updateFollowingUser(final String user_id, final String followed_user_id, final Boolean isFollowing){
+
+
+    public boolean updateFollowingUser(final String user_id, final String followed_user_id, final Boolean isFollowing) {
 
         try {
             db.runWriteTransaction(new ISqlJetTransaction() {
 
                 public Object run(SqlJetDb db) throws SqlJetException {
-                	if(isFollowing){
+                    if (isFollowing) {
 
-                		ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
-                        table.insert(user_id, followed_user_id);	
-                	}
-                	else{
-                		ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
+                        ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
+                        table.insert(user_id, followed_user_id);
+                    } else {
+                        ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
                         ISqlJetCursor cursor = table.lookup(FollowingUser.INDEX_USER_ID, user_id);
-                        
+
                         try {
                             if (!cursor.eof()) {
-                              do {
-                              	if(cursor.getString(FollowingUser.FIELD_FOLLOWED_USER_ID).equals(followed_user_id)){
-                                  	cursor.delete();
-                              	}
-                               } while(cursor.next());
+                                do {
+                                    if (cursor.getString(FollowingUser.FIELD_FOLLOWED_USER_ID).equals(followed_user_id)) {
+                                        cursor.delete();
+                                    }
+                                } while (cursor.next());
                             }
-                          } finally {
+                        } finally {
                             cursor.close();
-                          }
-                       		
-                	}
-                    
+                        }
+
+                    }
+
 
                     return true;
                 }
@@ -101,10 +142,10 @@ public class DbHandler {
             return false;
         }
 
-        return true; 	
-    	
+        return true;
+
     }
-    
+
     @SuppressWarnings("unchecked")
     public List<FollowingUser> getFollowingUsers(final String user_id) {
         final List<FollowingUser> result = new ArrayList<FollowingUser>();
@@ -115,19 +156,18 @@ public class DbHandler {
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
                     ISqlJetCursor cursor = table.lookup(FollowingUser.INDEX_FOLLOWED_USER_ID, user_id);
-                	try{
-                		if (!cursor.eof()) {
-		                    do {
-		                    	FollowingUser tmp = new FollowingUser();
-		                        tmp.read(cursor);
-		                        result.add(tmp);
-		
-		                    } while (cursor.next());
-                		}
-                	}
-                	finally {
-                		cursor.close();
-            	    }
+                    try {
+                        if (!cursor.eof()) {
+                            do {
+                                FollowingUser tmp = new FollowingUser();
+                                tmp.read(cursor);
+                                result.add(tmp);
+
+                            } while (cursor.next());
+                        }
+                    } finally {
+                        cursor.close();
+                    }
 
                     return result;
                 }
@@ -138,7 +178,7 @@ public class DbHandler {
 
         return result;
     }
-    
+
     @SuppressWarnings("unchecked")
     public List<FollowingUser> getFollowedUsers(final String user_id) {
         final List<FollowingUser> result = new ArrayList<FollowingUser>();
@@ -149,19 +189,18 @@ public class DbHandler {
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(FollowingUser.TABLE_NAME);
                     ISqlJetCursor cursor = table.lookup(FollowingUser.INDEX_USER_ID, user_id);
-                	try{
-                		if (!cursor.eof()) {
-		                    do {
-		                    	FollowingUser tmp = new FollowingUser();
-		                        tmp.read(cursor);
-		                        result.add(tmp);
-		
-		                    } while (cursor.next());
-                		}
-                	}
-                	finally {
-                		cursor.close();
-            	    }
+                    try {
+                        if (!cursor.eof()) {
+                            do {
+                                FollowingUser tmp = new FollowingUser();
+                                tmp.read(cursor);
+                                result.add(tmp);
+
+                            } while (cursor.next());
+                        }
+                    } finally {
+                        cursor.close();
+                    }
 
                     return result;
                 }
@@ -172,10 +211,10 @@ public class DbHandler {
 
         return result;
     }
-    
-    
-    public boolean saveChatterPost(final String message,final Long timestamp,final Long parent_id,final String creator_id)
-    
+
+
+    public boolean saveChatterPost(final String message, final Long timestamp, final Long parent_id, final String creator_id)
+
     {
 
         try {
@@ -183,7 +222,7 @@ public class DbHandler {
 
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(ChatterPost.TABLE_NAME);
-                    table.insert(message, timestamp,parent_id,creator_id);
+                    table.insert(message, timestamp, parent_id, creator_id);
 
                     return true;
                 }
@@ -195,7 +234,7 @@ public class DbHandler {
 
         return true;
     }
-    
+
     @SuppressWarnings("unchecked")
     public List<ChatterPost> getChatterPosts(final Set<String> userIds) {
         final List<ChatterPost> result = new ArrayList<ChatterPost>();
@@ -205,25 +244,24 @@ public class DbHandler {
 
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(ChatterPost.TABLE_NAME);
-                    for(String userId : userIds){
-                    ISqlJetCursor cursor = table.lookup(ChatterPost.INDEX_CREATOR_ID, userId);
-                    
-	                    try{
-	                		if (!cursor.eof()) {
-			                    do {
-			                    	ChatterPost tmp = new ChatterPost();
-			                        tmp.read(cursor);
-			                        result.add(tmp);
-			
-			                    } while (cursor.next());
-	                		}
-	                	}
-	                	finally {
-	                		cursor.close();
-	            	    }
+                    for (String userId : userIds) {
+                        ISqlJetCursor cursor = table.lookup(ChatterPost.INDEX_CREATOR_ID, userId);
+
+                        try {
+                            if (!cursor.eof()) {
+                                do {
+                                    ChatterPost tmp = new ChatterPost();
+                                    tmp.read(cursor);
+                                    result.add(tmp);
+
+                                } while (cursor.next());
+                            }
+                        } finally {
+                            cursor.close();
+                        }
 
                     }
-                    
+
                     return result;
                 }
             });
@@ -234,25 +272,22 @@ public class DbHandler {
         return result;
     }
 
-    
 
     public Login getLatestLogin(final String user_id) {
         Login result = null;
 
         try {
             return (Login) db.runReadTransaction(new ISqlJetTransaction() {
-
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(Login.TABLE_NAME);
                     ISqlJetCursor cursor = table.lookup(Login.INDEX_USER_ID, user_id);
                     Login login = null;
-                    try{
-                    	cursor.last();
-                    	login = new Login(cursor);
+                    try {
+                        cursor.last();
+                        login = new Login(cursor);
+                    } finally {
+                        cursor.close();
                     }
-                    finally {
-                		cursor.close();
-            	    }
 
                     return login;
                 }
@@ -271,12 +306,11 @@ public class DbHandler {
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(LabTestRequest.TABLE_NAME);
                     ISqlJetCursor cursor = table.lookup(LabTestRequest.INDEX_REQUEST_ID, request_id);
-                    try{
-                    	cursor.delete();
-                    }                	
-                    finally {
-                		cursor.close();
-            	    }
+                    try {
+                        cursor.delete();
+                    } finally {
+                        cursor.close();
+                    }
                     return true;
                 }
             });
@@ -319,19 +353,18 @@ public class DbHandler {
                     ISqlJetTable table = db.getTable(LabTestRequest.TABLE_NAME);
                     ISqlJetCursor cursor = table.lookup(LabTestRequest.INDEX_USER_ID, user_id);
 
-                    try{
-                    	if (!cursor.eof()) {
-		                    do {
-		                        LabTestRequest tmp = new LabTestRequest();
-		                        tmp.read(cursor);
-		                        result.add(tmp);
-		
-		                    } while (cursor.next());
-                    	}
-	                    }
-                	finally {
-                		cursor.close();
-            	    }
+                    try {
+                        if (!cursor.eof()) {
+                            do {
+                                LabTestRequest tmp = new LabTestRequest();
+                                tmp.read(cursor);
+                                result.add(tmp);
+
+                            } while (cursor.next());
+                        }
+                    } finally {
+                        cursor.close();
+                    }
 
                     return result;
                 }
@@ -387,12 +420,11 @@ public class DbHandler {
                     ISqlJetCursor cursor = table.lookup(VitalData.INDEX_USER_ID,
                             user_id);
                     int rows = 0;
-                    try{
-                    	rows = (int) cursor.getRowCount();
+                    try {
+                        rows = (int) cursor.getRowCount();
+                    } finally {
+                        cursor.close();
                     }
-                    finally {
-                		cursor.close();
-            	    }
 
                     return rows;
                 }
@@ -424,25 +456,24 @@ public class DbHandler {
                     ISqlJetCursor cursor = table.lookup(VitalData.INDEX_VITALDATA_ITEM_ID);
                     // new Object[]{endDate_DB.getTimeInMillis()},
                     //new Object[]{startDate_DB.getTimeInMillis()}
-                    try{
-	                    do {
-	
-	                        VitalData tmp = new VitalData();
-	                        tmp.read(cursor);
-	
-	                        date_DB.setTimeInMillis(parseLong(tmp.getDate()));
-	                        //System.out.println(date_DB.getTime());
-	
-	                        if (tmp.getUser_id().equals(user_id) &&
-	                                date_DB.before(endDate) &&
-	                                date_DB.after(startDate))
-	                            result.add(tmp);
-	
-	                    } while (cursor.next());
-                    }                	
-                    finally {
-                		cursor.close();
-            	    }
+                    try {
+                        do {
+
+                            VitalData tmp = new VitalData();
+                            tmp.read(cursor);
+
+                            date_DB.setTimeInMillis(parseLong(tmp.getDate()));
+                            //System.out.println(date_DB.getTime());
+
+                            if (tmp.getUser_id().equals(user_id) &&
+                                    date_DB.before(endDate) &&
+                                    date_DB.after(startDate))
+                                result.add(tmp);
+
+                        } while (cursor.next());
+                    } finally {
+                        cursor.close();
+                    }
 
                     return result;
                 }
@@ -460,7 +491,7 @@ public class DbHandler {
         try {
             final eu.neq.mais.domain.gnuhealth.VitalDataGnu vitalDataGnu = new eu.neq.mais.domain.gnuhealth.VitalDataGnu(user_id);
             final Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.DATE, -100);
+            calendar.add(Calendar.DATE, -50);
             //System.out.println(calendar.getTime());
 
 
@@ -468,7 +499,7 @@ public class DbHandler {
 
                 public Object run(SqlJetDb db) throws SqlJetException {
                     ISqlJetTable table = db.getTable(VitalData.TABLE_NAME);
-                    for (int i = 1; i < 100; i++) {
+                    for (int i = 1; i < 50; i++) {
                         vitalDataGnu.generateVitalData();
                         calendar.add(Calendar.DATE, 1);
                         //System.out.println(calendar.getTime());
@@ -482,9 +513,13 @@ public class DbHandler {
                     return true;
                 }
             });
+
+
         } catch (SqlJetException e) {
             e.printStackTrace();
         }
+
+
     }
 
 

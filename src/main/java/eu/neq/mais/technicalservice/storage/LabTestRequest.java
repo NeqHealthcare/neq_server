@@ -49,6 +49,7 @@ public class LabTestRequest implements DbTable {
         }
     }
 
+    //todo
     public static void main(String[] args) {
         DbHandler dbh = new DbHandler();
 

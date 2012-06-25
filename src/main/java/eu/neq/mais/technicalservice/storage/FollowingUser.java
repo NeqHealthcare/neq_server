@@ -7,8 +7,8 @@ import org.tmatesoft.sqljet.core.table.SqlJetDb;
 
 public class FollowingUser implements DbTable {
 
-	
-	String followed_user_id;
+
+    String followed_user_id;
     String user_id;
 
     public static String TABLE_NAME = "FOLLOWING_USER_TABLE";
@@ -49,6 +49,8 @@ public class FollowingUser implements DbTable {
         }
     }
 
+
+    //todo
     public static void main(String[] args) {
         DbHandler dbh = new DbHandler();
 
@@ -74,5 +76,5 @@ public class FollowingUser implements DbTable {
     public void setUser_id(String user_id) {
         this.user_id = user_id;
     }
-	
+
 }

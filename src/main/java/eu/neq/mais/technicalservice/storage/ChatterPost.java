@@ -7,13 +7,13 @@ import org.tmatesoft.sqljet.core.table.SqlJetDb;
 
 public class ChatterPost implements DbTable {
 
-	
-	Long id;
+
+    Long id;
     String message;
     Long timestamp;
     Long parent_id;
     String creator_id;
-    
+
 
     public static String TABLE_NAME = "CHATTER_POST_TABLE";
     public static String FIELD_ID = "id";
@@ -21,13 +21,13 @@ public class ChatterPost implements DbTable {
     public static String FIELD_TIMESTAMP = "timestamp";
     public static String FIELD_PARENT_ID = "parent_id";
     public static String FIELD_CREATOR_ID = "creator_id";
-       
+
     public static String INDEX_ID = "sqlite_autoindex_CHATTER_POST_TABLE_1";
     public static String INDEX_PARENT_ID = "parent_id_index_ChatterPost";
     public static String INDEX_CREATOR_ID = "creator_id_index_ChatterPost";
-    
-    public String toString(){
-    	return "id: "+id+" message: "+message+" timestamp: "+timestamp+" parent_id: "+parent_id+" creator_id: "+creator_id;
+
+    public String toString() {
+        return "id: " + id + " message: " + message + " timestamp: " + timestamp + " parent_id: " + parent_id + " creator_id: " + creator_id;
     }
 
     public ChatterPost() {
@@ -40,7 +40,7 @@ public class ChatterPost implements DbTable {
 
     public void read(ISqlJetCursor cursor) {
         try {
-        	this.id = cursor.getInteger(FIELD_ID);
+            this.id = cursor.getInteger(FIELD_ID);
             this.message = cursor.getString(FIELD_MESSAGE);
             this.timestamp = cursor.getInteger(FIELD_TIMESTAMP);
             this.parent_id = cursor.getInteger(FIELD_PARENT_ID);
@@ -66,53 +66,53 @@ public class ChatterPost implements DbTable {
     }
 
     public static void main(String[] args) {
-        DbHandler dbh = new DbHandler();
+        DbHandler dbh = DBFacade.getInstance();
 
         ChatterPost r = new ChatterPost();
         r.initialize(dbh.getDb());
 
 
-        dbh.close();
+        //dbh.commit();
     }
 
-	public long getId() {
-		return id;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public String getMessage() {
-		return message;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-	public long getTimestamp() {
-		return timestamp;
-	}
+    public long getTimestamp() {
+        return timestamp;
+    }
 
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
-	}
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
 
-	public long getParent_id() {
-		return parent_id;
-	}
+    public long getParent_id() {
+        return parent_id;
+    }
 
-	public void setParent_id(long parent_id) {
-		this.parent_id = parent_id;
-	}
+    public void setParent_id(long parent_id) {
+        this.parent_id = parent_id;
+    }
 
-	public String getCreator_id() {
-		return creator_id;
-	}
+    public String getCreator_id() {
+        return creator_id;
+    }
 
-	public void setCreator_id(String creator_id) {
-		this.creator_id = creator_id;
-	}
+    public void setCreator_id(String creator_id) {
+        this.creator_id = creator_id;
+    }
 
 }

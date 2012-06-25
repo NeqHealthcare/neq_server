@@ -4,6 +4,7 @@ import eu.neq.mais.domain.VitalData;
 import eu.neq.mais.domain.gnuhealth.VitalDataGnu;
 import eu.neq.mais.technicalservice.DTOWrapper;
 import eu.neq.mais.technicalservice.Settings;
+import eu.neq.mais.technicalservice.storage.DBFacade;
 import eu.neq.mais.technicalservice.storage.DbHandler;
 
 import javax.servlet.http.HttpServletResponse;
@@ -82,8 +83,8 @@ public class VitalDataHandler {
             endDate_sql = Calendar.getInstance();
             endDate_sql.setTime(sdfToDate.parse(endDate));
 
-            System.out.print(endDate_sql.getTime());
-            System.out.print(startDate_sql.getTime());
+            //System.out.print(endDate_sql.getTime());
+            //System.out.print(startDate_sql.getTime());
 
         } catch (ParseException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -91,7 +92,7 @@ public class VitalDataHandler {
 
         try {
 
-            DbHandler dbh = new DbHandler();
+            DbHandler dbh = DBFacade.getInstance();
 
 
             List<eu.neq.mais.technicalservice.storage.VitalData> vitalDataEntries;
@@ -122,7 +123,7 @@ public class VitalDataHandler {
             }
 
 
-            dbh.close();
+            //dbh.commit();
 
             response = new DTOWrapper().wrap(vitalDataListGnu);
         } catch (Exception e) {

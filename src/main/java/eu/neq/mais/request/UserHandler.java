@@ -8,23 +8,20 @@ import eu.neq.mais.technicalservice.DTOWrapper;
 import eu.neq.mais.technicalservice.ImageHandler;
 import eu.neq.mais.technicalservice.SessionStore.NoSessionInSessionStoreException;
 import eu.neq.mais.technicalservice.Settings;
+import eu.neq.mais.technicalservice.storage.DBFacade;
 import eu.neq.mais.technicalservice.storage.DbHandler;
 import eu.neq.mais.technicalservice.storage.Login;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -47,7 +44,7 @@ public class UserHandler {
     @OPTIONS
     @Path("/personalInformation")
     public Response returnPersnoalDataOptions(@Context HttpServletResponse servlerResponse) {
-
+        //System.out.println("Options request on personalInformation");
         servlerResponse.addHeader("Allow-Control-Allow-Methods", "POST,GET,OPTIONS");
         servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
         servlerResponse.addHeader("Access-Control-Allow-Origin", Settings.ALLOW_ORIGIN_ADRESS);
@@ -76,26 +73,26 @@ public class UserHandler {
 
         try {
             connector = ConnectorFactory.getConnector(NeqServer.getSessionStore().getBackendSid(session));
-           
+
             String user_id = String.valueOf(NeqServer.getSessionStore().getUserId(session));
-           
+
             person = connector.returnPersonalInformation(user_id);
-           
+
             /*
             * Number of patients
             */
-           
+
             List<?> nrOfpatients = connector.returnNumberOfPatients(Integer.parseInt(user_id));
-            
+
             person.setNumber_of_patients(String.valueOf(nrOfpatients.size()));
 
             /*
             * last login
             */
 
-            DbHandler dbH = new DbHandler();
+            DbHandler dbH = DBFacade.getInstance();
             Login l = dbH.getLatestLogin(user_id);
-            dbH.close();
+            // dbH.commit();
 
             person.setLastLogin(l.getDateOfLogin());
 
@@ -112,69 +109,69 @@ public class UserHandler {
 
 
     @OPTIONS
-	@Path("/image")
-	public Response optionsPic(@Context HttpServletResponse servlerResponse) {
+    @Path("/image")
+    public Response optionsPic(@Context HttpServletResponse servlerResponse) {
 
-		servlerResponse.addHeader("Allow-Control-Allow-Methods",
-				"POST,GET,OPTIONS");
-		servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
-		servlerResponse.addHeader("Access-Control-Allow-Origin",
-				Settings.ALLOW_ORIGIN_ADRESS);
-		servlerResponse.addHeader("Access-Control-Allow-Headers",
-				"Content-Type,X-Requested-With");
-		servlerResponse.addHeader("Access-Control-Max-Age", "60");
+        servlerResponse.addHeader("Allow-Control-Allow-Methods",
+                "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin",
+                Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers",
+                "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
-		return null;
+        return null;
 
-	}
+    }
 
-	@GET
-	@Path("/image/{id}")
-	@Produces("image/png")
-	public Response getPic(@PathParam("id") String id,
-			@QueryParam("width") String width,
-			@QueryParam("height") String height,
-			@Context HttpServletResponse servlerResponse) {
+    @GET
+    @Path("/image/{id}")
+    @Produces("image/png")
+    public Response getPic(@PathParam("id") String id,
+                           @QueryParam("width") String width,
+                           @QueryParam("height") String height,
+                           @Context HttpServletResponse servlerResponse) {
 
-		servlerResponse.addHeader("Allow-Control-Allow-Methods",
-				"POST,GET,OPTIONS");
-		servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
-		servlerResponse.addHeader("Access-Control-Allow-Origin",
-				Settings.ALLOW_ORIGIN_ADRESS);
-		servlerResponse.addHeader("Access-Control-Allow-Headers",
-				"Content-Type,X-Requested-With");
-		servlerResponse.addHeader("Access-Control-Max-Age", "60");
+        servlerResponse.addHeader("Allow-Control-Allow-Methods",
+                "POST,GET,OPTIONS");
+        servlerResponse.addHeader("Access-Control-Allow-Credentials", "true");
+        servlerResponse.addHeader("Access-Control-Allow-Origin",
+                Settings.ALLOW_ORIGIN_ADRESS);
+        servlerResponse.addHeader("Access-Control-Allow-Headers",
+                "Content-Type,X-Requested-With");
+        servlerResponse.addHeader("Access-Control-Max-Age", "60");
 
-		if (!id.contains(".jpg"))
-			id += ".jpg";
+        if (!id.contains(".jpg"))
+            id += ".jpg";
 
-		String path = System.getProperty("user.dir")+Settings.DOCTOR_IMAGE_PATH;
-		File img = new File(path + id);
+        String path = System.getProperty("user.dir") + Settings.DOCTOR_IMAGE_PATH;
+        File img = new File(path + id);
 
-		if (!img.exists()) {
-			img = new File(path+"default_user.png");
-		}
+        if (!img.exists()) {
+            img = new File(path + "default_user.png");
+        }
 
-		BufferedImage image;
-		try {
-			image = ImageIO.read(img);
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			
-			if (height != null && width != null) {
-				image = ImageHandler.getScaledImage(image, Integer.parseInt(width), Integer.parseInt(height));
-			}
-			
-			ImageIO.write(image, "png", baos);
+        BufferedImage image;
+        try {
+            image = ImageIO.read(img);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-			return Response.ok(baos.toByteArray()).build();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+            if (height != null && width != null) {
+                image = ImageHandler.getScaledImage(image, Integer.parseInt(width), Integer.parseInt(height));
+            }
 
-		return Response.serverError().build();
-	}
-	
-	
+            ImageIO.write(image, "png", baos);
+
+            return Response.ok(baos.toByteArray()).build();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return Response.serverError().build();
+    }
+
+
     @GET
     @Path("/lastLogin")
     @Produces(MediaType.APPLICATION_JSON)
