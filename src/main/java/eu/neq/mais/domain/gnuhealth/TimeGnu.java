@@ -17,7 +17,7 @@ public class TimeGnu {
 		cal = new GregorianCalendar();
 		cal.setTimeInMillis(time);
 		this.hour = cal.get(Calendar.HOUR_OF_DAY);
-		this.month = cal.get(Calendar.MONTH);
+		this.month = cal.get(Calendar.MONTH)+1;
 		this.second = cal.get(Calendar.SECOND);
 		this.year = cal.get(Calendar.YEAR);
 		this.day = cal.get(Calendar.DAY_OF_MONTH);
